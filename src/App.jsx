@@ -64,6 +64,10 @@ const avatarColors = {
   FA: "#a85ce2",
 };
 
+const LANG_CODES = { Tamil: "ta", Hindi: "hi", Malayalam: "ml", English: "en", Arabic: "ar" };
+
+const srOnly = { position: "absolute", width: 1, height: 1, overflow: "hidden", clip: "rect(0 0 0 0)", whiteSpace: "nowrap" };
+
 export default function App() {
   const [screen, setScreen] = useState("chat");
   const [activeContact, setActiveContact] = useState(null);
@@ -89,11 +93,8 @@ function CallScreen({ contact, onEnd }) {
   const [particles, setParticles] = useState([]);
   const [scanProgress, setScanProgress] = useState(0);
   const idxRef = useRef(0);
-  const captionTimer = useRef(null);
-  const scanRef = useRef(null);
 
   const lang = contact?.lang || "English";
-  const signs = SIGN_TRANSLATIONS[lang] || SIGN_TRANSLATIONS["English"];
 
   useEffect(() => {
     const t = setInterval(() => setCallDuration(d => d + 1), 1000);
@@ -107,7 +108,17 @@ function CallScreen({ contact, onEnd }) {
     return () => clearInterval(t);
   }, []);
 
+  // Simulated detection loop: scan → "detect" → caption → fade, every 5.8s.
+  // Every timer is tracked so unmount (and StrictMode's dev re-mount) cancels all of them.
   useEffect(() => {
+    const signs = SIGN_TRANSLATIONS[lang] || SIGN_TRANSLATIONS.English;
+    const timeouts = new Set();
+    const later = (fn, ms) => {
+      const id = setTimeout(() => { timeouts.delete(id); fn(); }, ms);
+      timeouts.add(id);
+    };
+    let scanTimer = null;
+
     const cycle = () => {
       setHandVisible(true);
       setScanning(true);
@@ -115,14 +126,14 @@ function CallScreen({ contact, onEnd }) {
 
       // Animate scan progress bar
       let p = 0;
-      clearInterval(scanRef.current);
-      scanRef.current = setInterval(() => {
+      clearInterval(scanTimer);
+      scanTimer = setInterval(() => {
         p += 8;
         setScanProgress(Math.min(p, 100));
-        if (p >= 100) clearInterval(scanRef.current);
+        if (p >= 100) clearInterval(scanTimer);
       }, 80);
 
-      setTimeout(() => {
+      later(() => {
         setScanning(false);
         const item = signs[idxRef.current % signs.length];
         idxRef.current++;
@@ -133,29 +144,30 @@ function CallScreen({ contact, onEnd }) {
           angle: (i / 10) * 360,
           speed: 0.6 + Math.random() * 0.4,
         })));
-        setTimeout(() => setParticles([]), 900);
+        later(() => setParticles([]), 900);
 
-        clearTimeout(captionTimer.current);
-        captionTimer.current = setTimeout(() => {
+        later(() => {
           setCaptionFade(true);
           setHandVisible(false);
-          setTimeout(() => setCaption(null), 500);
+          later(() => setCaption(null), 500);
         }, 3200);
       }, 1100);
     };
 
+    later(cycle, 400);
     const interval = setInterval(cycle, 5800);
-    setTimeout(cycle, 400);
-    return () => { clearInterval(interval); clearTimeout(captionTimer.current); clearInterval(scanRef.current); };
+    return () => {
+      clearInterval(interval);
+      clearInterval(scanTimer);
+      timeouts.forEach(clearTimeout);
+    };
   }, [lang]);
 
   const fmt = (s) => `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
 
   return (
-    <div style={{ width: "100%", maxWidth: 420, margin: "0 auto", height: "100vh", background: "#000", fontFamily: "'Sora',sans-serif", color: "#fff", display: "flex", flexDirection: "column", position: "relative", overflow: "hidden" }}>
+    <div style={{ width: "100%", maxWidth: 420, margin: "0 auto", height: "100dvh", background: "#000", fontFamily: "'Sora',sans-serif", color: "#fff", display: "flex", flexDirection: "column", position: "relative", overflow: "hidden" }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&display=swap');
-        * { box-sizing: border-box; margin: 0; padding: 0; }
         @keyframes floatHand { 0%,100%{transform:translateY(0) scale(1)} 50%{transform:translateY(-7px) scale(1.06)} }
         @keyframes ringExpand { 0%{transform:scale(0.7);opacity:0.9} 100%{transform:scale(2.2);opacity:0} }
         @keyframes captionIn { 0%{opacity:0;transform:translateY(18px) scale(0.96)} 100%{opacity:1;transform:translateY(0) scale(1)} }
@@ -234,6 +246,9 @@ function CallScreen({ contact, onEnd }) {
           </div>
         )}
 
+        {/* Screen-reader copy of the caption (persistent live region) */}
+        <div aria-live="polite" style={srOnly}>{caption?.text}</div>
+
         {/* ── CAPTION — overlaid directly on video, bottom center ── */}
         {caption && (
           <div style={{ position: "absolute", bottom: 72, left: 12, right: 12, zIndex: 20, animation: captionFade ? "captionOut .5s ease forwards" : "captionIn .42s cubic-bezier(0.34,1.56,0.64,1) forwards", pointerEvents: "none" }}>
@@ -250,8 +265,8 @@ function CallScreen({ contact, onEnd }) {
                 <div style={{ width: 48, height: 3, borderRadius: 2, background: "linear-gradient(90deg,rgba(0,255,150,0.1) 0%,rgba(0,210,255,0.4) 50%,rgba(0,255,150,0.1) 100%)", backgroundSize: "200% 100%", animation: "shimmer 1.8s linear infinite" }} />
               </div>
 
-              {/* Translated text */}
-              <div style={{ fontSize: 17, lineHeight: 1.6, fontWeight: 500, color: "#fff", letterSpacing: 0.25 }}>
+              {/* Translated text — dir="auto" so Arabic renders right-to-left */}
+              <div dir="auto" lang={LANG_CODES[lang]} style={{ fontSize: 17, lineHeight: 1.6, fontWeight: 500, color: "#fff", letterSpacing: 0.25 }}>
                 {caption.text}
               </div>
             </div>
@@ -294,17 +309,17 @@ function CallScreen({ contact, onEnd }) {
 
       {/* ── CONTROLS ── */}
       <div style={{ background: "rgba(5,8,18,0.97)", backdropFilter: "blur(24px)", padding: "16px 32px 26px", display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "1px solid rgba(255,255,255,0.05)", zIndex: 20 }}>
-        <button className="btn" onClick={() => setMicOn(m => !m)} style={{ width: 54, height: 54, borderRadius: "50%", background: micOn ? "rgba(255,255,255,0.09)" : "rgba(255,55,55,0.22)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 3 }}>
-          <span style={{ fontSize: 23 }}>{micOn ? "🎙️" : "🔇"}</span>
+        <button className="btn" aria-label={micOn ? "Mute microphone" : "Unmute microphone"} onClick={() => setMicOn(m => !m)} style={{ width: 54, height: 54, borderRadius: "50%", background: micOn ? "rgba(255,255,255,0.09)" : "rgba(255,55,55,0.22)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 3 }}>
+          <span aria-hidden="true" style={{ fontSize: 23 }}>{micOn ? "🎙️" : "🔇"}</span>
           <span style={{ fontSize: 9, color: "rgba(255,255,255,0.38)" }}>{micOn ? "Mute" : "Unmute"}</span>
         </button>
 
-        <button className="btn" onClick={onEnd} style={{ width: 68, height: 68, borderRadius: "50%", background: "linear-gradient(135deg,#ff3c3c,#be0000)", fontSize: 26, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 6px 28px rgba(255,50,50,0.42)" }}>
-          📵
+        <button className="btn" aria-label="End call" onClick={onEnd} style={{ width: 68, height: 68, borderRadius: "50%", background: "linear-gradient(135deg,#ff3c3c,#be0000)", fontSize: 26, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 6px 28px rgba(255,50,50,0.42)" }}>
+          <span aria-hidden="true">📵</span>
         </button>
 
-        <button className="btn" onClick={() => setCamOn(c => !c)} style={{ width: 54, height: 54, borderRadius: "50%", background: camOn ? "rgba(255,255,255,0.09)" : "rgba(255,55,55,0.22)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 3 }}>
-          <span style={{ fontSize: 23 }}>{camOn ? "📹" : "🚫"}</span>
+        <button className="btn" aria-label={camOn ? "Turn camera off" : "Turn camera on"} onClick={() => setCamOn(c => !c)} style={{ width: 54, height: 54, borderRadius: "50%", background: camOn ? "rgba(255,255,255,0.09)" : "rgba(255,55,55,0.22)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 3 }}>
+          <span aria-hidden="true" style={{ fontSize: 23 }}>{camOn ? "📹" : "🚫"}</span>
           <span style={{ fontSize: 9, color: "rgba(255,255,255,0.38)" }}>{camOn ? "Camera" : "Off"}</span>
         </button>
       </div>
@@ -317,10 +332,8 @@ function ChatList({ contacts, onCall }) {
   const filtered = contacts.filter(c => c.name.toLowerCase().includes(search.toLowerCase()));
 
   return (
-    <div style={{ maxWidth: 420, margin: "0 auto", minHeight: "100vh", background: "linear-gradient(160deg,#080d1a 0%,#060c18 100%)", fontFamily: "'Sora',sans-serif", color: "#e8f0fe", display: "flex", flexDirection: "column" }}>
+    <div style={{ maxWidth: 420, margin: "0 auto", minHeight: "100dvh", background: "linear-gradient(160deg,#080d1a 0%,#060c18 100%)", fontFamily: "'Sora',sans-serif", color: "#e8f0fe", display: "flex", flexDirection: "column" }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&display=swap');
-        * { box-sizing: border-box; margin: 0; padding: 0; }
         .row { transition: background .18s, transform .18s; cursor: pointer; }
         .row:hover { background: rgba(0,255,150,0.04) !important; transform: translateX(3px); }
         .vcbtn { transition: all .18s; cursor: pointer; }
@@ -341,7 +354,7 @@ function ChatList({ contacts, onCall }) {
         </div>
         <div style={{ position: "relative" }}>
           <span style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", opacity: 0.3 }}>🔍</span>
-          <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search…" style={{ width: "100%", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 12, padding: "9px 12px 9px 36px", color: "#e8f0fe", fontFamily: "'Sora',sans-serif", fontSize: 14, transition: "border .2s" }} />
+          <input aria-label="Search chats" value={search} onChange={e => setSearch(e.target.value)} placeholder="Search…" style={{ width: "100%", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 12, padding: "9px 12px 9px 36px", color: "#e8f0fe", fontFamily: "'Sora',sans-serif", fontSize: 14, transition: "border .2s" }} />
         </div>
       </div>
 
@@ -376,7 +389,7 @@ function ChatList({ contacts, onCall }) {
                 </div>
               </div>
             </div>
-            <button className="vcbtn" onClick={() => onCall(c)} style={{ width: 36, height: 36, borderRadius: "50%", border: "1px solid rgba(0,255,150,0.28)", background: "rgba(0,255,150,0.07)", color: "#00ff96", fontSize: 16, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+            <button className="vcbtn" aria-label={`Video call ${c.name}`} onClick={() => onCall(c)} style={{ width: 36, height: 36, borderRadius: "50%", border: "1px solid rgba(0,255,150,0.28)", background: "rgba(0,255,150,0.07)", color: "#00ff96", fontSize: 16, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
               📹
             </button>
           </div>
