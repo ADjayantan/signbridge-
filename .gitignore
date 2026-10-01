@@ -23,3 +23,8 @@ dist-ssr
 .DS_Store
 Thumbs.db
 *.sw?
+
+# Local secrets
+.env
+.env.*
+!.env.example
