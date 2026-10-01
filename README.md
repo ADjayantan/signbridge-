@@ -9,6 +9,14 @@
 - **Sign mode** (Deaf and hard of hearing): the camera tracks your hands on your own device. Hold a sign and it becomes a word; lower your hands and the words go to the AI, which works out the sentence you meant and replies. It can also say your words aloud for hearing people nearby.
 - **Voice mode** (blind and low vision): talk and hear the answer, hands-free, like a voice assistant. Answers start playing while the AI is still writing. Everything works from the keyboard and with screen readers. Turn on the camera and ask "what's in front of me?" or "read this label".
 
+## Install it as an app
+
+SignBridge is an installable app (PWA). In Chrome or Edge, press **Install the SignBridge app** on the home screen (or the install icon in the address bar); on Android, choose **Add to Home screen**; on iPhone, **Share → Add to Home Screen**.
+
+- Opens instantly after the first visit; the hand-tracking runtime and model are cached the first time sign mode opens.
+- **Sign recognition works offline.** AI answers still need the internet, and the app says so.
+- Long-press the app icon for shortcuts straight into **Voice mode** or **Sign mode**.
+
 ## How it works
 
 ```
@@ -121,6 +129,6 @@ tests/                   unit tests (node:test)
 
 ## Tech stack
 
-React 19 · Vite 8 · MediaPipe Tasks Vision 1.0.1 · Gemini API · Vercel Functions · Web Speech API
+React 19 · Vite 8 · PWA (Workbox) · MediaPipe Tasks Vision 1.0.1 · Gemini API · Vercel Functions · Web Speech API
 
 Built by [Jayantan](https://github.com/ADjayantan).

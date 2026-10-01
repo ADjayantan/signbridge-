@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { LanguageSelect } from "../components/Controls.jsx";
 
-export default function Home({ settings, update, onPick }) {
+export default function Home({ settings, update, onPick, shell }) {
   useEffect(() => {
     document.title = "SignBridge — talk to AI in sign language or by voice";
   }, []);
@@ -49,7 +49,17 @@ export default function Home({ settings, update, onPick }) {
 
       <div className="home-settings">
         <LanguageSelect value={settings.lang} onChange={(lang) => update({ lang })} id="home-language" />
+        {shell?.canInstall && (
+          <button type="button" className="btn btn-primary install-button" onClick={shell.install}>
+            <span aria-hidden="true">⬇</span> Install the SignBridge app
+          </button>
+        )}
       </div>
+      {shell?.iosHint && (
+        <p className="shortcut-tip">
+          Install on iPhone or iPad: tap <strong>Share</strong>, then <strong>Add to Home Screen</strong>.
+        </p>
+      )}
 
       <ul className="facts">
         <li>

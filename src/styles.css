@@ -351,7 +351,25 @@ input[type="checkbox"] {
   font-size: 0.9rem;
 }
 .home-settings {
-  max-width: 320px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 1rem;
+}
+.home-settings .field {
+  min-width: 260px;
+}
+.offline-banner {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  padding: 0.6rem 1.25rem;
+  text-align: center;
+  font-weight: 600;
+  background: var(--warning-bg);
+  color: var(--warning);
+  border-bottom: 1px solid var(--warning);
+  backdrop-filter: blur(8px);
 }
 .facts {
   list-style: none;

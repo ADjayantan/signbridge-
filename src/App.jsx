@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { isTyping } from "./components/Controls.jsx";
+import { useAppShell } from "./hooks/useAppShell.js";
 import { useHashMode } from "./hooks/useHashMode.js";
 import { useSettings } from "./hooks/useSettings.js";
 import Home from "./modes/Home.jsx";
@@ -9,6 +10,7 @@ import VoiceMode from "./modes/VoiceMode.jsx";
 export default function App() {
   const [settings, update] = useSettings();
   const [mode, go] = useHashMode();
+  const shell = useAppShell();
 
   useEffect(() => {
     if (mode !== "home") return undefined;
@@ -26,7 +28,19 @@ export default function App() {
   }, []);
 
   const home = () => go("home");
-  if (mode === "voice") return <VoiceMode settings={settings} update={update} onBack={home} />;
-  if (mode === "sign") return <SignMode settings={settings} update={update} onBack={home} />;
-  return <Home settings={settings} update={update} onPick={go} />;
+  let screen;
+  if (mode === "voice") screen = <VoiceMode settings={settings} update={update} onBack={home} />;
+  else if (mode === "sign") screen = <SignMode settings={settings} update={update} onBack={home} />;
+  else screen = <Home settings={settings} update={update} onPick={go} shell={shell} />;
+
+  return (
+    <>
+      {!shell.online && (
+        <p className="offline-banner" role="status">
+          You're offline. Hand tracking still works; AI answers need an internet connection.
+        </p>
+      )}
+      {screen}
+    </>
+  );
 }
