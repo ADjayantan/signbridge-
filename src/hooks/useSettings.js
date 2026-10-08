@@ -9,8 +9,12 @@ export const DEFAULT_SETTINGS = {
   rate: 1, // speech rate
   handsFree: true, // voice mode: listen again after each answer
   voiceOutput: "voice", // "voice" = app speaks; "screenreader" = the user's screen reader reads replies
-  autoSendMs: 2000, // sign mode: send after hands are down this long (0 = off)
+  autoSendMs: 0, // review words before sending; automatic sending is opt-in
   speakSigns: false, // sign mode: say the user's signed sentence aloud for people nearby
+  signLanguage: "isl",
+  recognitionProfile: "balanced",
+  gestureShortcuts: false, // opt-in handshape shortcuts; never guess HELLO for an unknown sign
+  videoReplies: true,
 };
 
 function sanitize(saved) {
@@ -22,6 +26,10 @@ function sanitize(saved) {
   if (saved.voiceOutput === "voice" || saved.voiceOutput === "screenreader") s.voiceOutput = saved.voiceOutput;
   if (AUTO_SEND_OPTIONS.includes(saved.autoSendMs)) s.autoSendMs = saved.autoSendMs;
   if (typeof saved.speakSigns === "boolean") s.speakSigns = saved.speakSigns;
+  if (["isl", "asl"].includes(saved.signLanguage)) s.signLanguage = saved.signLanguage;
+  if (["balanced", "careful"].includes(saved.recognitionProfile)) s.recognitionProfile = saved.recognitionProfile;
+  if (typeof saved.gestureShortcuts === "boolean") s.gestureShortcuts = saved.gestureShortcuts;
+  if (typeof saved.videoReplies === "boolean") s.videoReplies = saved.videoReplies;
   return s;
 }
 

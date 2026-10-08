@@ -1,0 +1,183 @@
+{
+  "format": "signbridge-graph-experiment-v1",
+  "created_utc": "2026-10-04T05:48:46.620767+00:00",
+  "feature_contract": "signbridge-pose75-xyc-v1",
+  "feature_shape": [
+    32,
+    75,
+    3
+  ],
+  "valid_joint_confidence": 0.5,
+  "shoulder_confidence": 0.2,
+  "resampling": "nearest index floor(i*(T-1)/31+0.5), trimmed hand-visible interval",
+  "coordinate_clip": [
+    -5,
+    5
+  ],
+  "normalization": "Valid-training-only XY mean/std, std floor .05, embedded model, missing nodes remasked; confidence never standardized",
+  "models": [
+    "gru27",
+    "gru75",
+    "stgcn"
+  ],
+  "seeds": [
+    42,
+    43,
+    44
+  ],
+  "training": {
+    "epoch_ceiling": 80,
+    "early_stop_minimum_epoch": 20,
+    "patience": 20,
+    "batch_size": 64,
+    "optimizer": "AdamW",
+    "learning_rate": 0.002,
+    "weight_decay": 0.0001,
+    "augmentation": "none",
+    "checkpoint_metric": "validation macro recall",
+    "cpu_threads": 4
+  },
+  "calibration": {
+    "confidence_grid": {
+      "start": 0.5,
+      "end": 0.99,
+      "step": 0.01
+    },
+    "margin_grid": {
+      "start": 0.05,
+      "end": 0.5,
+      "step": 0.05
+    },
+    "minimum_known_precision": 0.95,
+    "minimum_correct_known_coverage": 0.6,
+    "maximum_unknown_false_accept_rate": 0.05,
+    "objective": "Maximize accepted-correct validation coverage after precision/FAR screening; tie fewer known mistakes, fewer unknown accepts, stricter threshold then margin; zero eligible point disables acceptance"
+  },
+  "selection": "Same architecture across seeds chosen per language by validation; only qualifying architecture with >=5pp mean accepted-correct coverage improvement over calibrated GRU27 control considered, then frozen final test/parity/runtime gates",
+  "camera_gate": {
+    "minimum_samples": 4,
+    "minimum_hand_and_shoulder_samples": 4,
+    "minimum_duration_ms": 350,
+    "maximum_duration_ms": 12000,
+    "maximum_samples": 100,
+    "maximum_sample_gap_ms": 1000,
+    "strict_monotonic_timestamps": true
+  },
+  "test_policy": "Historical test already inspected previously; final outputs are one frozen confirmatory benchmark, never unseen-signer or live accuracy; no architecture changes after candidate test inspection",
+  "sources": {
+    "isl": {
+      "classes": 49,
+      "splits": {
+        "train": {
+          "count": 628,
+          "ordered_clip_ids_sha256": "1107e351fff6b770fe809f47c040ceace20cb7d62facbffece95c5c6925876ea"
+        },
+        "val": {
+          "count": 117,
+          "ordered_clip_ids_sha256": "42602a19a115927b46866136cea8638332568a7b176a01401b487efb01980871"
+        },
+        "test": {
+          "count": 192,
+          "ordered_clip_ids_sha256": "4c3e8a37f593523b7f5508e8f2570cdad6d54816423beed5dc05611424a4ccc5"
+        },
+        "unknown_validation": {
+          "count": 100,
+          "ordered_clip_ids_sha256": "4aac6b2ec5e0174a6f2e83645c938b38828474fe6ee3bb7f5beae58219675607"
+        },
+        "unknown_test": {
+          "count": 200,
+          "ordered_clip_ids_sha256": "247c858124acc66bc75b8a01ec162bb7b2308480de1128e8f91823a641d68259"
+        }
+      },
+      "demonstration_labels": [
+        "BIRD",
+        "COURT",
+        "HOUSE",
+        "WHITE",
+        "COW",
+        "FATHER",
+        "GIRL",
+        "GOOD",
+        "HAPPY",
+        "I",
+        "NEW",
+        "QUIET",
+        "RED",
+        "SMALL LITTLE",
+        "STORE OR SHOP",
+        "YOU (PLURAL)",
+        "BANK",
+        "BIG LARGE",
+        "BOY",
+        "BROTHER"
+      ],
+      "demonstration_selection": "Top20 train counts, label lexical tie break, before candidate test inspection",
+      "sha256": {
+        "archive": "141a46ef6dc8eb12734fea0da8b7392c139809f089a0700453fdfd4d87ccb5a0",
+        "prepared": "b1e5b66e23001d1c642d04fde0ddd7d04f97042c769409cb6794cc93cd83c13b",
+        "metadata": "a367d8403b4fa2e8ac7d9b2b39a7cb02969eff63dbde8d9b428b870742d747eb",
+        "legacy_model": "9bdba60b46b4d513a7de120cfb6f0f712a98daf0842528a527d13f28d43f719e"
+      }
+    },
+    "asl": {
+      "classes": 100,
+      "splits": {
+        "train": {
+          "count": 1435,
+          "ordered_clip_ids_sha256": "3e0982a9a6a747fcd9097b9b2a5e88f56488cc8a118b3f85d33a1b75d408f651"
+        },
+        "val": {
+          "count": 335,
+          "ordered_clip_ids_sha256": "0606b1cf52a025532ecd001ada6cae99e13556c908bdfeebf1a407346e2dce1c"
+        },
+        "test": {
+          "count": 255,
+          "ordered_clip_ids_sha256": "9de2eced0313c9ba8cd69069e7a3842ea59d9737b0a3b5024b30d77839515dda"
+        },
+        "unknown_validation": {
+          "count": 100,
+          "ordered_clip_ids_sha256": "6fecbd799d80f1872500c388b021de319c5387540eedae661dd48eb105fb1afe"
+        },
+        "unknown_test": {
+          "count": 200,
+          "ordered_clip_ids_sha256": "877399b7d34de4cff987c876ed10a22b392bd9ea7302371add97bf4556912b32"
+        }
+      },
+      "demonstration_labels": [
+        "BOOK",
+        "DRINK",
+        "COMPUTER",
+        "CHAIR",
+        "GO",
+        "BEFORE",
+        "CLOTHES",
+        "WHO",
+        "CANDY",
+        "COUSIN",
+        "DEAF",
+        "BLUE",
+        "BOWLING",
+        "CAN",
+        "FAMILY",
+        "FINE",
+        "GRADUATE",
+        "HELP",
+        "HOT",
+        "MAN"
+      ],
+      "demonstration_selection": "Top20 train counts, label lexical tie break, before candidate test inspection",
+      "sha256": {
+        "archive": "0752e9a0bf2b29749a59c0c8d38d16f1413e0331fafa5c7f22a2a1360a9e87b8",
+        "prepared": "c67da34858718cd98d33a058fba9134739172d9dd946e9953f08c65b4252446a",
+        "metadata": "5991f8564b9e83d5b643e6a5cd62639498a39607967db0ee6ba9383ae339d82e",
+        "legacy_model": "65c40faf3961418ced5b4baba9ece1d7eb0b3faa4f34960bf24e2ff50a8dfafa"
+      }
+    }
+  },
+  "limitations": [
+    "No facial mesh/z features",
+    "ISL signer IDs absent",
+    "Legacy ASL signer overlap; signer-disjoint study deferred if not feasible",
+    "Fluent/live camera evaluation pending"
+  ]
+}

@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: signbridge-conversations
+    runtime: node
+    plan: free
+    buildCommand: npm ci && npm run build:public
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+# Optional TURN credentials can be added privately after creating the free service.
+# The initial text pilot can deploy without a Metered account or an AI key.

@@ -1,0 +1,12 @@
+{
+  "format": "signbridge-graph-experiment-amendment-v1",
+  "protocol_sha256": "3994660ad5aad251acbc346712f2be9d70ce767bb9cf65e5bce7d288bc7b9a38",
+  "stage": "Before full seeded STGCN learning runs",
+  "reason": "Measured CPU bottleneck in artificial runtime benchmarks; chosen for compute cost, without candidate final-test inspection or validation-accuracy architecture selection",
+  "graph_blocks": { "widths": [32, 64, 64], "temporal_kernel": 5, "temporal_groups": "channels (depthwise)", "temporal_strides": [1, 2, 2], "spatial": "Masked anatomical neighbor averaging with channel projection", "pooling": "Masked mean" },
+  "mask_downsampling": "At stride s, observed destination mask and residual sample indices 0,s,2s,...; invalid neighbors excluded and degree renormalized before temporal convolution",
+  "run_budgets": "Unchanged 80-epoch ceiling, min20/patience20, seeds42/43/44, 1200seconds/run; same budgets for all models",
+  "profiling_excluded": "One-epoch timing traces and all untrained compatibility spikes are excluded from the seeded quality comparison",
+  "representative_seed": 42,
+  "limitations": "This compact graph architecture is one bounded candidate, not evidence about every graph architecture. Legacy27-to-full75 also changes resampling, confidence validity and normalization; only full75GRU-vs-graph shares exactly the same features."
+}

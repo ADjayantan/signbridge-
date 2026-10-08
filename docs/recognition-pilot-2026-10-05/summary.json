@@ -1,0 +1,492 @@
+{
+  "format": "signbridge-small-vocab-validation-summary-v1",
+  "signLanguage": "asl",
+  "labels": [
+    "DRINK",
+    "FINISH",
+    "FAMILY",
+    "WHO",
+    "BIRD",
+    "BOOK",
+    "GO",
+    "HOT",
+    "FINE",
+    "BROWN",
+    "EAT",
+    "WHAT"
+  ],
+  "gates": {
+    "minimumKnownPrecision": 0.95,
+    "minimumCorrectKnownCoverage": 0.6,
+    "maximumGenuineOovFalseAcceptRate": 0.05,
+    "maximumExcludedKnownFalseAcceptRate": 0.05
+  },
+  "variants": {
+    "none": {
+      "allThreeSeedsPassed": false,
+      "meanCorrectCoverage": 0.017094017094017092,
+      "correctCoverageRange": [
+        0.0,
+        0.05128205128205128
+      ],
+      "meanMacroRecall": 0.6495370370370369
+    },
+    "mild-spatial": {
+      "allThreeSeedsPassed": false,
+      "meanCorrectCoverage": 0.017094017094017092,
+      "correctCoverageRange": [
+        0.0,
+        0.02564102564102564
+      ],
+      "meanMacroRecall": 0.7152777777777777
+    }
+  },
+  "augmentationCoverageDifference": 0.0,
+  "researchFollowUpCandidate": null,
+  "runs": [
+    {
+      "variant": "none",
+      "seed": 42,
+      "epochsRun": 80,
+      "bestEpoch": 79,
+      "trainingSeconds": 13.732517099997494,
+      "bestValidationMacroRecall": 0.7152777777777777,
+      "calibration": {
+        "threshold": 0.99,
+        "margin": 0.5,
+        "acceptanceEnabled": false,
+        "screenPassed": false,
+        "known": {
+          "known_count": 39,
+          "unknown_count": 40,
+          "top1_correct": 26,
+          "top1_accuracy": 0.6666666666666666,
+          "macro_recall": 0.7152777777777777,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "known_rejected": 39,
+          "unknown_false_accepts": 0,
+          "known_accepted_precision": null,
+          "correct_known_coverage": 0.0,
+          "unknown_false_accept_rate": 0.0,
+          "mixture_precision": null,
+          "mixture": "All supplied known examples plus all supplied unknown-sign examples; nonsigning camera negatives not yet collected",
+          "wilson95": {
+            "known_precision": null,
+            "correct_coverage": [
+              0.0,
+              0.08966685370757144
+            ],
+            "unknown_false_accept_rate": [
+              0.0,
+              0.08762160119728664
+            ],
+            "mixture_precision": null
+          }
+        },
+        "excludedKnown": {
+          "count": 334,
+          "falseAccepts": 0,
+          "falseAcceptRate": 0.0,
+          "wilson95": [
+            0.0,
+            0.011370596237961843
+          ]
+        }
+      },
+      "weightsSha256": "2c6c948f50ccf12e0348560d89e96f58c49128dc579bb5b48e093ee2a439b1b7",
+      "validationPredictionsSha256": "e78c626f78c79ccd8629b8d70be4404d3442977ed53529dea1f08e06dcfa5c1b"
+    },
+    {
+      "variant": "none",
+      "seed": 43,
+      "epochsRun": 74,
+      "bestEpoch": 54,
+      "trainingSeconds": 14.44954949998646,
+      "bestValidationMacroRecall": 0.6124999999999999,
+      "calibration": {
+        "threshold": 0.99,
+        "margin": 0.5,
+        "acceptanceEnabled": false,
+        "screenPassed": false,
+        "known": {
+          "known_count": 39,
+          "unknown_count": 40,
+          "top1_correct": 22,
+          "top1_accuracy": 0.5641025641025641,
+          "macro_recall": 0.6124999999999999,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "known_rejected": 39,
+          "unknown_false_accepts": 0,
+          "known_accepted_precision": null,
+          "correct_known_coverage": 0.0,
+          "unknown_false_accept_rate": 0.0,
+          "mixture_precision": null,
+          "mixture": "All supplied known examples plus all supplied unknown-sign examples; nonsigning camera negatives not yet collected",
+          "wilson95": {
+            "known_precision": null,
+            "correct_coverage": [
+              0.0,
+              0.08966685370757144
+            ],
+            "unknown_false_accept_rate": [
+              0.0,
+              0.08762160119728664
+            ],
+            "mixture_precision": null
+          }
+        },
+        "excludedKnown": {
+          "count": 334,
+          "falseAccepts": 0,
+          "falseAcceptRate": 0.0,
+          "wilson95": [
+            0.0,
+            0.011370596237961843
+          ]
+        }
+      },
+      "weightsSha256": "9892e6fbb455ca21a50ec1e5d71f013fbec1720c341f310c0df8d8e28eb3a6e3",
+      "validationPredictionsSha256": "f96b1848b5e0db792846be41a7ee515114800d972573970af98e0e75de351654"
+    },
+    {
+      "variant": "none",
+      "seed": 44,
+      "epochsRun": 65,
+      "bestEpoch": 45,
+      "trainingSeconds": 3.8418261999904644,
+      "bestValidationMacroRecall": 0.6208333333333332,
+      "calibration": {
+        "threshold": 0.94,
+        "margin": 0.5,
+        "acceptanceEnabled": true,
+        "screenPassed": false,
+        "known": {
+          "known_count": 39,
+          "unknown_count": 40,
+          "top1_correct": 24,
+          "top1_accuracy": 0.6153846153846154,
+          "macro_recall": 0.6208333333333332,
+          "accepted_correct": 2,
+          "accepted_wrong": 0,
+          "known_rejected": 37,
+          "unknown_false_accepts": 2,
+          "known_accepted_precision": 1.0,
+          "correct_known_coverage": 0.05128205128205128,
+          "unknown_false_accept_rate": 0.05,
+          "mixture_precision": 0.5,
+          "mixture": "All supplied known examples plus all supplied unknown-sign examples; nonsigning camera negatives not yet collected",
+          "wilson95": {
+            "known_precision": [
+              0.34238022750665303,
+              1.0
+            ],
+            "correct_coverage": [
+              0.014177955415274113,
+              0.16885640047613612
+            ],
+            "unknown_false_accept_rate": [
+              0.013820667386148344,
+              0.16503877369140962
+            ],
+            "mixture_precision": [
+              0.15003898915214947,
+              0.8499610108478506
+            ]
+          }
+        },
+        "excludedKnown": {
+          "count": 334,
+          "falseAccepts": 16,
+          "falseAcceptRate": 0.04790419161676647,
+          "wilson95": [
+            0.02969887862092601,
+            0.07639070240860837
+          ]
+        }
+      },
+      "weightsSha256": "0d835b2f03ad4e913a6266309b6617a92835477daa52c098f60133c273b6875a",
+      "validationPredictionsSha256": "36354cdcd3e75a6e3988132ecc4d8c09b94c05afbe200f5194e1962a3e08aeb7"
+    },
+    {
+      "variant": "mild-spatial",
+      "seed": 42,
+      "epochsRun": 80,
+      "bestEpoch": 67,
+      "trainingSeconds": 4.952548700006446,
+      "bestValidationMacroRecall": 0.75,
+      "calibration": {
+        "threshold": 0.97,
+        "margin": 0.5,
+        "acceptanceEnabled": true,
+        "screenPassed": false,
+        "known": {
+          "known_count": 39,
+          "unknown_count": 40,
+          "top1_correct": 27,
+          "top1_accuracy": 0.6923076923076923,
+          "macro_recall": 0.75,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "known_rejected": 38,
+          "unknown_false_accepts": 1,
+          "known_accepted_precision": 1.0,
+          "correct_known_coverage": 0.02564102564102564,
+          "unknown_false_accept_rate": 0.025,
+          "mixture_precision": 0.5,
+          "mixture": "All supplied known examples plus all supplied unknown-sign examples; nonsigning camera negatives not yet collected",
+          "wilson95": {
+            "known_precision": [
+              0.20654931437723745,
+              1.0
+            ],
+            "correct_coverage": [
+              0.004540703100990098,
+              0.13180990169850076
+            ],
+            "unknown_false_accept_rate": [
+              0.0044268315026814095,
+              0.1288136896347409
+            ],
+            "mixture_precision": [
+              0.09453120573423074,
+              0.9054687942657693
+            ]
+          }
+        },
+        "excludedKnown": {
+          "count": 334,
+          "falseAccepts": 16,
+          "falseAcceptRate": 0.04790419161676647,
+          "wilson95": [
+            0.02969887862092601,
+            0.07639070240860837
+          ]
+        }
+      },
+      "weightsSha256": "8d18ee0841b80675d08cf9b570732b3428eb46e2cf70bb36cbcd6583842dba56",
+      "validationPredictionsSha256": "e0918773da00b8036aae652cd7f0e10e61b15a6a354d4ead311a02581401085e"
+    },
+    {
+      "variant": "mild-spatial",
+      "seed": 43,
+      "epochsRun": 80,
+      "bestEpoch": 73,
+      "trainingSeconds": 4.872205699997721,
+      "bestValidationMacroRecall": 0.6749999999999998,
+      "calibration": {
+        "threshold": 0.99,
+        "margin": 0.5,
+        "acceptanceEnabled": false,
+        "screenPassed": false,
+        "known": {
+          "known_count": 39,
+          "unknown_count": 40,
+          "top1_correct": 24,
+          "top1_accuracy": 0.6153846153846154,
+          "macro_recall": 0.6749999999999998,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "known_rejected": 39,
+          "unknown_false_accepts": 0,
+          "known_accepted_precision": null,
+          "correct_known_coverage": 0.0,
+          "unknown_false_accept_rate": 0.0,
+          "mixture_precision": null,
+          "mixture": "All supplied known examples plus all supplied unknown-sign examples; nonsigning camera negatives not yet collected",
+          "wilson95": {
+            "known_precision": null,
+            "correct_coverage": [
+              0.0,
+              0.08966685370757144
+            ],
+            "unknown_false_accept_rate": [
+              0.0,
+              0.08762160119728664
+            ],
+            "mixture_precision": null
+          }
+        },
+        "excludedKnown": {
+          "count": 334,
+          "falseAccepts": 0,
+          "falseAcceptRate": 0.0,
+          "wilson95": [
+            0.0,
+            0.011370596237961843
+          ]
+        }
+      },
+      "weightsSha256": "06f53f886679e201038ed3bc7551e0e48c681a1b8430a10919bab0649da1438d",
+      "validationPredictionsSha256": "275f748b0c8225d3e8f011978ab11e3fec947041db610b371007df7df0ec68a8"
+    },
+    {
+      "variant": "mild-spatial",
+      "seed": 44,
+      "epochsRun": 80,
+      "bestEpoch": 75,
+      "trainingSeconds": 4.783831800014013,
+      "bestValidationMacroRecall": 0.7208333333333332,
+      "calibration": {
+        "threshold": 0.98,
+        "margin": 0.5,
+        "acceptanceEnabled": true,
+        "screenPassed": false,
+        "known": {
+          "known_count": 39,
+          "unknown_count": 40,
+          "top1_correct": 28,
+          "top1_accuracy": 0.717948717948718,
+          "macro_recall": 0.7208333333333332,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "known_rejected": 38,
+          "unknown_false_accepts": 1,
+          "known_accepted_precision": 1.0,
+          "correct_known_coverage": 0.02564102564102564,
+          "unknown_false_accept_rate": 0.025,
+          "mixture_precision": 0.5,
+          "mixture": "All supplied known examples plus all supplied unknown-sign examples; nonsigning camera negatives not yet collected",
+          "wilson95": {
+            "known_precision": [
+              0.20654931437723745,
+              1.0
+            ],
+            "correct_coverage": [
+              0.004540703100990098,
+              0.13180990169850076
+            ],
+            "unknown_false_accept_rate": [
+              0.0044268315026814095,
+              0.1288136896347409
+            ],
+            "mixture_precision": [
+              0.09453120573423074,
+              0.9054687942657693
+            ]
+          }
+        },
+        "excludedKnown": {
+          "count": 334,
+          "falseAccepts": 15,
+          "falseAcceptRate": 0.04491017964071856,
+          "wilson95": [
+            0.02740225592630179,
+            0.0727673885537593
+          ]
+        }
+      },
+      "weightsSha256": "c7d700903b4f0db73ca0d3ebda6fce1dd927113ccf719058b7e8cd31b4e4d7dd",
+      "validationPredictionsSha256": "11150cec5444d5228b6a82e3b26681d1096cd75781384ff10dbe09485488f941"
+    }
+  ],
+  "finalTestEvaluated": false,
+  "promoted": false,
+  "validationReused": true,
+  "decision": "no variant passes all fixed validation gates",
+  "limits": [
+    "Reused validation is model-selection data, not fresh test or release evidence.",
+    "The underlying historical corpus has already been inspected; no new final test is claimed.",
+    "Original strict signer groups and final test identity commitments are retained.",
+    "No final test features, targets or predictions are read by this pilot.",
+    "No idle-camera negatives, live devices, fluent-user review, facial features or continuous sentences.",
+    "Small correlated validation samples do not establish a population false-accept bound.",
+    "Mild spatial augmentation is a research hypothesis, not linguistically validated sign generation.",
+    "No threshold tuning after these fixed runs, promotion, export or public-build changes."
+  ],
+  "sourceInputsUnchanged": true,
+  "protocolSha256": "5e3980acf1da7aee880de559117f2f1232126b7757f1e266f64beef97f5e4f10",
+  "counts": {
+    "train": {
+      "clips": 198,
+      "signers": 39
+    },
+    "val": {
+      "clips": 39,
+      "signers": 7
+    },
+    "excluded_known_validation": {
+      "clips": 334,
+      "signers": 14
+    },
+    "unknown_validation": {
+      "clips": 40,
+      "signers": 11
+    }
+  },
+  "perClassCounts": [
+    {
+      "word": "DRINK",
+      "trainingClips": 23,
+      "trainingSigners": 14,
+      "validationClips": 5
+    },
+    {
+      "word": "FINISH",
+      "trainingClips": 17,
+      "trainingSigners": 13,
+      "validationClips": 2
+    },
+    {
+      "word": "FAMILY",
+      "trainingClips": 15,
+      "trainingSigners": 12,
+      "validationClips": 1
+    },
+    {
+      "word": "WHO",
+      "trainingClips": 15,
+      "trainingSigners": 12,
+      "validationClips": 3
+    },
+    {
+      "word": "BIRD",
+      "trainingClips": 13,
+      "trainingSigners": 12,
+      "validationClips": 4
+    },
+    {
+      "word": "BOOK",
+      "trainingClips": 33,
+      "trainingSigners": 11,
+      "validationClips": 4
+    },
+    {
+      "word": "GO",
+      "trainingClips": 19,
+      "trainingSigners": 11,
+      "validationClips": 1
+    },
+    {
+      "word": "HOT",
+      "trainingClips": 15,
+      "trainingSigners": 11,
+      "validationClips": 2
+    },
+    {
+      "word": "FINE",
+      "trainingClips": 14,
+      "trainingSigners": 11,
+      "validationClips": 5
+    },
+    {
+      "word": "BROWN",
+      "trainingClips": 12,
+      "trainingSigners": 11,
+      "validationClips": 3
+    },
+    {
+      "word": "EAT",
+      "trainingClips": 11,
+      "trainingSigners": 11,
+      "validationClips": 5
+    },
+    {
+      "word": "WHAT",
+      "trainingClips": 11,
+      "trainingSigners": 11,
+      "validationClips": 4
+    }
+  ]
+}

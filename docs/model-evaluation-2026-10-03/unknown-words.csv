@@ -1,0 +1,342 @@
+language,source_label,test_samples,false_accepts,false_accept_rate,most_common_false_accept_label,most_common_false_accept_count
+isl,1. Religion,1,0,0.0,,0
+isl,10. Energy,1,0,0.0,,0
+isl,10. Mean,1,0,0.0,,0
+isl,12. Peace,1,0,0.0,,0
+isl,12. Truck,2,0,0.0,,0
+isl,13. Attack,1,0,0.0,,0
+isl,13. thick,1,0,0.0,,0
+isl,14. Bus,1,0,0.0,,0
+isl,15. Boat,2,0,0.0,,0
+isl,17. Sport,2,1,0.5,BIRD,1
+isl,17. Transportation,2,0,0.0,,0
+isl,18. City,2,0,0.0,,0
+isl,18. Exercise,1,0,0.0,,0
+isl,19. Ball,2,0,0.0,,0
+isl,19. male,1,0,0.0,,0
+isl,2. Cat,1,0,0.0,,0
+isl,20. Price,1,0,0.0,,0
+isl,20. Street or Road,2,0,0.0,,0
+isl,21. Train Station,1,1,1.0,COURT,1
+isl,23. high,1,0,0.0,,0
+isl,24. School,1,0,0.0,,0
+isl,24. Table,2,1,0.5,BIG LARGE,1
+isl,25. Office,1,0,0.0,,0
+isl,26. University,2,0,0.0,,0
+isl,28. shallow,1,1,1.0,COURT,1
+isl,29. Library,1,0,0.0,,0
+isl,29. clean,1,0,0.0,,0
+isl,3. Fish,1,1,1.0,LONG,1
+isl,3. Medicine,1,1,1.0,BIRD,1
+isl,30. Bedroom,1,0,0.0,,0
+isl,30. Hospital,1,1,1.0,HOUSE,1
+isl,30. dirty,1,0,0.0,,0
+isl,32. Bathroom,2,0,0.0,,0
+isl,32. Market,1,1,1.0,STORE OR SHOP,1
+isl,32. weak,1,0,0.0,,0
+isl,33. India,2,0,0.0,,0
+isl,33. Pencil,2,0,0.0,,0
+isl,33. dead,1,0,0.0,,0
+isl,34. alive,1,1,1.0,QUIET,1
+isl,35. Photograph,1,0,0.0,,0
+isl,36. Location,1,0,0.0,,0
+isl,36. Soap,1,0,0.0,,0
+isl,36. light,1,1,1.0,STORE OR SHOP,1
+isl,38. Dress,1,0,0.0,,0
+isl,38. Page,2,0,0.0,,0
+isl,39. Suit,3,0,0.0,,0
+isl,39. famous,1,0,0.0,,0
+isl,40. Skirt,2,0,0.0,,0
+isl,41. Shirt,1,0,0.0,,0
+isl,41. you,1,0,0.0,,0
+isl,42. he,1,0,0.0,,0
+isl,43. Lock,1,0,0.0,,0
+isl,43. Pant,1,0,0.0,,0
+isl,44. Telephone,2,0,0.0,,0
+isl,45. Pocket,3,0,0.0,,0
+isl,45. we,1,0,0.0,,0
+isl,46. Box,1,0,0.0,,0
+isl,46. Clothing,2,0,0.0,,0
+isl,47. they,2,0,0.0,,0
+isl,48. Card,2,1,0.5,COURT,1
+isl,48. Green,3,1,0.3333333333333333,RED,1
+isl,49. Blue,2,0,0.0,,0
+isl,49. How are you,2,0,0.0,,0
+isl,49. Ring,1,0,0.0,,0
+isl,5. Bill,2,0,0.0,,0
+isl,50. Alright,2,0,0.0,,0
+isl,51. Brown,1,0,0.0,,0
+isl,51. Clock,1,0,0.0,,0
+isl,52. Good afternoon,3,0,0.0,,0
+isl,52. Lamp,1,0,0.0,,0
+isl,52. Pink,2,1,0.5,RED,1
+isl,53. Good evening,2,0,0.0,,0
+isl,53. Orange,2,0,0.0,,0
+isl,55. Computer,1,0,0.0,,0
+isl,56. Grey,2,0,0.0,,0
+isl,56. Laptop,1,0,0.0,,0
+isl,56. Pleased,1,0,0.0,,0
+isl,57. Colour,1,0,0.0,,0
+isl,57. Screen,2,0,0.0,,0
+isl,58. Camera,2,0,0.0,,0
+isl,58. Son,2,0,0.0,,0
+isl,59. Daughter,1,0,0.0,,0
+isl,59. Television,2,0,0.0,,0
+isl,6. Marriage,1,1,1.0,BANK,1
+isl,6. Mouse,1,0,0.0,,0
+isl,60. Mother,1,0,0.0,,0
+isl,60. Radio,2,0,0.0,,0
+isl,62. Parent,1,0,0.0,,0
+isl,62. Spring,2,0,0.0,,0
+isl,63. Winter,1,0,0.0,,0
+isl,64. Man,2,0,0.0,,0
+isl,65. Season,2,0,0.0,,0
+isl,65. Woman,1,0,0.0,,0
+isl,66. Sunday,1,0,0.0,,0
+isl,67. Sister,1,0,0.0,,0
+isl,68. Tuesday,1,0,0.0,,0
+isl,69. Grandfather,1,0,0.0,,0
+isl,7. Deaf,1,0,0.0,,0
+isl,7. Horse,2,0,0.0,,0
+isl,7. Team,1,0,0.0,,0
+isl,70. Grandmother,1,0,0.0,,0
+isl,71. Husband,1,1,1.0,FATHER,1
+isl,72. Wife,3,1,0.3333333333333333,FATHER,1
+isl,73. King,1,0,0.0,,0
+isl,74. Queen,1,1,1.0,HAT,1
+isl,75. President,3,0,0.0,,0
+isl,75. Yesterday,1,0,0.0,,0
+isl,76. Neighbour,2,0,0.0,,0
+isl,76. Week,1,0,0.0,,0
+isl,77. Month,1,0,0.0,,0
+isl,79. Child,1,0,0.0,,0
+isl,8. Animal,1,1,1.0,BIRD,1
+isl,8. Blind,1,1,1.0,WHITE,1
+isl,8. Race (ethnicity),2,0,0.0,,0
+isl,80. tall,1,0,0.0,,0
+isl,81. Friend,1,0,0.0,,0
+isl,81. wide,2,0,0.0,,0
+isl,82. Morning,1,0,0.0,,0
+isl,82. Player,4,1,0.25,COURT,1
+isl,82. narrow,1,0,0.0,,0
+isl,85. Night,1,1,1.0,RED,1
+isl,85. slow,2,0,0.0,,0
+isl,86. fast,1,0,0.0,,0
+isl,87. Doctor,1,1,1.0,TEACHER,1
+isl,88. cold,1,1,1.0,SMALL LITTLE,1
+isl,89. Waiter,1,0,0.0,,0
+isl,89. warm,2,0,0.0,,0
+isl,9. Technology,1,1,1.0,CAR,1
+isl,9. Train,1,0,0.0,,0
+isl,90. Secretary,1,0,0.0,,0
+isl,90. cool,1,0,0.0,,0
+isl,92. old,2,0,0.0,,0
+isl,93. young,1,0,0.0,,0
+isl,94. Artist,1,0,0.0,,0
+isl,95. Author,1,1,1.0,DOG,1
+isl,95. bad,2,0,0.0,,0
+isl,96. Manager,1,0,0.0,,0
+isl,97. Reporter,1,0,0.0,,0
+isl,98. sick,2,0,0.0,,0
+isl,99. Job,1,0,0.0,,0
+isl,99. healthy,1,1,1.0,HAPPY,1
+isl,Ex. Monsoon,1,1,1.0,COW,1
+asl,add,1,0,0.0,,0
+asl,afraid,1,0,0.0,,0
+asl,alphabet,1,0,0.0,,0
+asl,america,1,0,0.0,,0
+asl,apart,1,0,0.0,,0
+asl,appear,1,0,0.0,,0
+asl,arm,1,0,0.0,,0
+asl,aunt,1,0,0.0,,0
+asl,austria,1,0,0.0,,0
+asl,bank,1,0,0.0,,0
+asl,baseball,2,0,0.0,,0
+asl,beautiful,1,0,0.0,,0
+asl,big,1,0,0.0,,0
+asl,bitter,1,0,0.0,,0
+asl,boat,1,0,0.0,,0
+asl,bone,1,0,0.0,,0
+asl,bother,1,0,0.0,,0
+asl,bowl,1,0,0.0,,0
+asl,boyfriend,1,0,0.0,,0
+asl,bracelet,1,0,0.0,,0
+asl,bug,1,0,0.0,,0
+asl,burp,1,0,0.0,,0
+asl,business,1,0,0.0,,0
+asl,cafeteria,1,0,0.0,,0
+asl,calm,1,0,0.0,,0
+asl,cancel,1,0,0.0,,0
+asl,cereal,1,0,0.0,,0
+asl,character,1,0,0.0,,0
+asl,cheese,1,0,0.0,,0
+asl,christian,1,0,0.0,,0
+asl,coach,1,1,1.0,SHIRT,1
+asl,coconut,1,0,0.0,,0
+asl,comb,1,0,0.0,,0
+asl,compromise,1,0,0.0,,0
+asl,construct,1,0,0.0,,0
+asl,cross,1,0,0.0,,0
+asl,curse,1,0,0.0,,0
+asl,cut,1,0,0.0,,0
+asl,danger,1,0,0.0,,0
+asl,debt,1,0,0.0,,0
+asl,deodorant,1,0,0.0,,0
+asl,depressed,1,0,0.0,,0
+asl,design,1,0,0.0,,0
+asl,destroy,1,0,0.0,,0
+asl,different,1,0,0.0,,0
+asl,dining room,1,0,0.0,,0
+asl,doll,1,0,0.0,,0
+asl,dragon,1,0,0.0,,0
+asl,drive,1,0,0.0,,0
+asl,drunk,1,0,0.0,,0
+asl,dull,1,0,0.0,,0
+asl,easy,1,0,0.0,,0
+asl,empty,1,0,0.0,,0
+asl,engage,1,0,0.0,,0
+asl,establish,1,0,0.0,,0
+asl,example,1,0,0.0,,0
+asl,fail,1,0,0.0,,0
+asl,famous,1,0,0.0,,0
+asl,feed,1,0,0.0,,0
+asl,football,1,0,0.0,,0
+asl,four,1,0,0.0,,0
+asl,fox,1,0,0.0,,0
+asl,friday,1,0,0.0,,0
+asl,friend,1,0,0.0,,0
+asl,funeral,1,0,0.0,,0
+asl,gang,1,0,0.0,,0
+asl,gift,1,0,0.0,,0
+asl,giraffe,1,0,0.0,,0
+asl,grammar,1,1,1.0,LANGUAGE,1
+asl,grandma,1,0,0.0,,0
+asl,gray,1,0,0.0,,0
+asl,guilty,1,0,0.0,,0
+asl,hanukkah,1,0,0.0,,0
+asl,hawaii,1,0,0.0,,0
+asl,heavy,1,0,0.0,,0
+asl,hold,1,0,0.0,,0
+asl,hospital,1,0,0.0,,0
+asl,hurt,1,0,0.0,,0
+asl,idea,1,0,0.0,,0
+asl,ignore,1,0,0.0,,0
+asl,improve,1,0,0.0,,0
+asl,independent,1,0,0.0,,0
+asl,insect,1,0,0.0,,0
+asl,interest,1,0,0.0,,0
+asl,interview,1,0,0.0,,0
+asl,july,1,0,0.0,,0
+asl,jump,1,0,0.0,,0
+asl,late,1,0,0.0,,0
+asl,laugh,1,0,0.0,,0
+asl,learn,1,0,0.0,,0
+asl,leave,1,0,0.0,,0
+asl,lettuce,1,0,0.0,,0
+asl,liability,1,0,0.0,,0
+asl,lipstick,1,0,0.0,,0
+asl,loan,1,0,0.0,,0
+asl,maybe,1,1,1.0,WHAT,1
+asl,meat,1,0,0.0,,0
+asl,microwave,1,0,0.0,,0
+asl,monday,1,0,0.0,,0
+asl,moon,1,1,1.0,COUSIN,1
+asl,most,1,0,0.0,,0
+asl,napkin,1,0,0.0,,0
+asl,necessary,1,0,0.0,,0
+asl,necklace,1,0,0.0,,0
+asl,negative,1,0,0.0,,0
+asl,neighbor,1,0,0.0,,0
+asl,nephew,1,0,0.0,,0
+asl,nervous,1,0,0.0,,0
+asl,niece,1,0,0.0,,0
+asl,night,1,0,0.0,,0
+asl,noon,1,0,0.0,,0
+asl,not,1,0,0.0,,0
+asl,number,1,0,0.0,,0
+asl,obsess,1,0,0.0,,0
+asl,off,1,0,0.0,,0
+asl,operate,1,0,0.0,,0
+asl,opposite,1,0,0.0,,0
+asl,pain,1,0,0.0,,0
+asl,peaceful,1,0,0.0,,0
+asl,peanut butter,1,0,0.0,,0
+asl,penalty,1,0,0.0,,0
+asl,pennsylvania,1,0,0.0,,0
+asl,physics,1,0,0.0,,0
+asl,plate,1,0,0.0,,0
+asl,preach,1,0,0.0,,0
+asl,president,1,0,0.0,,0
+asl,pretty,1,0,0.0,,0
+asl,price,1,0,0.0,,0
+asl,procrastinate,1,0,0.0,,0
+asl,provide,1,0,0.0,,0
+asl,psychologist,1,0,0.0,,0
+asl,public,1,0,0.0,,0
+asl,regular,1,0,0.0,,0
+asl,relationship,1,0,0.0,,0
+asl,release,1,0,0.0,,0
+asl,religion,1,0,0.0,,0
+asl,remember,1,0,0.0,,0
+asl,remote control,1,0,0.0,,0
+asl,represent,1,0,0.0,,0
+asl,research,1,0,0.0,,0
+asl,river,1,0,0.0,,0
+asl,rooster,1,0,0.0,,0
+asl,rope,1,0,0.0,,0
+asl,rough,1,0,0.0,,0
+asl,salad,1,0,0.0,,0
+asl,scared,1,0,0.0,,0
+asl,see,1,0,0.0,,0
+asl,seem,1,0,0.0,,0
+asl,shine,1,0,0.0,,0
+asl,shovel,1,0,0.0,,0
+asl,sin,1,0,0.0,,0
+asl,singer,1,0,0.0,,0
+asl,sister,1,0,0.0,,0
+asl,skill,1,0,0.0,,0
+asl,snack,1,0,0.0,,0
+asl,sometimes,1,0,0.0,,0
+asl,sorry,1,0,0.0,,0
+asl,sound,1,0,0.0,,0
+asl,specific,1,0,0.0,,0
+asl,speech,1,0,0.0,,0
+asl,star,1,0,0.0,,0
+asl,still,1,0,0.0,,0
+asl,story,1,0,0.0,,0
+asl,strange,1,0,0.0,,0
+asl,street,1,0,0.0,,0
+asl,sunday,1,0,0.0,,0
+asl,surgeon,1,0,0.0,,0
+asl,take,1,0,0.0,,0
+asl,thank you,1,0,0.0,,0
+asl,that,1,0,0.0,,0
+asl,there,1,0,0.0,,0
+asl,think,1,0,0.0,,0
+asl,ticket,1,0,0.0,,0
+asl,to,1,0,0.0,,0
+asl,tomorrow,1,1,1.0,DRINK,1
+asl,tonight,1,0,0.0,,0
+asl,tornado,1,0,0.0,,0
+asl,train,1,0,0.0,,0
+asl,transform,1,1,1.0,CHANGE,1
+asl,type,1,1,1.0,WALK,1
+asl,umbrella,1,0,0.0,,0
+asl,understand,1,0,0.0,,0
+asl,value,1,1,1.0,PULL,1
+asl,vegetable,1,0,0.0,,0
+asl,visit,1,0,0.0,,0
+asl,vocabulary,1,0,0.0,,0
+asl,vote,1,1,1.0,DANCE,1
+asl,wall,1,0,0.0,,0
+asl,warm,1,0,0.0,,0
+asl,we,1,0,0.0,,0
+asl,wear,1,0,0.0,,0
+asl,wednesday,1,0,0.0,,0
+asl,wet,1,0,0.0,,0
+asl,wheelchair,1,0,0.0,,0
+asl,why,1,0,0.0,,0
+asl,wine,1,0,0.0,,0
+asl,with,1,0,0.0,,0
+asl,worthless,1,0,0.0,,0
+asl,yellow,1,0,0.0,,0

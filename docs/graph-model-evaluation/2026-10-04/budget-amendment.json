@@ -1,0 +1,8 @@
+{
+  "format": "signbridge-graph-experiment-amendment-v1",
+  "protocol_sha256": "3994660ad5aad251acbc346712f2be9d70ce767bb9cf65e5bce7d288bc7b9a38",
+  "stage": "Before labelled model training",
+  "training_max_seconds_per_run": 1200,
+  "rule": "All architectures and seeds share the same ceiling. Check at completed epoch boundaries; record truncation and retain the best validation checkpoint. No final test selection.",
+  "onnx_interface": { "input": "Raw shoulder-normalized float32 pose [1,32,75,3]", "output": "Softmax probabilities [1,classes]", "normalization_stage": "embedded_model" }
+}

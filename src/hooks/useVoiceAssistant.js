@@ -78,6 +78,7 @@ export function useVoiceAssistant({ lang, rate, handsFree, voiceOutput, captureI
     speaker.setIdleHandler(null);
     speaker.cancel();
     setInterim("");
+    setMessages((all) => all.map((m) => m.pending ? { ...m, pending: false, interrupted: true } : m));
   }, [speaker]);
 
   /** Short app message (errors, toggles): spoken in voice mode, announced for screen readers. */
@@ -197,6 +198,7 @@ export function useVoiceAssistant({ lang, rate, handsFree, voiceOutput, captureI
           patch({ text: full });
           chunker.push(piece);
         }
+        if (turn !== turnRef.current || controller.signal.aborted) return;
         chunker.flush();
         historyRef.current = [...history, { role: "assistant", text: full }].slice(-MAX_HISTORY);
         lastReplyRef.current = full;
@@ -249,7 +251,8 @@ export function useVoiceAssistant({ lang, rate, handsFree, voiceOutput, captureI
     setStatus("idle");
     if (!speaksAloud(settings.current)) {
       setAnnouncement("");
-      setTimeout(() => setAnnouncement(last), 50);
+      const turn = turnRef.current;
+      setTimeout(() => { if (turn === turnRef.current) setAnnouncement(last); }, 50);
       return;
     }
     const turn = turnRef.current;

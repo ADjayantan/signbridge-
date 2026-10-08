@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { LanguageSelect, Switch, TopBar, isTyping } from "../components/Controls.jsx";
+import { CameraSelect, LanguageSelect, Switch, TopBar, isTyping } from "../components/Controls.jsx";
 import { useCamera } from "../hooks/useCamera.js";
 import { useVoiceAssistant } from "../hooks/useVoiceAssistant.js";
 import { language } from "../lib/languages.js";
@@ -24,12 +24,15 @@ function captureFrame(video) {
 
 export default function VoiceMode({ settings, update, onBack }) {
   const [cameraOn, setCameraOn] = useState(false);
+  const [cameraDevice, setCameraDevice] = useState("");
   const [typed, setTyped] = useState("");
   const micRef = useRef(null);
-  const { videoRef, status: cameraStatus, error: cameraError, retry: retryCamera } = useCamera({
+  const camera = useCamera({
     active: cameraOn,
     facingMode: "environment",
+    deviceId: cameraDevice,
   });
+  const { videoRef, status: cameraStatus, error: cameraError, retry: retryCamera } = camera;
 
   const captureImage = useCallback(
     () => (cameraStatus === "on" ? captureFrame(videoRef.current) : null),
@@ -155,7 +158,7 @@ export default function VoiceMode({ settings, update, onBack }) {
         </p>
         <div className={`voice-camera${cameraOn ? " on" : ""}`}>
           <video ref={videoRef} muted playsInline aria-hidden="true" />
-          {cameraStatus === "starting" && <p className="camera-status">Starting camera…</p>}
+          {cameraStatus === "starting" && <p className="camera-status">Starting camera… Choose Allow if your browser asks for camera access.</p>}
           {cameraStatus === "error" && (
             <div className="camera-status error" role="alert">
               <p>{cameraError}</p>
@@ -165,6 +168,7 @@ export default function VoiceMode({ settings, update, onBack }) {
             </div>
           )}
         </div>
+        {cameraOn && <><CameraSelect camera={camera} value={cameraDevice} onChange={setCameraDevice} id="voice-camera-device" />{cameraStatus === "on" && <p className="hint" role="status">Camera connected · {camera.name}</p>}</>}
         <p id="voice-keys" className="keys">
           <kbd>Space</kbd> talk / interrupt · <kbd>Esc</kbd> stop · <kbd>R</kbd> repeat · <kbd>C</kbd> camera ·{" "}
           <kbd>H</kbd> hands-free · <kbd>+</kbd>/<kbd>−</kbd> speed
@@ -201,6 +205,7 @@ export default function VoiceMode({ settings, update, onBack }) {
               <h2 className="msg-who">{m.role === "user" ? "You" : "SignBridge"}</h2>
               <p lang={m.role === "assistant" ? language(settings.lang).bcp47 : undefined}>
                 {m.text || (m.pending ? "…" : "")}
+                {m.interrupted && <span className="hint"> · Interrupted — ask again to continue.</span>}
               </p>
             </article>
           ))
