@@ -38,7 +38,7 @@ Use one server instance. Durable transcripts and shared state across instances a
 ### Private Metered configuration
 
 1. Use a **free Open Relay** account and obtain its application domain and **TURN REST API key**. The application uses its own signaling server; a Metered publishable signaling/SDK key is not used.
-2. Privately set server environment variables `METERED_DOMAIN=your-app.metered.live` and `METERED_TURN_API_KEY`. Locally put them in `.env.local` and restart `npm run rooms`. Neither secret belongs in `VITE_*`.
+2. Privately set server environment variables `METERED_DOMAIN=your-app.metered.live` and `METERED_TURN_API_KEY`. Locally put them in `.env.local` and restart `npm run rooms`. On Render, restart/deploy the existing service after saving values; its backend reads them at startup. Existing rooms end, so create a fresh invite. Neither secret belongs in `VITE_*`.
 3. Authenticated room members fetch ICE configuration from the room server. It caches successful upstream results for five minutes and failures for 30 seconds. Temporary ICE credentials reach the browser peer; the master API key and raw upstream errors do not.
 4. Confirm allowance/usage in the account dashboard. Open Relay currently advertises 20 GB/month free TURN traffic. This app does not inspect remaining allowance or purchase capacity. Failed/missing relay configuration leaves text available and explains video availability. [Open Relay setup and allowance](https://www.metered.ca/tools/openrelay/).
 

@@ -20,6 +20,8 @@ The check follows each transport's `selectedCandidatePairId`, requires a success
 
 No addresses, ports, candidate identifiers, credentials or raw statistics are shown or added to messages. Results clear on reconnect/disconnection. Late results from replaced peers are ignored. Checking a route does not prove that camera frames/audio are being received, the video quality is usable, or sign recognition is accurate.
 
+The label is a snapshot from the last explicit check, not continuous monitoring. Check again after network or relay-setting changes; a selected ICE route can change while the peer remains connected.
+
 For forced-relay acceptance, both actual devices should enable **Require video relay**, reconnect, and independently confirm relay use. Still test live video/audio in both directions; route status alone is insufficient.
 
 ## Private account step
@@ -28,6 +30,8 @@ The live server currently reports relay unavailable. The [free Open Relay accoun
 
 The private Render service environment needs `METERED_DOMAIN` and `METERED_TURN_API_KEY`. These are server settings, never `VITE_*` values. Keep the current Free compute plan and do not create a second service. The server already authenticates ICE requests and keeps the master key out of browser responses. Account setup/configuration is separate from proving an actual different-network call.
 
+Restart/deploy the existing Render service after saving these values. The backend reads its environment at startup. This ends rooms held in server memory, so create a fresh invite afterward.
+
 The existing [physical-device runbook](conversations-deployment.md#physical-two-device-acceptance) remains the acceptance checklist.
 
 ## Engineering verification
@@ -35,3 +39,11 @@ The existing [physical-device runbook](conversations-deployment.md#physical-two-
 Seven selected-route fixtures cover relay/direct/mixed paths, unselected nominated decoys, incomplete references and disconnected states. Focused hook/UI tests cover blocked playback followed by explicit retry, stale playback/stats results, unavailable statistics, visible action binding and room/camera independence.
 
 `npm run check` passed **282 Node + 328 UI checks (610 total)** and the regular build. `npm run build:public` passed separately and excluded research weights. These fixture-based checks establish software behavior; they do not establish real camera playback or different-network relay success.
+
+## Live browser verification
+
+Render reported commit `7cf0774` as **Deploy succeeded | Live** on 8 October 2026. In the Codex in-app browser, the visible **Update and reload** action loaded the released app bundle. Two fresh tabs created/joined a disposable room with separate participant identities; both showed **Room connected** and **Video link connected** with camera and microphone off. Reviewed text travelled in both directions with receipt status. Both participants independently checked the route and saw **Direct media connection; relay is not in use**.
+
+Enabling **Require video relay** without configured credentials cleared the route result and showed **Forced relay requires TURN credentials. Text messages still work.** A further reviewed message was received by the partner. The room was ended after the test.
+
+This was a same-browser, same-laptop transport/UI test. It did not exercise real camera/audio playback, forced TURN success, physical devices, different networks, sign recognition or an AI conversation. The blocked-playback recovery path was covered by automated fixtures only. Metered private login/configuration remains pending.
