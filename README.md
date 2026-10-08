@@ -6,6 +6,8 @@
 
 The public pilot source is on [`codex/render-pilot`](https://github.com/ADjayantan/signbridge-/tree/codex/render-pilot). The shortcut uses the Free web-service blueprint; review it in your own Render account before creating the service. Automatic deployments are off, so source updates do not interrupt active rooms until you deliberately deploy. Render account connection, deployment and physical-device checks are still pending. See the [deployment guide](docs/conversations-deployment.md) and [local/cloud implementation plan](docs/parallel-implementation-plan-2026-10-08.md).
 
+The [full external LSTM repository assessment](docs/external-lstm-full-analysis-2026-10-08.md) informs a newly implemented [training-only LSTM75 control](docs/temporal-lstm-control-2026-10-08.md). It has synthetic engineering verification, not trained sign-accuracy evidence. No application model was replaced or promoted.
+
 ## Start a conversation
 
 1. Open Home → **Start conversation**, or `/#connect`, and set **Communication preferences** on your device.
