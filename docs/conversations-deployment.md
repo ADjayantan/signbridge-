@@ -1,6 +1,6 @@
 # Conversation pilot: deployment and physical-device acceptance
 
-**Status, 8 October 2026:** public pilot source pushed to [`codex/render-pilot`](https://github.com/ADjayantan/signbridge-/tree/codex/render-pilot). No Render service has been created or verified by this session; Render account access is still required. Private Metered setup and physical Windows Chrome ↔ Android Chrome tests remain pending. Automated sockets and simulated media checks do not establish cross-network video success, fluent sign translation or assistive-device usability. The clarification, meeting and reference workflows have [separate local verification](conversation-quality-verification-2026-10-03.md).
+**Status, 8 October 2026:** public pilot source pushed to [`codex/render-pilot`](https://github.com/ADjayantan/signbridge-/tree/codex/render-pilot) and deployed as `signbridge-conversations` on Render Free. [Open the live app](https://signbridge-conversations.onrender.com/#connect). Thirteen remote synthetic HTTPS/WSS checks passed, including twenty alternating messages, receipts, duplicate prevention and reconnect history; the browser also created, sent and ended a disposable room. See [deployment verification](render-pilot-verification-2026-10-08.md). The relay endpoint reports unavailable. Private Metered setup and physical Windows Chrome ↔ Android Chrome tests remain pending. Automated sockets and simulated media checks do not establish cross-network video success, fluent sign translation or assistive-device usability. The clarification, meeting and reference workflows have [separate local verification](conversation-quality-verification-2026-10-03.md).
 
 ## Local start and public-build check
 
@@ -19,9 +19,9 @@ Run `npm run check`, then `npm run build:public`. Keep/start `npm run rooms` and
 
 ## Free Render deployment
 
-`render.yaml` is the deployment blueprint. No public service or paid resource has been created by this implementation. When the reviewed code is ready in a connected Git repository:
+`render.yaml` is the deployment blueprint. The public service is running on Free compute; no database, disk or paid resource was created. The following settings reproduce the pilot:
 
-The [Deploy to Render shortcut](https://render.com/deploy?repo=https%3A%2F%2Fgithub.com%2FADjayantan%2Fsignbridge-%2Ftree%2Fcodex%2Frender-pilot) selects the published pilot branch. Sign in to your own Render account, review the Free service and create it. Keep the resulting HTTPS URL for the two-device test. This is a prepared deployment shortcut, not proof of a deployed service. It follows Render's [official button/branch documentation](https://render.com/docs/deploy-to-render). If using the manual service flow below, explicitly select branch `codex/render-pilot`.
+The [Deploy to Render shortcut](https://render.com/deploy?repo=https%3A%2F%2Fgithub.com%2FADjayantan%2Fsignbridge-%2Ftree%2Fcodex%2Frender-pilot) selects the published pilot branch. The existing account already has the deployed service; do not create a duplicate for routine updates. The shortcut follows Render's [official button/branch documentation](https://render.com/docs/deploy-to-render). If reproducing the service in another account, explicitly select branch `codex/render-pilot` and Free compute.
 
 1. In the existing Render account, create a **Node Web Service** from the repository, or use its Blueprint. Confirm **Free** compute before creating it. This pilot needs no database or persistent disk.
 2. Set build command `npm ci --include=dev && npm run build:public`, start command `npm start`, and health check `/api/health`. The blueprint sets `NODE_ENV=production`; explicitly including development dependencies makes Vite available during the build. The server binds `0.0.0.0` and uses Render's supplied `PORT`.
@@ -29,7 +29,7 @@ The [Deploy to Render shortcut](https://render.com/deploy?repo=https%3A%2F%2Fgit
 4. Leave `VITE_ROOM_SERVER_URL` unset for same-origin hosting. Use `ROOM_ALLOWED_ORIGINS` only for additional frontends. If setting optional Gemini `ALLOWED_ORIGINS`, include the frontend making the AI request.
 5. Open the deployed HTTPS `/#connect` page and check `/api/health`, then complete physical-device acceptance below.
 
-The blueprint sets `autoDeployTrigger: off`, as recommended for a Deploy to Render button. After source updates, deliberately deploy the selected branch from the dashboard and expect existing in-memory rooms to end. This avoids interrupting calls whenever a source commit lands.
+The blueprint sets `autoDeployTrigger: off`, as recommended for a Deploy to Render button. Ordinary source updates need a deliberate deploy of the selected branch from the dashboard. Blueprint configuration syncs can still trigger deployment when configuration changes; expect existing in-memory rooms to end during either kind of deployment.
 
 Render supports public WebSockets on the HTTP service; deployed clients use HTTPS/WSS. Free services can sleep after 15 minutes without inbound traffic, take approximately a minute to wake, and restart. Room state is in memory, so sleep/restart ends old rooms. The UI retains drafts and explains wake-up/reconnection; create a fresh room after “Room ended.” Free usage caps apply: check dashboard usage and retain the Free plan. [Render deployment](https://render.com/docs/deploy-node-express-app), [WebSockets](https://render.com/docs/websocket), [Free limits](https://render.com/docs/free).
 

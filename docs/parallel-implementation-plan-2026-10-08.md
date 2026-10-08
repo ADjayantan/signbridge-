@@ -6,9 +6,9 @@ The goal is two-way communication: a signer sends a reviewed meaning that a part
 
 ## Stage 1 — Put the conversation on a shared HTTPS server
 
-Push the reviewed application source to GitHub, then connect that repository to a Render Free Node web service. The existing configuration uses `npm ci && npm run build:public`, `npm start`, and `/api/health`. GitHub stores the code; Render runs the room server and website. GitHub Pages alone cannot run this WebSocket backend.
+The reviewed application source is pushed to GitHub and the [pilot is live on Render Free](https://signbridge-conversations.onrender.com/#connect). The configuration uses `npm ci --include=dev && npm run build:public`, `npm start`, and `/api/health`. GitHub stores the code; Render runs the room server and website. GitHub Pages alone cannot run this WebSocket backend. [Remote synthetic checks passed](render-pilot-verification-2026-10-08.md); physical-device acceptance remains the gate below.
 
-Keep secrets, personal recordings and research artifacts out of the push. Public builds exclude laptop research weights. Saved sign videos currently live separately in each browser; deployment does not transfer them to another device. Begin with a text/video pilot that needs no AI key. Add private TURN settings when relay access is ready; neither a working Render service nor relay configuration is established yet.
+Keep secrets, personal recordings and research artifacts out of the push. Public builds exclude laptop research weights. Saved sign videos currently live separately in each browser; deployment does not transfer them to another device. The initial text pilot needs no AI key. Add private TURN settings when relay access is ready; relay availability and cross-network media are not yet established.
 
 **Gate:** two actual devices on different networks exchange twenty alternating messages without loss or duplication. Verify denied camera/microphone, invalid invite, third participant, room expiry, draft recovery and server restart. Test video/audio directly and with forced relay separately. Retain text if media fails. Record real-device results separately from automated checks; two tabs on one laptop are insufficient evidence.
 
