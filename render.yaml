@@ -4,7 +4,7 @@ services:
     runtime: node
     plan: free
     autoDeployTrigger: off
-    buildCommand: npm ci && npm run build:public
+    buildCommand: npm ci --include=dev && npm run build:public
     startCommand: npm start
     healthCheckPath: /api/health
     envVars:
