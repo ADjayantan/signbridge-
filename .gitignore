@@ -11,6 +11,14 @@ node_modules
 dist
 dist-ssr
 *.local
+.training-venv/
+.training-data/
+training/artifacts/
+__pycache__/
+*.py[cod]
+public/models/*.json
+public/models/**
+public/onnx/**
 
 # Deploy tooling
 .vercel

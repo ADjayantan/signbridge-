@@ -1,0 +1,44 @@
+{
+  "evaluatedAt": "2026-10-04T06:04:46.574Z",
+  "scope": "Python versus actual JavaScript graph preprocessing; validation poses and synthetic quality cases only",
+  "featureContract": "signbridge-pose75-xyc-v1",
+  "contractHash": "3c9a4c8e6417ff200493238b73ba53e9615df56c979d424ac57821e707ddb95c",
+  "adjacencyHash": "3680035c591590b36fb0d6a6a2ee8092beda2601640950e9fdc9d8135972ddf3",
+  "checks": [
+    {
+      "signLanguage": "synthetic",
+      "synthetic": true,
+      "positiveCases": 3,
+      "negativeCases": 1,
+      "maximumRawFeatureError": 0,
+      "maximumNormalizationError": 0,
+      "tolerance": 0.00001,
+      "passed": true
+    },
+    {
+      "signLanguage": "isl",
+      "synthetic": false,
+      "positiveCases": 3,
+      "negativeCases": 0,
+      "maximumRawFeatureError": 0,
+      "maximumNormalizationError": 0,
+      "tolerance": 0.00001,
+      "passed": true
+    },
+    {
+      "signLanguage": "asl",
+      "synthetic": false,
+      "positiveCases": 3,
+      "negativeCases": 0,
+      "maximumRawFeatureError": 0,
+      "maximumNormalizationError": 0,
+      "tolerance": 0.00001,
+      "passed": true
+    }
+  ],
+  "limits": [
+    "Feature parity is not recognition accuracy",
+    "No camera or final-test classification was performed",
+    "Real raw fixture inputs remain local and ignored"
+  ]
+}

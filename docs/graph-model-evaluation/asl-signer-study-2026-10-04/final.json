@@ -1,0 +1,5072 @@
+{
+  "format": "signbridge-signer-final-benchmark-v1",
+  "language": "asl",
+  "frozen_selection_sha256": "554d928427edffdf8692abb83dfcd2d31bcbe1323e445fa786865d1fe4b42402",
+  "selected_architecture": null,
+  "representative_seed": 42,
+  "candidate_dataset_gate_passed": false,
+  "test_mean_correct_coverage": {
+    "gru27": 0.007407407407407408,
+    "gru75": 0.005925925925925926
+  },
+  "mean_coverage_improvement": -0.001481481481481482,
+  "runs": [
+    {
+      "architecture": "gru27",
+      "seed": 42,
+      "threshold": 0.99,
+      "margin": 0.5,
+      "acceptance_enabled": false,
+      "test_screen_passed": false,
+      "metrics": {
+        "known_count": 450,
+        "unknown_count": 112,
+        "top1_correct": 122,
+        "top1_accuracy": 0.27111111111111114,
+        "macro_recall": 0.27666666666666667,
+        "accepted_correct": 0,
+        "accepted_wrong": 0,
+        "known_rejected": 450,
+        "unknown_false_accepts": 0,
+        "known_accepted_precision": null,
+        "correct_known_coverage": 0.0,
+        "unknown_false_accept_rate": 0.0,
+        "mixture_precision": null,
+        "mixture": "All supplied known examples plus all supplied unknown-sign examples; nonsigning camera negatives not yet collected",
+        "wilson95": {
+          "known_precision": null,
+          "correct_coverage": [
+            8.673617379884035e-19,
+            0.008464318862970662
+          ],
+          "unknown_false_accept_rate": [
+            3.469446951953614e-18,
+            0.033161347066943875
+          ],
+          "mixture_precision": null
+        }
+      },
+      "per_word": [
+        {
+          "label": "ACCIDENT",
+          "count": 4,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "HOW"
+        },
+        {
+          "label": "AFRICA",
+          "count": 4,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BROWN"
+        },
+        {
+          "label": "ALL",
+          "count": 5,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BEFORE"
+        },
+        {
+          "label": "APPLE",
+          "count": 6,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "COOL"
+        },
+        {
+          "label": "BASKETBALL",
+          "count": 5,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "PAINT"
+        },
+        {
+          "label": "BED",
+          "count": 3,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "AFRICA"
+        },
+        {
+          "label": "BEFORE",
+          "count": 8,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BLUE"
+        },
+        {
+          "label": "BIRD",
+          "count": 2,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "MEET"
+        },
+        {
+          "label": "BIRTHDAY",
+          "count": 3,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "WHITE"
+        },
+        {
+          "label": "BLACK",
+          "count": 5,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "COUSIN"
+        },
+        {
+          "label": "BLUE",
+          "count": 6,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "DOG"
+        },
+        {
+          "label": "BOOK",
+          "count": 3,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "YEAR"
+        },
+        {
+          "label": "BOWLING",
+          "count": 3,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "GIVE"
+        },
+        {
+          "label": "BROWN",
+          "count": 3,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "DRINK"
+        },
+        {
+          "label": "BUT",
+          "count": 5,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "CAN"
+        },
+        {
+          "label": "CAN",
+          "count": 1,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "DECIDE"
+        },
+        {
+          "label": "CANDY",
+          "count": 7,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "PINK"
+        },
+        {
+          "label": "CHAIR",
+          "count": 2,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "LETTER"
+        },
+        {
+          "label": "CHANGE",
+          "count": 5,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "PULL"
+        },
+        {
+          "label": "CHEAT",
+          "count": 2,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "CHAIR"
+        },
+        {
+          "label": "CITY",
+          "count": 3,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "KISS"
+        },
+        {
+          "label": "CLOTHES",
+          "count": 2,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "CAN"
+        },
+        {
+          "label": "COLOR",
+          "count": 3,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "PINK"
+        },
+        {
+          "label": "COMPUTER",
+          "count": 7,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BASKETBALL"
+        },
+        {
+          "label": "COOK",
+          "count": 2,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "GRADUATE"
+        },
+        {
+          "label": "COOL",
+          "count": 3,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "DEAF"
+        },
+        {
+          "label": "CORN",
+          "count": 3,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "COW"
+        },
+        {
+          "label": "COUSIN",
+          "count": 6,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "CANDY"
+        },
+        {
+          "label": "COW",
+          "count": 4,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "APPLE"
+        },
+        {
+          "label": "DANCE",
+          "count": 2,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "STUDY"
+        },
+        {
+          "label": "DARK",
+          "count": 5,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "ACCIDENT"
+        },
+        {
+          "label": "DEAF",
+          "count": 5,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "HEARING"
+        },
+        {
+          "label": "DECIDE",
+          "count": 3,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "FINISH"
+        },
+        {
+          "label": "DOCTOR",
+          "count": 2,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "YEAR"
+        },
+        {
+          "label": "DOG",
+          "count": 2,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "DRINK",
+          "count": 6,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "APPLE"
+        },
+        {
+          "label": "EAT",
+          "count": 3,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "COLOR"
+        },
+        {
+          "label": "ENJOY",
+          "count": 5,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "WOMAN"
+        },
+        {
+          "label": "FAMILY",
+          "count": 4,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BOOK"
+        },
+        {
+          "label": "FINE",
+          "count": 3,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "COOK"
+        },
+        {
+          "label": "FINISH",
+          "count": 2,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "FISH",
+          "count": 3,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "SECRETARY"
+        },
+        {
+          "label": "FORGET",
+          "count": 2,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "FULL",
+          "count": 3,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "APPLE"
+        },
+        {
+          "label": "GIVE",
+          "count": 3,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BEFORE"
+        },
+        {
+          "label": "GO",
+          "count": 6,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "CAN"
+        },
+        {
+          "label": "GRADUATE",
+          "count": 3,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BEFORE"
+        },
+        {
+          "label": "HAT",
+          "count": 3,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "DRINK"
+        },
+        {
+          "label": "HEARING",
+          "count": 4,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "APPLE"
+        },
+        {
+          "label": "HELP",
+          "count": 4,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "HOW"
+        },
+        {
+          "label": "HOT",
+          "count": 4,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BIRTHDAY"
+        },
+        {
+          "label": "HOW",
+          "count": 3,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "GRADUATE"
+        },
+        {
+          "label": "JACKET",
+          "count": 3,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "COMPUTER"
+        },
+        {
+          "label": "KISS",
+          "count": 4,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BEFORE"
+        },
+        {
+          "label": "LANGUAGE",
+          "count": 5,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BASKETBALL"
+        },
+        {
+          "label": "LAST",
+          "count": 4,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BEFORE"
+        },
+        {
+          "label": "LATER",
+          "count": 7,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "FORGET"
+        },
+        {
+          "label": "LETTER",
+          "count": 5,
+          "top1_correct": 5,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "LIKE",
+          "count": 4,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "PIZZA"
+        },
+        {
+          "label": "MAN",
+          "count": 6,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "COUSIN"
+        },
+        {
+          "label": "MANY",
+          "count": 5,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BASKETBALL"
+        },
+        {
+          "label": "MEDICINE",
+          "count": 2,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "CHEAT"
+        },
+        {
+          "label": "MEET",
+          "count": 7,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "YEAR"
+        },
+        {
+          "label": "MOTHER",
+          "count": 6,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "WHO"
+        },
+        {
+          "label": "NEED",
+          "count": 5,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "DEAF"
+        },
+        {
+          "label": "NO",
+          "count": 8,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "DEAF"
+        },
+        {
+          "label": "NOW",
+          "count": 4,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "DECIDE"
+        },
+        {
+          "label": "ORANGE",
+          "count": 6,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "WHO"
+        },
+        {
+          "label": "PAINT",
+          "count": 5,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "DARK"
+        },
+        {
+          "label": "PAPER",
+          "count": 7,
+          "top1_correct": 4,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "CHANGE"
+        },
+        {
+          "label": "PINK",
+          "count": 6,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "FINE"
+        },
+        {
+          "label": "PIZZA",
+          "count": 5,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "NO"
+        },
+        {
+          "label": "PLAY",
+          "count": 6,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BASKETBALL"
+        },
+        {
+          "label": "PULL",
+          "count": 4,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BUT"
+        },
+        {
+          "label": "PURPLE",
+          "count": 5,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BOWLING"
+        },
+        {
+          "label": "RIGHT",
+          "count": 3,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "FISH"
+        },
+        {
+          "label": "SAME",
+          "count": 4,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "AFRICA"
+        },
+        {
+          "label": "SCHOOL",
+          "count": 6,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "PAPER"
+        },
+        {
+          "label": "SECRETARY",
+          "count": 4,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "CITY"
+        },
+        {
+          "label": "SHIRT",
+          "count": 2,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "PURPLE"
+        },
+        {
+          "label": "SHORT",
+          "count": 5,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "CHAIR"
+        },
+        {
+          "label": "SON",
+          "count": 5,
+          "top1_correct": 4,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "DOCTOR"
+        },
+        {
+          "label": "STUDY",
+          "count": 5,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "DECIDE"
+        },
+        {
+          "label": "TABLE",
+          "count": 3,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "PAPER"
+        },
+        {
+          "label": "TALL",
+          "count": 4,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "FORGET"
+        },
+        {
+          "label": "TELL",
+          "count": 6,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BIRTHDAY"
+        },
+        {
+          "label": "THANKSGIVING",
+          "count": 5,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "FINISH"
+        },
+        {
+          "label": "THIN",
+          "count": 7,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "MAN"
+        },
+        {
+          "label": "THURSDAY",
+          "count": 4,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "SHIRT"
+        },
+        {
+          "label": "TIME",
+          "count": 5,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "CHEAT"
+        },
+        {
+          "label": "WALK",
+          "count": 10,
+          "top1_correct": 6,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "GIVE"
+        },
+        {
+          "label": "WANT",
+          "count": 6,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "MANY"
+        },
+        {
+          "label": "WHAT",
+          "count": 6,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "NOW"
+        },
+        {
+          "label": "WHITE",
+          "count": 5,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "FINE"
+        },
+        {
+          "label": "WHO",
+          "count": 7,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "EAT"
+        },
+        {
+          "label": "WOMAN",
+          "count": 8,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "FINE"
+        },
+        {
+          "label": "WORK",
+          "count": 6,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "GRADUATE"
+        },
+        {
+          "label": "WRONG",
+          "count": 5,
+          "top1_correct": 4,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "ACCIDENT"
+        },
+        {
+          "label": "YEAR",
+          "count": 7,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BEFORE"
+        },
+        {
+          "label": "YES",
+          "count": 8,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "COOL"
+        }
+      ]
+    },
+    {
+      "architecture": "gru27",
+      "seed": 43,
+      "threshold": 0.92,
+      "margin": 0.5,
+      "acceptance_enabled": true,
+      "test_screen_passed": false,
+      "metrics": {
+        "known_count": 450,
+        "unknown_count": 112,
+        "top1_correct": 123,
+        "top1_accuracy": 0.2733333333333333,
+        "macro_recall": 0.28884523809523804,
+        "accepted_correct": 10,
+        "accepted_wrong": 1,
+        "known_rejected": 439,
+        "unknown_false_accepts": 2,
+        "known_accepted_precision": 0.9090909090909091,
+        "correct_known_coverage": 0.022222222222222223,
+        "unknown_false_accept_rate": 0.017857142857142856,
+        "mixture_precision": 0.7692307692307693,
+        "mixture": "All supplied known examples plus all supplied unknown-sign examples; nonsigning camera negatives not yet collected",
+        "wilson95": {
+          "known_precision": [
+            0.6226415635484043,
+            0.9837678271141151
+          ],
+          "correct_coverage": [
+            0.012114589193206515,
+            0.04041798216474323
+          ],
+          "unknown_false_accept_rate": [
+            0.004910811536248828,
+            0.06278048742116135
+          ],
+          "mixture_precision": [
+            0.49743624053272495,
+            0.9182047128150143
+          ]
+        }
+      },
+      "per_word": [
+        {
+          "label": "ACCIDENT",
+          "count": 4,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "ALL"
+        },
+        {
+          "label": "AFRICA",
+          "count": 4,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "GO"
+        },
+        {
+          "label": "ALL",
+          "count": 5,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BEFORE"
+        },
+        {
+          "label": "APPLE",
+          "count": 6,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "CORN"
+        },
+        {
+          "label": "BASKETBALL",
+          "count": 5,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "COMPUTER"
+        },
+        {
+          "label": "BED",
+          "count": 3,
+          "top1_correct": 1,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BLUE"
+        },
+        {
+          "label": "BEFORE",
+          "count": 8,
+          "top1_correct": 6,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "CHEAT"
+        },
+        {
+          "label": "BIRD",
+          "count": 2,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "DRINK"
+        },
+        {
+          "label": "BIRTHDAY",
+          "count": 3,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "COLOR"
+        },
+        {
+          "label": "BLACK",
+          "count": 5,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "COUSIN"
+        },
+        {
+          "label": "BLUE",
+          "count": 6,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "ALL"
+        },
+        {
+          "label": "BOOK",
+          "count": 3,
+          "top1_correct": 2,
+          "accepted_correct": 2,
+          "accepted_wrong": 0,
+          "most_common_wrong": "YEAR"
+        },
+        {
+          "label": "BOWLING",
+          "count": 3,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "GIVE"
+        },
+        {
+          "label": "BROWN",
+          "count": 3,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "COUSIN"
+        },
+        {
+          "label": "BUT",
+          "count": 5,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BASKETBALL"
+        },
+        {
+          "label": "CAN",
+          "count": 1,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "DECIDE"
+        },
+        {
+          "label": "CANDY",
+          "count": 7,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "WHITE"
+        },
+        {
+          "label": "CHAIR",
+          "count": 2,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "LETTER"
+        },
+        {
+          "label": "CHANGE",
+          "count": 5,
+          "top1_correct": 3,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": "DARK"
+        },
+        {
+          "label": "CHEAT",
+          "count": 2,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "LETTER"
+        },
+        {
+          "label": "CITY",
+          "count": 3,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "KISS"
+        },
+        {
+          "label": "CLOTHES",
+          "count": 2,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "COLOR",
+          "count": 3,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "WRONG"
+        },
+        {
+          "label": "COMPUTER",
+          "count": 7,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BASKETBALL"
+        },
+        {
+          "label": "COOK",
+          "count": 2,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "DOCTOR"
+        },
+        {
+          "label": "COOL",
+          "count": 3,
+          "top1_correct": 1,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": "DEAF"
+        },
+        {
+          "label": "CORN",
+          "count": 3,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "COW"
+        },
+        {
+          "label": "COUSIN",
+          "count": 6,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "COW"
+        },
+        {
+          "label": "COW",
+          "count": 4,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BLACK"
+        },
+        {
+          "label": "DANCE",
+          "count": 2,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "YEAR"
+        },
+        {
+          "label": "DARK",
+          "count": 5,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "ACCIDENT"
+        },
+        {
+          "label": "DEAF",
+          "count": 5,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "COOL"
+        },
+        {
+          "label": "DECIDE",
+          "count": 3,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BASKETBALL"
+        },
+        {
+          "label": "DOCTOR",
+          "count": 2,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 1,
+          "most_common_wrong": "YEAR"
+        },
+        {
+          "label": "DOG",
+          "count": 2,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "DRINK",
+          "count": 6,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "COUSIN"
+        },
+        {
+          "label": "EAT",
+          "count": 3,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "PINK"
+        },
+        {
+          "label": "ENJOY",
+          "count": 5,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BEFORE"
+        },
+        {
+          "label": "FAMILY",
+          "count": 4,
+          "top1_correct": 1,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": "LAST"
+        },
+        {
+          "label": "FINE",
+          "count": 3,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "THANKSGIVING"
+        },
+        {
+          "label": "FINISH",
+          "count": 2,
+          "top1_correct": 2,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "FISH",
+          "count": 3,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "SECRETARY"
+        },
+        {
+          "label": "FORGET",
+          "count": 2,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "FULL",
+          "count": 3,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "DOCTOR"
+        },
+        {
+          "label": "GIVE",
+          "count": 3,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "DOG"
+        },
+        {
+          "label": "GO",
+          "count": 6,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BLUE"
+        },
+        {
+          "label": "GRADUATE",
+          "count": 3,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "RIGHT"
+        },
+        {
+          "label": "HAT",
+          "count": 3,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "COMPUTER"
+        },
+        {
+          "label": "HEARING",
+          "count": 4,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BUT"
+        },
+        {
+          "label": "HELP",
+          "count": 4,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "ACCIDENT"
+        },
+        {
+          "label": "HOT",
+          "count": 4,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BIRTHDAY"
+        },
+        {
+          "label": "HOW",
+          "count": 3,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "RIGHT"
+        },
+        {
+          "label": "JACKET",
+          "count": 3,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "COMPUTER"
+        },
+        {
+          "label": "KISS",
+          "count": 4,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "ACCIDENT"
+        },
+        {
+          "label": "LANGUAGE",
+          "count": 5,
+          "top1_correct": 3,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BASKETBALL"
+        },
+        {
+          "label": "LAST",
+          "count": 4,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BLUE"
+        },
+        {
+          "label": "LATER",
+          "count": 7,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "CHAIR"
+        },
+        {
+          "label": "LETTER",
+          "count": 5,
+          "top1_correct": 4,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "CLOTHES"
+        },
+        {
+          "label": "LIKE",
+          "count": 4,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "NO"
+        },
+        {
+          "label": "MAN",
+          "count": 6,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BLACK"
+        },
+        {
+          "label": "MANY",
+          "count": 5,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "NOW"
+        },
+        {
+          "label": "MEDICINE",
+          "count": 2,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "FULL"
+        },
+        {
+          "label": "MEET",
+          "count": 7,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BEFORE"
+        },
+        {
+          "label": "MOTHER",
+          "count": 6,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "WHO"
+        },
+        {
+          "label": "NEED",
+          "count": 5,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "NO"
+        },
+        {
+          "label": "NO",
+          "count": 8,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "DEAF"
+        },
+        {
+          "label": "NOW",
+          "count": 4,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "DECIDE"
+        },
+        {
+          "label": "ORANGE",
+          "count": 6,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "DECIDE"
+        },
+        {
+          "label": "PAINT",
+          "count": 5,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BOOK"
+        },
+        {
+          "label": "PAPER",
+          "count": 7,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "CHANGE"
+        },
+        {
+          "label": "PINK",
+          "count": 6,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "TELL"
+        },
+        {
+          "label": "PIZZA",
+          "count": 5,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "NO"
+        },
+        {
+          "label": "PLAY",
+          "count": 6,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BASKETBALL"
+        },
+        {
+          "label": "PULL",
+          "count": 4,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "GIVE"
+        },
+        {
+          "label": "PURPLE",
+          "count": 5,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "NO"
+        },
+        {
+          "label": "RIGHT",
+          "count": 3,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "FINISH"
+        },
+        {
+          "label": "SAME",
+          "count": 4,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "NEED"
+        },
+        {
+          "label": "SCHOOL",
+          "count": 6,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "CHANGE"
+        },
+        {
+          "label": "SECRETARY",
+          "count": 4,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "DANCE"
+        },
+        {
+          "label": "SHIRT",
+          "count": 2,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "NEED"
+        },
+        {
+          "label": "SHORT",
+          "count": 5,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "ALL"
+        },
+        {
+          "label": "SON",
+          "count": 5,
+          "top1_correct": 5,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "STUDY",
+          "count": 5,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "CLOTHES"
+        },
+        {
+          "label": "TABLE",
+          "count": 3,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "FULL"
+        },
+        {
+          "label": "TALL",
+          "count": 4,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "FORGET"
+        },
+        {
+          "label": "TELL",
+          "count": 6,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "CHEAT"
+        },
+        {
+          "label": "THANKSGIVING",
+          "count": 5,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "MANY"
+        },
+        {
+          "label": "THIN",
+          "count": 7,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "MAN"
+        },
+        {
+          "label": "THURSDAY",
+          "count": 4,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "DOG"
+        },
+        {
+          "label": "TIME",
+          "count": 5,
+          "top1_correct": 3,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": "WALK"
+        },
+        {
+          "label": "WALK",
+          "count": 10,
+          "top1_correct": 6,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BUT"
+        },
+        {
+          "label": "WANT",
+          "count": 6,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "NOW"
+        },
+        {
+          "label": "WHAT",
+          "count": 6,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "DECIDE"
+        },
+        {
+          "label": "WHITE",
+          "count": 5,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BOOK"
+        },
+        {
+          "label": "WHO",
+          "count": 7,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "DEAF"
+        },
+        {
+          "label": "WOMAN",
+          "count": 8,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "FINE"
+        },
+        {
+          "label": "WORK",
+          "count": 6,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "DOCTOR"
+        },
+        {
+          "label": "WRONG",
+          "count": 5,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "COLOR"
+        },
+        {
+          "label": "YEAR",
+          "count": 7,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "CHANGE"
+        },
+        {
+          "label": "YES",
+          "count": 8,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "NO"
+        }
+      ]
+    },
+    {
+      "architecture": "gru27",
+      "seed": 44,
+      "threshold": 0.99,
+      "margin": 0.5,
+      "acceptance_enabled": false,
+      "test_screen_passed": false,
+      "metrics": {
+        "known_count": 450,
+        "unknown_count": 112,
+        "top1_correct": 134,
+        "top1_accuracy": 0.29777777777777775,
+        "macro_recall": 0.30883333333333335,
+        "accepted_correct": 0,
+        "accepted_wrong": 0,
+        "known_rejected": 450,
+        "unknown_false_accepts": 0,
+        "known_accepted_precision": null,
+        "correct_known_coverage": 0.0,
+        "unknown_false_accept_rate": 0.0,
+        "mixture_precision": null,
+        "mixture": "All supplied known examples plus all supplied unknown-sign examples; nonsigning camera negatives not yet collected",
+        "wilson95": {
+          "known_precision": null,
+          "correct_coverage": [
+            8.673617379884035e-19,
+            0.008464318862970662
+          ],
+          "unknown_false_accept_rate": [
+            3.469446951953614e-18,
+            0.033161347066943875
+          ],
+          "mixture_precision": null
+        }
+      },
+      "per_word": [
+        {
+          "label": "ACCIDENT",
+          "count": 4,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "MEET"
+        },
+        {
+          "label": "AFRICA",
+          "count": 4,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "GO"
+        },
+        {
+          "label": "ALL",
+          "count": 5,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BEFORE"
+        },
+        {
+          "label": "APPLE",
+          "count": 6,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "HAT"
+        },
+        {
+          "label": "BASKETBALL",
+          "count": 5,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "COW"
+        },
+        {
+          "label": "BED",
+          "count": 3,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "AFRICA"
+        },
+        {
+          "label": "BEFORE",
+          "count": 8,
+          "top1_correct": 6,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "COUSIN"
+        },
+        {
+          "label": "BIRD",
+          "count": 2,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "KISS"
+        },
+        {
+          "label": "BIRTHDAY",
+          "count": 3,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "FAMILY"
+        },
+        {
+          "label": "BLACK",
+          "count": 5,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "COUSIN"
+        },
+        {
+          "label": "BLUE",
+          "count": 6,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "GO"
+        },
+        {
+          "label": "BOOK",
+          "count": 3,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "YEAR"
+        },
+        {
+          "label": "BOWLING",
+          "count": 3,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "GIVE"
+        },
+        {
+          "label": "BROWN",
+          "count": 3,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "BUT",
+          "count": 5,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "CAN"
+        },
+        {
+          "label": "CAN",
+          "count": 1,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "DECIDE"
+        },
+        {
+          "label": "CANDY",
+          "count": 7,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "PINK"
+        },
+        {
+          "label": "CHAIR",
+          "count": 2,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "CHANGE",
+          "count": 5,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "CHEAT"
+        },
+        {
+          "label": "CHEAT",
+          "count": 2,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "GO"
+        },
+        {
+          "label": "CITY",
+          "count": 3,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "FAMILY"
+        },
+        {
+          "label": "CLOTHES",
+          "count": 2,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "SHORT"
+        },
+        {
+          "label": "COLOR",
+          "count": 3,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "WRONG"
+        },
+        {
+          "label": "COMPUTER",
+          "count": 7,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "PAPER"
+        },
+        {
+          "label": "COOK",
+          "count": 2,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "DOCTOR"
+        },
+        {
+          "label": "COOL",
+          "count": 3,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "DEAF"
+        },
+        {
+          "label": "CORN",
+          "count": 3,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "CLOTHES"
+        },
+        {
+          "label": "COUSIN",
+          "count": 6,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BLUE"
+        },
+        {
+          "label": "COW",
+          "count": 4,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BLACK"
+        },
+        {
+          "label": "DANCE",
+          "count": 2,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "ENJOY"
+        },
+        {
+          "label": "DARK",
+          "count": 5,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BASKETBALL"
+        },
+        {
+          "label": "DEAF",
+          "count": 5,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "CORN"
+        },
+        {
+          "label": "DECIDE",
+          "count": 3,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "PLAY"
+        },
+        {
+          "label": "DOCTOR",
+          "count": 2,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "YEAR"
+        },
+        {
+          "label": "DOG",
+          "count": 2,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BLUE"
+        },
+        {
+          "label": "DRINK",
+          "count": 6,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "APPLE"
+        },
+        {
+          "label": "EAT",
+          "count": 3,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "COLOR"
+        },
+        {
+          "label": "ENJOY",
+          "count": 5,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BIRTHDAY"
+        },
+        {
+          "label": "FAMILY",
+          "count": 4,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "MANY"
+        },
+        {
+          "label": "FINE",
+          "count": 3,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "THURSDAY"
+        },
+        {
+          "label": "FINISH",
+          "count": 2,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "FISH",
+          "count": 3,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "PLAY"
+        },
+        {
+          "label": "FORGET",
+          "count": 2,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "FULL",
+          "count": 3,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "DOCTOR"
+        },
+        {
+          "label": "GIVE",
+          "count": 3,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "COOK"
+        },
+        {
+          "label": "GO",
+          "count": 6,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BEFORE"
+        },
+        {
+          "label": "GRADUATE",
+          "count": 3,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BOOK"
+        },
+        {
+          "label": "HAT",
+          "count": 3,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "COW"
+        },
+        {
+          "label": "HEARING",
+          "count": 4,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BUT"
+        },
+        {
+          "label": "HELP",
+          "count": 4,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "YEAR"
+        },
+        {
+          "label": "HOT",
+          "count": 4,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BIRTHDAY"
+        },
+        {
+          "label": "HOW",
+          "count": 3,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "YEAR"
+        },
+        {
+          "label": "JACKET",
+          "count": 3,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "CAN"
+        },
+        {
+          "label": "KISS",
+          "count": 4,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BEFORE"
+        },
+        {
+          "label": "LANGUAGE",
+          "count": 5,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BUT"
+        },
+        {
+          "label": "LAST",
+          "count": 4,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BEFORE"
+        },
+        {
+          "label": "LATER",
+          "count": 7,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "GO"
+        },
+        {
+          "label": "LETTER",
+          "count": 5,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BEFORE"
+        },
+        {
+          "label": "LIKE",
+          "count": 4,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "PAPER"
+        },
+        {
+          "label": "MAN",
+          "count": 6,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "YES"
+        },
+        {
+          "label": "MANY",
+          "count": 5,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "COOL"
+        },
+        {
+          "label": "MEDICINE",
+          "count": 2,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "DOCTOR"
+        },
+        {
+          "label": "MEET",
+          "count": 7,
+          "top1_correct": 4,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "KISS"
+        },
+        {
+          "label": "MOTHER",
+          "count": 6,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "WHO"
+        },
+        {
+          "label": "NEED",
+          "count": 5,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "CANDY"
+        },
+        {
+          "label": "NO",
+          "count": 8,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "CANDY"
+        },
+        {
+          "label": "NOW",
+          "count": 4,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "GIVE"
+        },
+        {
+          "label": "ORANGE",
+          "count": 6,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "AFRICA"
+        },
+        {
+          "label": "PAINT",
+          "count": 5,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "COOL"
+        },
+        {
+          "label": "PAPER",
+          "count": 7,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "SCHOOL"
+        },
+        {
+          "label": "PINK",
+          "count": 6,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BLUE"
+        },
+        {
+          "label": "PIZZA",
+          "count": 5,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "YES"
+        },
+        {
+          "label": "PLAY",
+          "count": 6,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "CAN"
+        },
+        {
+          "label": "PULL",
+          "count": 4,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "DOCTOR"
+        },
+        {
+          "label": "PURPLE",
+          "count": 5,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BOWLING"
+        },
+        {
+          "label": "RIGHT",
+          "count": 3,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BLACK"
+        },
+        {
+          "label": "SAME",
+          "count": 4,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BUT"
+        },
+        {
+          "label": "SCHOOL",
+          "count": 6,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "PAPER"
+        },
+        {
+          "label": "SECRETARY",
+          "count": 4,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "FISH"
+        },
+        {
+          "label": "SHIRT",
+          "count": 2,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "FINE"
+        },
+        {
+          "label": "SHORT",
+          "count": 5,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BOWLING"
+        },
+        {
+          "label": "SON",
+          "count": 5,
+          "top1_correct": 5,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "STUDY",
+          "count": 5,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "LETTER"
+        },
+        {
+          "label": "TABLE",
+          "count": 3,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BIRTHDAY"
+        },
+        {
+          "label": "TALL",
+          "count": 4,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BEFORE"
+        },
+        {
+          "label": "TELL",
+          "count": 6,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "WHO"
+        },
+        {
+          "label": "THANKSGIVING",
+          "count": 5,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "GIVE"
+        },
+        {
+          "label": "THIN",
+          "count": 7,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BOOK"
+        },
+        {
+          "label": "THURSDAY",
+          "count": 4,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "SHIRT"
+        },
+        {
+          "label": "TIME",
+          "count": 5,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "CHAIR"
+        },
+        {
+          "label": "WALK",
+          "count": 10,
+          "top1_correct": 6,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "CLOTHES"
+        },
+        {
+          "label": "WANT",
+          "count": 6,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "MANY"
+        },
+        {
+          "label": "WHAT",
+          "count": 6,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "WANT"
+        },
+        {
+          "label": "WHITE",
+          "count": 5,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BOOK"
+        },
+        {
+          "label": "WHO",
+          "count": 7,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "AFRICA"
+        },
+        {
+          "label": "WOMAN",
+          "count": 8,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "COOL"
+        },
+        {
+          "label": "WORK",
+          "count": 6,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "COMPUTER"
+        },
+        {
+          "label": "WRONG",
+          "count": 5,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "ACCIDENT"
+        },
+        {
+          "label": "YEAR",
+          "count": 7,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "DANCE"
+        },
+        {
+          "label": "YES",
+          "count": 8,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "NO"
+        }
+      ]
+    },
+    {
+      "architecture": "gru75",
+      "seed": 42,
+      "threshold": 0.79,
+      "margin": 0.5,
+      "acceptance_enabled": true,
+      "test_screen_passed": false,
+      "metrics": {
+        "known_count": 450,
+        "unknown_count": 112,
+        "top1_correct": 120,
+        "top1_accuracy": 0.26666666666666666,
+        "macro_recall": 0.28522619047619047,
+        "accepted_correct": 7,
+        "accepted_wrong": 2,
+        "known_rejected": 441,
+        "unknown_false_accepts": 2,
+        "known_accepted_precision": 0.7777777777777778,
+        "correct_known_coverage": 0.015555555555555555,
+        "unknown_false_accept_rate": 0.017857142857142856,
+        "mixture_precision": 0.6363636363636364,
+        "mixture": "All supplied known examples plus all supplied unknown-sign examples; nonsigning camera negatives not yet collected",
+        "wilson95": {
+          "known_precision": [
+            0.45258896910698887,
+            0.9367748928821533
+          ],
+          "correct_coverage": [
+            0.007555094832788611,
+            0.031757000776667405
+          ],
+          "unknown_false_accept_rate": [
+            0.004910811536248828,
+            0.06278048742116135
+          ],
+          "mixture_precision": [
+            0.35380117450784887,
+            0.8483352890463243
+          ]
+        }
+      },
+      "per_word": [
+        {
+          "label": "ACCIDENT",
+          "count": 4,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BOOK"
+        },
+        {
+          "label": "AFRICA",
+          "count": 4,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BLUE"
+        },
+        {
+          "label": "ALL",
+          "count": 5,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "RIGHT"
+        },
+        {
+          "label": "APPLE",
+          "count": 6,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "COW"
+        },
+        {
+          "label": "BASKETBALL",
+          "count": 5,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "COW"
+        },
+        {
+          "label": "BED",
+          "count": 3,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BLACK"
+        },
+        {
+          "label": "BEFORE",
+          "count": 8,
+          "top1_correct": 4,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "HOW"
+        },
+        {
+          "label": "BIRD",
+          "count": 2,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "DRINK"
+        },
+        {
+          "label": "BIRTHDAY",
+          "count": 3,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BOOK"
+        },
+        {
+          "label": "BLACK",
+          "count": 5,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "COUSIN"
+        },
+        {
+          "label": "BLUE",
+          "count": 6,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "DOG"
+        },
+        {
+          "label": "BOOK",
+          "count": 3,
+          "top1_correct": 2,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": "ENJOY"
+        },
+        {
+          "label": "BOWLING",
+          "count": 3,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "GIVE"
+        },
+        {
+          "label": "BROWN",
+          "count": 3,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "DEAF"
+        },
+        {
+          "label": "BUT",
+          "count": 5,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BLUE"
+        },
+        {
+          "label": "CAN",
+          "count": 1,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "CLOTHES"
+        },
+        {
+          "label": "CANDY",
+          "count": 7,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "APPLE"
+        },
+        {
+          "label": "CHAIR",
+          "count": 2,
+          "top1_correct": 2,
+          "accepted_correct": 2,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "CHANGE",
+          "count": 5,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "YEAR"
+        },
+        {
+          "label": "CHEAT",
+          "count": 2,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 1,
+          "most_common_wrong": "CHAIR"
+        },
+        {
+          "label": "CITY",
+          "count": 3,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "FAMILY"
+        },
+        {
+          "label": "CLOTHES",
+          "count": 2,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "CAN"
+        },
+        {
+          "label": "COLOR",
+          "count": 3,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "PINK"
+        },
+        {
+          "label": "COMPUTER",
+          "count": 7,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BASKETBALL"
+        },
+        {
+          "label": "COOK",
+          "count": 2,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "YEAR"
+        },
+        {
+          "label": "COOL",
+          "count": 3,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "DEAF"
+        },
+        {
+          "label": "CORN",
+          "count": 3,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "COW"
+        },
+        {
+          "label": "COUSIN",
+          "count": 6,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "DEAF"
+        },
+        {
+          "label": "COW",
+          "count": 4,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "COUSIN"
+        },
+        {
+          "label": "DANCE",
+          "count": 2,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "STUDY"
+        },
+        {
+          "label": "DARK",
+          "count": 5,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BASKETBALL"
+        },
+        {
+          "label": "DEAF",
+          "count": 5,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "APPLE"
+        },
+        {
+          "label": "DECIDE",
+          "count": 3,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "CAN"
+        },
+        {
+          "label": "DOCTOR",
+          "count": 2,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "YEAR"
+        },
+        {
+          "label": "DOG",
+          "count": 2,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "DRINK",
+          "count": 6,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "COUSIN"
+        },
+        {
+          "label": "EAT",
+          "count": 3,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BIRTHDAY"
+        },
+        {
+          "label": "ENJOY",
+          "count": 5,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BEFORE"
+        },
+        {
+          "label": "FAMILY",
+          "count": 4,
+          "top1_correct": 1,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BOOK"
+        },
+        {
+          "label": "FINE",
+          "count": 3,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "NEED"
+        },
+        {
+          "label": "FINISH",
+          "count": 2,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "FISH",
+          "count": 3,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "SECRETARY"
+        },
+        {
+          "label": "FORGET",
+          "count": 2,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "FULL",
+          "count": 3,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "CHEAT"
+        },
+        {
+          "label": "GIVE",
+          "count": 3,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BEFORE"
+        },
+        {
+          "label": "GO",
+          "count": 6,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BEFORE"
+        },
+        {
+          "label": "GRADUATE",
+          "count": 3,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "RIGHT"
+        },
+        {
+          "label": "HAT",
+          "count": 3,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BLACK"
+        },
+        {
+          "label": "HEARING",
+          "count": 4,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "APPLE"
+        },
+        {
+          "label": "HELP",
+          "count": 4,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "CHEAT"
+        },
+        {
+          "label": "HOT",
+          "count": 4,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BIRTHDAY"
+        },
+        {
+          "label": "HOW",
+          "count": 3,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "CHEAT"
+        },
+        {
+          "label": "JACKET",
+          "count": 3,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "CHAIR"
+        },
+        {
+          "label": "KISS",
+          "count": 4,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BEFORE"
+        },
+        {
+          "label": "LANGUAGE",
+          "count": 5,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "DECIDE"
+        },
+        {
+          "label": "LAST",
+          "count": 4,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BEFORE"
+        },
+        {
+          "label": "LATER",
+          "count": 7,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "FINE"
+        },
+        {
+          "label": "LETTER",
+          "count": 5,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "GO"
+        },
+        {
+          "label": "LIKE",
+          "count": 4,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "ORANGE"
+        },
+        {
+          "label": "MAN",
+          "count": 6,
+          "top1_correct": 2,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": "YES"
+        },
+        {
+          "label": "MANY",
+          "count": 5,
+          "top1_correct": 3,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": "COOL"
+        },
+        {
+          "label": "MEDICINE",
+          "count": 2,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "CHEAT"
+        },
+        {
+          "label": "MEET",
+          "count": 7,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "FAMILY"
+        },
+        {
+          "label": "MOTHER",
+          "count": 6,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "AFRICA"
+        },
+        {
+          "label": "NEED",
+          "count": 5,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "DEAF"
+        },
+        {
+          "label": "NO",
+          "count": 8,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "CANDY"
+        },
+        {
+          "label": "NOW",
+          "count": 4,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 1,
+          "most_common_wrong": "FISH"
+        },
+        {
+          "label": "ORANGE",
+          "count": 6,
+          "top1_correct": 4,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "APPLE"
+        },
+        {
+          "label": "PAINT",
+          "count": 5,
+          "top1_correct": 4,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "THANKSGIVING"
+        },
+        {
+          "label": "PAPER",
+          "count": 7,
+          "top1_correct": 4,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "CHANGE"
+        },
+        {
+          "label": "PINK",
+          "count": 6,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BIRD"
+        },
+        {
+          "label": "PIZZA",
+          "count": 5,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "COUSIN"
+        },
+        {
+          "label": "PLAY",
+          "count": 6,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BUT"
+        },
+        {
+          "label": "PULL",
+          "count": 4,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BEFORE"
+        },
+        {
+          "label": "PURPLE",
+          "count": 5,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "DOG"
+        },
+        {
+          "label": "RIGHT",
+          "count": 3,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "CHEAT"
+        },
+        {
+          "label": "SAME",
+          "count": 4,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "COOK"
+        },
+        {
+          "label": "SCHOOL",
+          "count": 6,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "MEDICINE"
+        },
+        {
+          "label": "SECRETARY",
+          "count": 4,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "RIGHT"
+        },
+        {
+          "label": "SHIRT",
+          "count": 2,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "PIZZA"
+        },
+        {
+          "label": "SHORT",
+          "count": 5,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "DOG"
+        },
+        {
+          "label": "SON",
+          "count": 5,
+          "top1_correct": 5,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "STUDY",
+          "count": 5,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BEFORE"
+        },
+        {
+          "label": "TABLE",
+          "count": 3,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "TALL",
+          "count": 4,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "FORGET"
+        },
+        {
+          "label": "TELL",
+          "count": 6,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "ACCIDENT"
+        },
+        {
+          "label": "THANKSGIVING",
+          "count": 5,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "NOW"
+        },
+        {
+          "label": "THIN",
+          "count": 7,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "LAST"
+        },
+        {
+          "label": "THURSDAY",
+          "count": 4,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "DOG"
+        },
+        {
+          "label": "TIME",
+          "count": 5,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "CHEAT"
+        },
+        {
+          "label": "WALK",
+          "count": 10,
+          "top1_correct": 5,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "CLOTHES"
+        },
+        {
+          "label": "WANT",
+          "count": 6,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "MANY"
+        },
+        {
+          "label": "WHAT",
+          "count": 6,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "WANT"
+        },
+        {
+          "label": "WHITE",
+          "count": 5,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "LIKE"
+        },
+        {
+          "label": "WHO",
+          "count": 7,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "DEAF"
+        },
+        {
+          "label": "WOMAN",
+          "count": 8,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "PIZZA"
+        },
+        {
+          "label": "WORK",
+          "count": 6,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "CHEAT"
+        },
+        {
+          "label": "WRONG",
+          "count": 5,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "EAT"
+        },
+        {
+          "label": "YEAR",
+          "count": 7,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "ENJOY"
+        },
+        {
+          "label": "YES",
+          "count": 8,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "GO"
+        }
+      ]
+    },
+    {
+      "architecture": "gru75",
+      "seed": 43,
+      "threshold": 0.97,
+      "margin": 0.5,
+      "acceptance_enabled": true,
+      "test_screen_passed": false,
+      "metrics": {
+        "known_count": 450,
+        "unknown_count": 112,
+        "top1_correct": 124,
+        "top1_accuracy": 0.27555555555555555,
+        "macro_recall": 0.292047619047619,
+        "accepted_correct": 1,
+        "accepted_wrong": 0,
+        "known_rejected": 449,
+        "unknown_false_accepts": 1,
+        "known_accepted_precision": 1.0,
+        "correct_known_coverage": 0.0022222222222222222,
+        "unknown_false_accept_rate": 0.008928571428571428,
+        "mixture_precision": 0.5,
+        "mixture": "All supplied known examples plus all supplied unknown-sign examples; nonsigning camera negatives not yet collected",
+        "wilson95": {
+          "known_precision": [
+            0.20654931437723745,
+            1.0
+          ],
+          "correct_coverage": [
+            0.0003923845536375403,
+            0.012478759558831033
+          ],
+          "unknown_false_accept_rate": [
+            0.001577854703292133,
+            0.048848468308884896
+          ],
+          "mixture_precision": [
+            0.09453120573423074,
+            0.9054687942657693
+          ]
+        }
+      },
+      "per_word": [
+        {
+          "label": "ACCIDENT",
+          "count": 4,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BEFORE"
+        },
+        {
+          "label": "AFRICA",
+          "count": 4,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BLUE"
+        },
+        {
+          "label": "ALL",
+          "count": 5,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BIRTHDAY"
+        },
+        {
+          "label": "APPLE",
+          "count": 6,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "COOL"
+        },
+        {
+          "label": "BASKETBALL",
+          "count": 5,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "COW"
+        },
+        {
+          "label": "BED",
+          "count": 3,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "AFRICA"
+        },
+        {
+          "label": "BEFORE",
+          "count": 8,
+          "top1_correct": 4,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "COUSIN"
+        },
+        {
+          "label": "BIRD",
+          "count": 2,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "DRINK"
+        },
+        {
+          "label": "BIRTHDAY",
+          "count": 3,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "BLACK",
+          "count": 5,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "HAT"
+        },
+        {
+          "label": "BLUE",
+          "count": 6,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "DOG"
+        },
+        {
+          "label": "BOOK",
+          "count": 3,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "YEAR"
+        },
+        {
+          "label": "BOWLING",
+          "count": 3,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "NOW"
+        },
+        {
+          "label": "BROWN",
+          "count": 3,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "DEAF"
+        },
+        {
+          "label": "BUT",
+          "count": 5,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "DEAF"
+        },
+        {
+          "label": "CAN",
+          "count": 1,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "CLOTHES"
+        },
+        {
+          "label": "CANDY",
+          "count": 7,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "COLOR"
+        },
+        {
+          "label": "CHAIR",
+          "count": 2,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "CHANGE",
+          "count": 5,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "YEAR"
+        },
+        {
+          "label": "CHEAT",
+          "count": 2,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "CHAIR"
+        },
+        {
+          "label": "CITY",
+          "count": 3,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "KISS"
+        },
+        {
+          "label": "CLOTHES",
+          "count": 2,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "COLOR",
+          "count": 3,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "WRONG"
+        },
+        {
+          "label": "COMPUTER",
+          "count": 7,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BASKETBALL"
+        },
+        {
+          "label": "COOK",
+          "count": 2,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "SCHOOL"
+        },
+        {
+          "label": "COOL",
+          "count": 3,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "DEAF"
+        },
+        {
+          "label": "CORN",
+          "count": 3,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "COW"
+        },
+        {
+          "label": "COUSIN",
+          "count": 6,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BLUE"
+        },
+        {
+          "label": "COW",
+          "count": 4,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "FORGET"
+        },
+        {
+          "label": "DANCE",
+          "count": 2,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "ENJOY"
+        },
+        {
+          "label": "DARK",
+          "count": 5,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BASKETBALL"
+        },
+        {
+          "label": "DEAF",
+          "count": 5,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "CORN"
+        },
+        {
+          "label": "DECIDE",
+          "count": 3,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "PLAY"
+        },
+        {
+          "label": "DOCTOR",
+          "count": 2,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "GRADUATE"
+        },
+        {
+          "label": "DOG",
+          "count": 2,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "DRINK",
+          "count": 6,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "APPLE"
+        },
+        {
+          "label": "EAT",
+          "count": 3,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "COUSIN"
+        },
+        {
+          "label": "ENJOY",
+          "count": 5,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BIRTHDAY"
+        },
+        {
+          "label": "FAMILY",
+          "count": 4,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BEFORE"
+        },
+        {
+          "label": "FINE",
+          "count": 3,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "LIKE"
+        },
+        {
+          "label": "FINISH",
+          "count": 2,
+          "top1_correct": 2,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "FISH",
+          "count": 3,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "GIVE"
+        },
+        {
+          "label": "FORGET",
+          "count": 2,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "FULL",
+          "count": 3,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "CHEAT"
+        },
+        {
+          "label": "GIVE",
+          "count": 3,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "PLAY"
+        },
+        {
+          "label": "GO",
+          "count": 6,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BEFORE"
+        },
+        {
+          "label": "GRADUATE",
+          "count": 3,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "SECRETARY"
+        },
+        {
+          "label": "HAT",
+          "count": 3,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BLACK"
+        },
+        {
+          "label": "HEARING",
+          "count": 4,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BUT"
+        },
+        {
+          "label": "HELP",
+          "count": 4,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "YEAR"
+        },
+        {
+          "label": "HOT",
+          "count": 4,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BIRTHDAY"
+        },
+        {
+          "label": "HOW",
+          "count": 3,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "YEAR"
+        },
+        {
+          "label": "JACKET",
+          "count": 3,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "CHAIR"
+        },
+        {
+          "label": "KISS",
+          "count": 4,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BEFORE"
+        },
+        {
+          "label": "LANGUAGE",
+          "count": 5,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "CLOTHES"
+        },
+        {
+          "label": "LAST",
+          "count": 4,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "DOG"
+        },
+        {
+          "label": "LATER",
+          "count": 7,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "CHAIR"
+        },
+        {
+          "label": "LETTER",
+          "count": 5,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BEFORE"
+        },
+        {
+          "label": "LIKE",
+          "count": 4,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "SCHOOL"
+        },
+        {
+          "label": "MAN",
+          "count": 6,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "DRINK"
+        },
+        {
+          "label": "MANY",
+          "count": 5,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "NOW"
+        },
+        {
+          "label": "MEDICINE",
+          "count": 2,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "GRADUATE"
+        },
+        {
+          "label": "MEET",
+          "count": 7,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "YEAR"
+        },
+        {
+          "label": "MOTHER",
+          "count": 6,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BROWN"
+        },
+        {
+          "label": "NEED",
+          "count": 5,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BROWN"
+        },
+        {
+          "label": "NO",
+          "count": 8,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "DEAF"
+        },
+        {
+          "label": "NOW",
+          "count": 4,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "CAN"
+        },
+        {
+          "label": "ORANGE",
+          "count": 6,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BIRD"
+        },
+        {
+          "label": "PAINT",
+          "count": 5,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "THANKSGIVING"
+        },
+        {
+          "label": "PAPER",
+          "count": 7,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "MEDICINE"
+        },
+        {
+          "label": "PINK",
+          "count": 6,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "CANDY"
+        },
+        {
+          "label": "PIZZA",
+          "count": 5,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "NO"
+        },
+        {
+          "label": "PLAY",
+          "count": 6,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "LAST"
+        },
+        {
+          "label": "PULL",
+          "count": 4,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BEFORE"
+        },
+        {
+          "label": "PURPLE",
+          "count": 5,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "DOG"
+        },
+        {
+          "label": "RIGHT",
+          "count": 3,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BOWLING"
+        },
+        {
+          "label": "SAME",
+          "count": 4,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "MEDICINE"
+        },
+        {
+          "label": "SCHOOL",
+          "count": 6,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "MEDICINE"
+        },
+        {
+          "label": "SECRETARY",
+          "count": 4,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "COOK"
+        },
+        {
+          "label": "SHIRT",
+          "count": 2,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "THURSDAY"
+        },
+        {
+          "label": "SHORT",
+          "count": 5,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BOWLING"
+        },
+        {
+          "label": "SON",
+          "count": 5,
+          "top1_correct": 5,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "STUDY",
+          "count": 5,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "CLOTHES"
+        },
+        {
+          "label": "TABLE",
+          "count": 3,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "SCHOOL"
+        },
+        {
+          "label": "TALL",
+          "count": 4,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "HELP"
+        },
+        {
+          "label": "TELL",
+          "count": 6,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BIRTHDAY"
+        },
+        {
+          "label": "THANKSGIVING",
+          "count": 5,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "COOL"
+        },
+        {
+          "label": "THIN",
+          "count": 7,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "APPLE"
+        },
+        {
+          "label": "THURSDAY",
+          "count": 4,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "HOT"
+        },
+        {
+          "label": "TIME",
+          "count": 5,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "CHEAT"
+        },
+        {
+          "label": "WALK",
+          "count": 10,
+          "top1_correct": 4,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "CHAIR"
+        },
+        {
+          "label": "WANT",
+          "count": 6,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "MANY"
+        },
+        {
+          "label": "WHAT",
+          "count": 6,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BOWLING"
+        },
+        {
+          "label": "WHITE",
+          "count": 5,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "LIKE"
+        },
+        {
+          "label": "WHO",
+          "count": 7,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BIRD"
+        },
+        {
+          "label": "WOMAN",
+          "count": 8,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BED"
+        },
+        {
+          "label": "WORK",
+          "count": 6,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "CHEAT"
+        },
+        {
+          "label": "WRONG",
+          "count": 5,
+          "top1_correct": 4,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "WHO"
+        },
+        {
+          "label": "YEAR",
+          "count": 7,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "DANCE"
+        },
+        {
+          "label": "YES",
+          "count": 8,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BLUE"
+        }
+      ]
+    },
+    {
+      "architecture": "gru75",
+      "seed": 44,
+      "threshold": 0.99,
+      "margin": 0.5,
+      "acceptance_enabled": false,
+      "test_screen_passed": false,
+      "metrics": {
+        "known_count": 450,
+        "unknown_count": 112,
+        "top1_correct": 122,
+        "top1_accuracy": 0.27111111111111114,
+        "macro_recall": 0.3009761904761905,
+        "accepted_correct": 0,
+        "accepted_wrong": 0,
+        "known_rejected": 450,
+        "unknown_false_accepts": 0,
+        "known_accepted_precision": null,
+        "correct_known_coverage": 0.0,
+        "unknown_false_accept_rate": 0.0,
+        "mixture_precision": null,
+        "mixture": "All supplied known examples plus all supplied unknown-sign examples; nonsigning camera negatives not yet collected",
+        "wilson95": {
+          "known_precision": null,
+          "correct_coverage": [
+            8.673617379884035e-19,
+            0.008464318862970662
+          ],
+          "unknown_false_accept_rate": [
+            3.469446951953614e-18,
+            0.033161347066943875
+          ],
+          "mixture_precision": null
+        }
+      },
+      "per_word": [
+        {
+          "label": "ACCIDENT",
+          "count": 4,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BOOK"
+        },
+        {
+          "label": "AFRICA",
+          "count": 4,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "DOG"
+        },
+        {
+          "label": "ALL",
+          "count": 5,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "ACCIDENT"
+        },
+        {
+          "label": "APPLE",
+          "count": 6,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "CORN"
+        },
+        {
+          "label": "BASKETBALL",
+          "count": 5,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "COW"
+        },
+        {
+          "label": "BED",
+          "count": 3,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "AFRICA"
+        },
+        {
+          "label": "BEFORE",
+          "count": 8,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "DOG"
+        },
+        {
+          "label": "BIRD",
+          "count": 2,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "DRINK"
+        },
+        {
+          "label": "BIRTHDAY",
+          "count": 3,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "FULL"
+        },
+        {
+          "label": "BLACK",
+          "count": 5,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "FORGET"
+        },
+        {
+          "label": "BLUE",
+          "count": 6,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "DOG"
+        },
+        {
+          "label": "BOOK",
+          "count": 3,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "YEAR"
+        },
+        {
+          "label": "BOWLING",
+          "count": 3,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "GIVE"
+        },
+        {
+          "label": "BROWN",
+          "count": 3,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "DRINK"
+        },
+        {
+          "label": "BUT",
+          "count": 5,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "DECIDE"
+        },
+        {
+          "label": "CAN",
+          "count": 1,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "CANDY",
+          "count": 7,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "COLOR"
+        },
+        {
+          "label": "CHAIR",
+          "count": 2,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "CHANGE",
+          "count": 5,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "SCHOOL"
+        },
+        {
+          "label": "CHEAT",
+          "count": 2,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "CHAIR"
+        },
+        {
+          "label": "CITY",
+          "count": 3,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "EAT"
+        },
+        {
+          "label": "CLOTHES",
+          "count": 2,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BOWLING"
+        },
+        {
+          "label": "COLOR",
+          "count": 3,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "WRONG"
+        },
+        {
+          "label": "COMPUTER",
+          "count": 7,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BASKETBALL"
+        },
+        {
+          "label": "COOK",
+          "count": 2,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "SCHOOL"
+        },
+        {
+          "label": "COOL",
+          "count": 3,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "COUSIN"
+        },
+        {
+          "label": "CORN",
+          "count": 3,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "COW"
+        },
+        {
+          "label": "COUSIN",
+          "count": 6,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "COW"
+        },
+        {
+          "label": "COW",
+          "count": 4,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "COUSIN"
+        },
+        {
+          "label": "DANCE",
+          "count": 2,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "CHAIR"
+        },
+        {
+          "label": "DARK",
+          "count": 5,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "COOL"
+        },
+        {
+          "label": "DEAF",
+          "count": 5,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "CANDY"
+        },
+        {
+          "label": "DECIDE",
+          "count": 3,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BASKETBALL"
+        },
+        {
+          "label": "DOCTOR",
+          "count": 2,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "MEDICINE"
+        },
+        {
+          "label": "DOG",
+          "count": 2,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "DRINK",
+          "count": 6,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "APPLE"
+        },
+        {
+          "label": "EAT",
+          "count": 3,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "COLOR"
+        },
+        {
+          "label": "ENJOY",
+          "count": 5,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BEFORE"
+        },
+        {
+          "label": "FAMILY",
+          "count": 4,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BEFORE"
+        },
+        {
+          "label": "FINE",
+          "count": 3,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BEFORE"
+        },
+        {
+          "label": "FINISH",
+          "count": 2,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "FISH",
+          "count": 3,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "DOG"
+        },
+        {
+          "label": "FORGET",
+          "count": 2,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "FULL",
+          "count": 3,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "SCHOOL"
+        },
+        {
+          "label": "GIVE",
+          "count": 3,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "DOG"
+        },
+        {
+          "label": "GO",
+          "count": 6,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "HOT"
+        },
+        {
+          "label": "GRADUATE",
+          "count": 3,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "YEAR"
+        },
+        {
+          "label": "HAT",
+          "count": 3,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "COW"
+        },
+        {
+          "label": "HEARING",
+          "count": 4,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "APPLE"
+        },
+        {
+          "label": "HELP",
+          "count": 4,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "CHEAT"
+        },
+        {
+          "label": "HOT",
+          "count": 4,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BIRTHDAY"
+        },
+        {
+          "label": "HOW",
+          "count": 3,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BOOK"
+        },
+        {
+          "label": "JACKET",
+          "count": 3,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "CHAIR"
+        },
+        {
+          "label": "KISS",
+          "count": 4,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "COUSIN"
+        },
+        {
+          "label": "LANGUAGE",
+          "count": 5,
+          "top1_correct": 5,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "LAST",
+          "count": 4,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BEFORE"
+        },
+        {
+          "label": "LATER",
+          "count": 7,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "FINE"
+        },
+        {
+          "label": "LETTER",
+          "count": 5,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "CLOTHES"
+        },
+        {
+          "label": "LIKE",
+          "count": 4,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "FISH"
+        },
+        {
+          "label": "MAN",
+          "count": 6,
+          "top1_correct": 4,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "SHIRT"
+        },
+        {
+          "label": "MANY",
+          "count": 5,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "PLAY"
+        },
+        {
+          "label": "MEDICINE",
+          "count": 2,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "FINE"
+        },
+        {
+          "label": "MEET",
+          "count": 7,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "CHANGE"
+        },
+        {
+          "label": "MOTHER",
+          "count": 6,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BIRTHDAY"
+        },
+        {
+          "label": "NEED",
+          "count": 5,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "DEAF"
+        },
+        {
+          "label": "NO",
+          "count": 8,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "DEAF"
+        },
+        {
+          "label": "NOW",
+          "count": 4,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "WANT"
+        },
+        {
+          "label": "ORANGE",
+          "count": 6,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "COLOR"
+        },
+        {
+          "label": "PAINT",
+          "count": 5,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "FAMILY"
+        },
+        {
+          "label": "PAPER",
+          "count": 7,
+          "top1_correct": 5,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "CHANGE"
+        },
+        {
+          "label": "PINK",
+          "count": 6,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "WHO"
+        },
+        {
+          "label": "PIZZA",
+          "count": 5,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BLUE"
+        },
+        {
+          "label": "PLAY",
+          "count": 6,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "WHAT"
+        },
+        {
+          "label": "PULL",
+          "count": 4,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "CLOTHES"
+        },
+        {
+          "label": "PURPLE",
+          "count": 5,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "DOG"
+        },
+        {
+          "label": "RIGHT",
+          "count": 3,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "CHEAT"
+        },
+        {
+          "label": "SAME",
+          "count": 4,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "DOCTOR"
+        },
+        {
+          "label": "SCHOOL",
+          "count": 6,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "MEDICINE"
+        },
+        {
+          "label": "SECRETARY",
+          "count": 4,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BIRTHDAY"
+        },
+        {
+          "label": "SHIRT",
+          "count": 2,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "LIKE"
+        },
+        {
+          "label": "SHORT",
+          "count": 5,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BOWLING"
+        },
+        {
+          "label": "SON",
+          "count": 5,
+          "top1_correct": 5,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "STUDY",
+          "count": 5,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BEFORE"
+        },
+        {
+          "label": "TABLE",
+          "count": 3,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "TALL",
+          "count": 4,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "COOK"
+        },
+        {
+          "label": "TELL",
+          "count": 6,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BIRTHDAY"
+        },
+        {
+          "label": "THANKSGIVING",
+          "count": 5,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "HOT"
+        },
+        {
+          "label": "THIN",
+          "count": 7,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BIRTHDAY"
+        },
+        {
+          "label": "THURSDAY",
+          "count": 4,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "DOG"
+        },
+        {
+          "label": "TIME",
+          "count": 5,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "CHEAT"
+        },
+        {
+          "label": "WALK",
+          "count": 10,
+          "top1_correct": 4,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "GO"
+        },
+        {
+          "label": "WANT",
+          "count": 6,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "NOW"
+        },
+        {
+          "label": "WHAT",
+          "count": 6,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "WANT"
+        },
+        {
+          "label": "WHITE",
+          "count": 5,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "FINE"
+        },
+        {
+          "label": "WHO",
+          "count": 7,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "DEAF"
+        },
+        {
+          "label": "WOMAN",
+          "count": 8,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "FINE"
+        },
+        {
+          "label": "WORK",
+          "count": 6,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "YEAR"
+        },
+        {
+          "label": "WRONG",
+          "count": 5,
+          "top1_correct": 5,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "YEAR",
+          "count": 7,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "DANCE"
+        },
+        {
+          "label": "YES",
+          "count": 8,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "DOG"
+        }
+      ]
+    }
+  ],
+  "promoted": false,
+  "signer_isolation_verified": true,
+  "historical_corpus_previously_inspected": true,
+  "limits": [
+    "Signer identities isolated within previously inspected historical corpus; not newly collected or untouched recordings",
+    "Only 40/112 real calibration/test negatives; small correlated signer/word groups widen uncertainty",
+    "Known-precision, coverage and unknown FAR gates are point estimates; Wilson95 intervals are reported, not guaranteed performance",
+    "Calibration/test can share unknown vocabulary; unknown isolated signs do not measure idle-camera or conversational false positives",
+    "Seeds reuse the same clips; never pool them as independent test samples",
+    "No sentence, live-camera, fluent-signer or device accuracy; no model promotion or distribution approval"
+  ]
+}

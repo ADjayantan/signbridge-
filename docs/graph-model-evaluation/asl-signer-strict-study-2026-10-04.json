@@ -1,0 +1,160 @@
+{
+  "format": "signbridge-signer-study-inventory-v1",
+  "signLanguage": "asl",
+  "preparedAt": "2026-10-04T16:47:09.710837+00:00",
+  "knownClasses": 100,
+  "knownClips": 2025,
+  "knownSigners": 96,
+  "algorithm": {
+    "seed": 42,
+    "sort": "distinct known signer IDs sorted numeric ascending into int64 array",
+    "rng": "numpy.random.default_rng(seed): PCG64",
+    "shuffle": "one in-place shuffle",
+    "assignment": "first floor(N*0.70) train; next floor(N*0.15) validation; remainder test",
+    "clipOrder": "original train, val, test concatenation, stable filter by assigned signer",
+    "numpyVersion": "2.5.3",
+    "unknownPolicy": "pooled negative signer regrouping under recorded strict protocol"
+  },
+  "groups": {
+    "train": {
+      "signers": 67,
+      "clips": 1202,
+      "classes": 100,
+      "perClassMinimum": 9,
+      "perClassMaximum": 33
+    },
+    "val": {
+      "signers": 14,
+      "clips": 373,
+      "classes": 100,
+      "perClassMinimum": 1,
+      "perClassMaximum": 14
+    },
+    "test": {
+      "signers": 15,
+      "clips": 450,
+      "classes": 100,
+      "perClassMinimum": 1,
+      "perClassMaximum": 10
+    }
+  },
+  "knownSignerOverlap": {
+    "trainValidation": 0,
+    "trainTest": 0,
+    "validationTest": 0
+  },
+  "unknownSignerOverlap": {
+    "unknown_validation": {
+      "clips": 40,
+      "signersWithAvailableIds": 11,
+      "missingSignerIds": 0,
+      "overlapWithKnownGroups": {
+        "train": 0,
+        "val": 10,
+        "test": 0
+      }
+    },
+    "unknown_test": {
+      "clips": 112,
+      "signersWithAvailableIds": 13,
+      "missingSignerIds": 0,
+      "overlapWithKnownGroups": {
+        "train": 0,
+        "val": 0,
+        "test": 11
+      }
+    }
+  },
+  "unknownValidationTestSignerOverlap": 0,
+  "knownTestSignerOverlapThroughUnknownValidation": 0,
+  "fullySignerDisjointAcceptanceEvaluation": true,
+  "unknownClipsUnchanged": false,
+  "assignmentManifestHash": "7731a90786a647fddb650b0dcf4bb906d971074a1bb66d774c6ca8755c2b886e",
+  "sourceHashes": {
+    "graph": "6b8c67eda358ebbf2c7154ce884f1205a9be73230b2a2694d3073c9304c5482f",
+    "legacy": "c67da34858718cd98d33a058fba9134739172d9dd946e9953f08c65b4252446a",
+    "graphMetadata": "57ed93aba374fb7590c48f47d00751ebf47f2c1fe75bc6e2d5a446fa0e48ba25",
+    "legacyMetadata": "5991f8564b9e83d5b643e6a5cd62639498a39607967db0ee6ba9383ae339d82e"
+  },
+  "trained": false,
+  "accuracyMeasured": false,
+  "limits": [
+    "Strict signer identities separate classifier fitting/model selection/threshold calibration from final known and unknown test",
+    "Calibration and test may share unknown words; signer-disjoint does not mean vocabulary-disjoint",
+    "Negative clips are isolated out-of-vocabulary signs; idle movements and natural conversations are unmeasured",
+    "Small negative holdouts have wide uncertainty; multiple clips from one signer/word are correlated",
+    "Same already inspected historical corpus; not newly collected signing or a newly untouched recording test",
+    "Fresh matched training is required; existing historical weights cannot serve as an unseen-signer control",
+    "No model was trained/evaluated; no live-camera or fluent-user accuracy established; local research only"
+  ],
+  "strictNegatives": true,
+  "strictProtocolHash": "b843920f2ffb36ff62651808d1439727fc552f95a3d927b28951eebb11d98674",
+  "status": "prepared",
+  "studyAvailable": true,
+  "unavailableReasons": [],
+  "minimumNegativesPerHoldout": 20,
+  "negativePoolAccounting": {
+    "pooledClips": 300,
+    "originalClips": {
+      "unknown_validation": 100,
+      "unknown_test": 200
+    },
+    "retainedClips": {
+      "unknown_validation": 40,
+      "unknown_test": 112
+    },
+    "discardedClips": {
+      "knownTrainingSigner": 148,
+      "missingSignerIdentity": 0
+    },
+    "discardReasons": {
+      "knownTrainingSigner": "not a held-out signer; excluded from calibration/test",
+      "missingSignerIdentity": "unavailable identity cannot certify separation"
+    },
+    "unknownOnlySignerGroups": {
+      "val": 1,
+      "test": 2
+    },
+    "pooledClipIdsUnique": true
+  },
+  "negativeHoldoutSize": {
+    "unknown_validation": {
+      "clips": 40,
+      "signers": 11,
+      "words": 39,
+      "perWordMinimum": 1,
+      "perWordMaximum": 2,
+      "oneFalseAcceptRate": 0.025,
+      "zeroAcceptsUpper95OneSidedPlanningBound": 0.0721575245055146,
+      "planningBoundNotMeasuredResult": true,
+      "intervalCaution": "one-sided exact binomial bound only if zero false accepts are later observed; clips sharing signer/word may be correlated; actual interval requires model results"
+    },
+    "unknown_test": {
+      "clips": 112,
+      "signers": 13,
+      "words": 111,
+      "perWordMinimum": 1,
+      "perWordMaximum": 2,
+      "oneFalseAcceptRate": 0.008928571428571428,
+      "zeroAcceptsUpper95OneSidedPlanningBound": 0.02639306042365297,
+      "planningBoundNotMeasuredResult": true,
+      "intervalCaution": "one-sided exact binomial bound only if zero false accepts are later observed; clips sharing signer/word may be correlated; actual interval requires model results"
+    }
+  },
+  "sharedUnknownWords": 1,
+  "selectionAndTestSignerOverlap": 0,
+  "signerDisjointPartitionVerified": true,
+  "sourceInputsUnchanged": true,
+  "dataHashes": {
+    "graph": "1e4a49374eca6feef9a8b18f05403fbac07fe4cb3afe8279dd84c1fc1aec9b21",
+    "legacy": "9b059c7118940a4f0e21ef5f7fde94068930fd6534f0adadddc9831e99269081"
+  },
+  "verification": {
+    "trainingLoadDataPassed": true,
+    "knownGraphAndLegacyArraysEqualPriorStudy": true,
+    "priorStudyHashesUnchanged": true,
+    "legacyTrainOnlyNormalizationReproduced": true,
+    "trained": false,
+    "testPredictionsPerformed": false
+  }
+}

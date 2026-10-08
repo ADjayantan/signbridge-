@@ -2,25 +2,39 @@
   "name": "signbridge",
   "version": "2.0.0",
   "private": true,
-  "description": "An AI assistant Deaf and blind people can talk to: sign to the camera or speak, and get answers in text or speech.",
+  "description": "Connect people through shared text, voice and live sign-language conversations.",
   "type": "module",
   "scripts": {
+    "predev": "node scripts/prepare-onnx-runtime.mjs",
+    "prebuild": "node scripts/prepare-onnx-runtime.mjs",
+    "prebuild:public": "node scripts/prepare-onnx-runtime.mjs",
     "dev": "vite",
     "build": "vite build",
+    "build:public": "node scripts/build-public.mjs",
+    "rooms": "node --env-file-if-exists=.env.local server/roomServer.js",
+    "start": "node server/roomServer.js",
     "preview": "vite preview",
-    "test": "node --test"
+    "test": "node --test",
+    "test:ui": "vitest run --config vitest.config.js",
+    "check": "npm run test && npm run test:ui && npm run build"
   },
   "dependencies": {
     "@mediapipe/tasks-vision": "1.0.1",
+    "onnxruntime-web": "1.30.0",
     "react": "^19.3.0",
-    "react-dom": "^19.3.0"
+    "react-dom": "^19.3.0",
+    "ws": "^8.22.0"
   },
   "devDependencies": {
+    "@testing-library/react": "^16.3.3",
     "@vitejs/plugin-react": "^6.1.1",
+    "fake-indexeddb": "^6.2.5",
+    "jsdom": "^30.1.1",
     "vite": "^8.3.1",
-    "vite-plugin-pwa": "^1.3.0"
+    "vite-plugin-pwa": "^1.3.0",
+    "vitest": "^5.0.3"
   },
   "engines": {
-    "node": "^20.19.0 || >=22.12.0"
+    "node": ">=22.12.0"
   }
 }

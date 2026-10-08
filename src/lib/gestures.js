@@ -34,12 +34,12 @@ export function gestureMap(saved) {
  * Which word (if any) the current frame shows. Taught signs win over built-in gestures.
  * → { label, source: "taught" | "gesture" | null, confidence }
  */
-export function decideSign(hands, aspect, classifier, gestures) {
+export function decideSign(hands, aspect, classifier, gestures, { minSignConfidence = MIN_SIGN_CONFIDENCE, minGestureScore = MIN_GESTURE_SCORE } = {}) {
   if (!hands.length) return { label: null, source: null, confidence: 0 };
 
   if (classifier?.size) {
     const p = classifier.predict(toFeatures(hands, aspect));
-    if (p?.label && p.confidence >= MIN_SIGN_CONFIDENCE) {
+    if (p?.label && p.confidence >= minSignConfidence) {
       return { label: p.label, source: "taught", confidence: p.confidence };
     }
   }
@@ -47,10 +47,11 @@ export function decideSign(hands, aspect, classifier, gestures) {
   let best = null;
   for (const hand of hands) {
     const g = hand.gesture;
-    if (g && g.name !== "None" && (!best || g.score > best.score)) best = g;
+    const mapped = g && gestures[g.name];
+    if (g && g.name !== "None" && mapped?.enabled && mapped.word && g.score >= minGestureScore && (!best || g.score > best.score)) best = g;
   }
   const mapped = best && gestures[best.name];
-  if (mapped?.enabled && mapped.word && best.score >= MIN_GESTURE_SCORE) {
+  if (mapped?.enabled && mapped.word && best.score >= minGestureScore) {
     return { label: mapped.word, source: "gesture", confidence: best.score };
   }
   return { label: null, source: null, confidence: 0 };

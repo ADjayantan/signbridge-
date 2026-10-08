@@ -95,4 +95,17 @@ describe("handsFromResult", () => {
     assert.deepEqual(handsFromResult({ landmarks: [] }), []);
     assert.deepEqual(handsFromResult(undefined), []);
   });
+
+  test("incomplete or nonfinite joints cannot enter hand features; invalid world landmarks fall back to image joints", () => {
+    const tracked = makeHand(handPixels(), { withWorld: false });
+    const other = makeHand(handPixels({ cx: 450 }), { side: "Left", withWorld: false });
+    const invalid = { ...tracked, landmarks: tracked.landmarks.map((point) => ({ ...point })) };
+    invalid.landmarks[20].x = NaN;
+    assert.deepEqual(handsFromResult({ landmarks: [invalid.landmarks, other.landmarks], handedness: [[], [{ categoryName: "Left", score: .9 }]] }).map((hand) => hand.handedness), ["Left"]);
+    close(toFeatures([invalid, other], ASPECT), toFeatures([other], ASPECT));
+    assert.deepEqual(toFeatures([{ landmarks: tracked.landmarks.slice(0, 20) }]), Array(FEATURE_SIZE).fill(0));
+    const world = tracked.landmarks.map((point) => ({ ...point })); world[9].z = Infinity;
+    close(toFeatures([{ ...tracked, world }], ASPECT), toFeatures([tracked], ASPECT));
+    assert.equal(handsFromResult({ landmarks: [tracked.landmarks], worldLandmarks: [world] })[0].world, null);
+  });
 });

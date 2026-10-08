@@ -1,0 +1,21 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "rooms",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "rooms"],
+      "port": 3001,
+      "autoPort": false,
+      "url": "http://127.0.0.1:3001"
+    },
+    {
+      "name": "web",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev", "--", "--host", "127.0.0.1", "--port", "5174", "--strictPort"],
+      "port": 5174,
+      "autoPort": false,
+      "url": "http://127.0.0.1:5174"
+    }
+  ]
+}

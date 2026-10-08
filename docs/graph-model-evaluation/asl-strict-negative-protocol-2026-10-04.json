@@ -1,0 +1,28 @@
+{
+  "format": "signbridge-strict-negative-protocol-v1",
+  "signLanguage": "asl",
+  "seed": 42,
+  "sourceHashes": {
+    "graph": "6b8c67eda358ebbf2c7154ce884f1205a9be73230b2a2694d3073c9304c5482f",
+    "legacy": "c67da34858718cd98d33a058fba9134739172d9dd946e9953f08c65b4252446a",
+    "graphMetadata": "57ed93aba374fb7590c48f47d00751ebf47f2c1fe75bc6e2d5a446fa0e48ba25",
+    "legacyMetadata": "5991f8564b9e83d5b643e6a5cd62639498a39607967db0ee6ba9383ae339d82e"
+  },
+  "knownAssignment": "unchanged: numeric-sorted signer IDs; PCG64 seed; first floor(N*.70) train, next floor(N*.15) validation, remainder test",
+  "negativePool": "original unknown_validation followed by unknown_test; each existing clip used at most once",
+  "knownSignerNegatives": "known validation signers -> unknown_validation; known test signers -> unknown_test; known training signers -> discard",
+  "extraSignerNegatives": "unknown-only nonnegative signer IDs sorted numeric int64; separate PCG64 shuffle with the same seed; first floor(N/2) validation, remainder test",
+  "missingSignerNegatives": "discard: cannot certify signer separation; no invented identity",
+  "clipOrder": "stable filter of pooled unknown_validation, unknown_test order",
+  "minimumNegativesPerHoldout": 20,
+  "availabilityRule": "fewer than 20 real negatives in either holdout -> unavailable; no NPZ datasets or manufactured samples",
+  "separationGate": "union known train, known validation, unknown validation signer IDs must be disjoint from union known test, unknown test signer IDs",
+  "selectionRule": "fixed known vocab, signer seed and negative assignment; no model predictions, threshold selection or performance-driven regrouping",
+  "uncertaintyRule": "report holdout size and binomial planning bounds separately; later evaluation must calculate intervals from actual accepts and disclose correlated clips",
+  "vocabularyLimit": "calibration and test may share unknown words; signer separation does not establish unseen-word or live-camera generalization",
+  "historicalExposure": "uses an already inspected historical corpus; never describe this as newly untouched recording-level test data",
+  "trained": false,
+  "accuracyMeasured": false,
+  "distribution": "local research only",
+  "recordedAt": "2026-10-04T16:47:08.690849+00:00"
+}

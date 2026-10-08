@@ -1,0 +1,24 @@
+.room-recognition-steps { padding-left: 1.3rem; font-size: .8rem; line-height: 1.65; color: var(--muted); margin: .8rem 0; }
+.room-recognition-steps li + li { margin-top: .35rem; }
+.room-recognition-steps strong { color: var(--text); }
+.room-recognition-vocabulary { border-top: 1px solid var(--border); margin-block: .8rem; }
+.room-recognition-vocabulary summary { cursor: pointer; padding-block: .6rem; min-height: 44px; font-size: .8rem; font-weight: 600; }
+.room-recognition-vocabulary p { max-height: 140px; overflow: auto; font-size: .75rem; line-height: 1.6; padding-bottom: .6rem; overflow-wrap: anywhere; }
+.room-tracking-preview { position: relative; max-width: 480px; margin: .8rem 0; padding: 0; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; background: var(--bg-soft); }
+.room-tracking-preview canvas { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: contain; max-height: 360px; }
+.room-tracking-preview.paused canvas { opacity: .45; }
+.room-tracking-preview figcaption { padding: .6rem .75rem; font-size: .7rem; color: var(--muted); border-top: 1px solid var(--border); }
+.room-tracking-readiness { padding: .75rem .85rem; margin-block: .8rem; border-left: 3px solid var(--warning); border-radius: 0 8px 8px 0; background: var(--bg-soft); font-size: .8rem; }
+.room-tracking-readiness.ready { border-color: var(--accent); }
+.room-tracking-readiness p { margin-top: .35rem; }
+.room-joint-counts { display: flex; flex-wrap: wrap; gap: .5rem .85rem; font-size: .8rem; margin-block: .6rem; }
+.room-joint-counts > span { padding: .4rem .6rem; border: 1px solid var(--border); border-radius: 6px; }
+.room-joint-legend { display: flex; flex-wrap: wrap; gap: .5rem .85rem; font-size: .75rem; }
+.room-joint-legend span { display: inline-flex; align-items: center; gap: .35rem; }
+.room-joint-legend i { width: .65rem; height: .65rem; border-radius: 50%; border: 1px solid var(--border); }
+.room-joint-numbers { display: flex; align-items: center; gap: .5rem; min-height: 44px; font-size: .8rem; margin-top: .25rem; cursor: pointer; }
+.room-joint-numbers input { width: 18px; height: 18px; accent-color: var(--accent); }
+.room-capture-progress { padding: .75rem .85rem; margin-top: .75rem; border: 1px solid var(--accent); border-radius: 8px; font-size: .8rem; }
+.room-capture-progress progress { display: block; width: 100%; margin-block: .5rem; accent-color: var(--accent); }
+.room-capture-progress p + p, .room-capture-quality p + p { margin-top: .4rem; }
+@media (max-width: 650px) { .room-tracking-preview { max-width: 100%; } .room-tracking-readiness, .room-capture-progress { padding: .65rem; } }

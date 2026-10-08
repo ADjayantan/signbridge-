@@ -6,8 +6,9 @@
 // wherever the hand is, however big it looks, and however it is rotated. Because orientation
 // still matters in sign language (thumb up vs thumb down), the hand's direction and palm
 // direction are added as separate, lighter features.
+import { HAND_JOINT_COUNT, isCompleteHandLandmarks } from "./handJoints.js";
 
-export const LANDMARKS = 21;
+export const LANDMARKS = HAND_JOINT_COUNT;
 const ORIENTATION_WEIGHT = 1;
 const HAND = 1 + LANDMARKS * 3 + 6; // presence + handshape (x, y, z per landmark) + orientation = 70
 const BETWEEN = 2 * HAND; // offset of the wrist-to-wrist vector
@@ -23,13 +24,14 @@ const length = (a) => Math.hypot(a[0], a[1], a[2]);
 /** GestureRecognizer result → [{ landmarks, world, handedness: "Left" | "Right", score, gesture }] */
 export function handsFromResult(result) {
   const hands = [];
-  const all = result?.landmarks || [];
+  const all = Array.isArray(result?.landmarks) ? result.landmarks : [];
   for (let i = 0; i < all.length; i++) {
+    if (!isCompleteHandLandmarks(all[i])) continue;
     const side = (result.handedness || result.handednesses)?.[i]?.[0];
     const gesture = result.gestures?.[i]?.[0];
     hands.push({
       landmarks: all[i],
-      world: result.worldLandmarks?.[i] || null,
+      world: isCompleteHandLandmarks(result.worldLandmarks?.[i]) ? result.worldLandmarks[i] : null,
       handedness: side?.categoryName === "Left" ? "Left" : "Right",
       score: side?.score ?? 0,
       gesture: gesture ? { name: gesture.categoryName, score: gesture.score } : null,
@@ -42,7 +44,7 @@ export function handsFromResult(result) {
 // If both get the same label, the second goes into the free slot.
 function assignSlots(hands) {
   const slots = [null, null];
-  const best = [...hands].sort((a, b) => b.score - a.score).slice(0, 2);
+  const best = (Array.isArray(hands) ? hands : []).filter((hand) => isCompleteHandLandmarks(hand?.landmarks)).sort((a, b) => b.score - a.score).slice(0, 2);
   for (const hand of best) {
     const want = hand.handedness === "Left" ? 1 : 0;
     if (!slots[want]) slots[want] = hand;
@@ -54,7 +56,7 @@ function assignSlots(hands) {
 // 3D points for one hand: MediaPipe's world landmarks (metres) when present, otherwise the
 // image landmarks with x and z scaled by the aspect ratio so all axes use the same unit.
 function points(hand, aspect) {
-  if (hand.world?.length === LANDMARKS) return hand.world.map((p) => [p.x, p.y, p.z]);
+  if (isCompleteHandLandmarks(hand.world)) return hand.world.map((p) => [p.x, p.y, p.z ?? 0]);
   return hand.landmarks.map((p) => [p.x * aspect, p.y, (p.z ?? 0) * aspect]);
 }
 
@@ -87,6 +89,7 @@ function writeHand(out, base, hand, aspect) {
  * @param aspect video width / height (used for image-space measurements).
  */
 export function toFeatures(hands, aspect = 4 / 3) {
+  if (!Number.isFinite(aspect) || aspect <= 0) aspect = 4 / 3;
   const out = Array.from({ length: FEATURE_SIZE }, () => 0);
   const slots = assignSlots(hands);
   slots.forEach((hand, slot) => {
