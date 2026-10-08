@@ -37,8 +37,29 @@ beforeEach(() => {
   mocks.room.sendAction = vi.fn().mockResolvedValue({ ok: true, id: "action_1" });
   mocks.room.pendingActions = [];
   mocks.media = { localVideoRef: { current: null }, remoteVideoRef: { current: null }, cameraOn: false, micOn: false, cameraStatus: "off", mediaStatus: "waiting", error: "", notice: "", remoteStream: null, localStream: null, enableCamera: vi.fn(), disableCamera: vi.fn(), enableMic: vi.fn(), disableMic: vi.fn(), retry: vi.fn(), stop: vi.fn(), forceRelay: false, setForceRelay: vi.fn(), remoteAudioEnabled: false, setRemoteAudioEnabled: vi.fn() };
+  Object.assign(mocks.media, { playbackBlocked: false, playbackError: "", retryRemotePlayback: vi.fn(), routeStatus: "unknown", checkVideoRoute: vi.fn() });
 });
 afterEach(cleanup);
+
+test("blocked partner playback exposes an explicit button without resending, reconnecting or enabling devices", () => {
+  const app = setup(); expect(screen.queryByRole("button", { name: "Play partner video/audio" })).toBeNull();
+  mocks.media = { ...mocks.media, playbackBlocked: true, playbackError: "Partner playback is paused. Choose Play partner video/audio to continue.", notice: "Video relay is unavailable." }; app.rerender(view());
+  const play = screen.getByRole("button", { name: "Play partner video/audio" }); expect(play.type).toBe("button"); expect(play.disabled).toBe(false);
+  fireEvent.click(play); expect(mocks.media.retryRemotePlayback).toHaveBeenCalledOnce(); expect(screen.getByText("Video relay is unavailable.")).toBeTruthy();
+  expect(mocks.media.retry).not.toHaveBeenCalled(); expect(mocks.media.enableCamera).not.toHaveBeenCalled(); expect(mocks.media.enableMic).not.toHaveBeenCalled(); expect(mocks.room.send).not.toHaveBeenCalled();
+  mocks.media = { ...mocks.media, playbackBlocked: false, playbackError: "" }; app.rerender(view()); expect(screen.queryByRole("button", { name: "Play partner video/audio" })).toBeNull();
+});
+
+test("video-route control requires a connected peer, shows only route labels, and pauses while checking", () => {
+  const app = setup(); const options = document.querySelector(".room-network-options"); fireEvent.click(options.querySelector("summary"));
+  let check = screen.getByRole("button", { name: "Check video route" }); expect(check.disabled).toBe(true); fireEvent.click(check); expect(mocks.media.checkVideoRoute).not.toHaveBeenCalled();
+  mocks.media = { ...mocks.media, mediaStatus: "connected" }; app.rerender(view()); check = screen.getByRole("button", { name: "Check video route" }); expect(check.disabled).toBe(false); fireEvent.click(check); expect(mocks.media.checkVideoRoute).toHaveBeenCalledOnce();
+  mocks.media = { ...mocks.media, routeStatus: "checking" }; app.rerender(view()); expect(screen.getByRole("button", { name: "Check video route" }).disabled).toBe(true); expect(screen.getByText("Checking the current video route…")).toBeTruthy();
+  for (const [routeStatus, label] of [["relay", "Relay is in use for the selected media connection."], ["direct", "Direct media connection; relay is not in use."], ["mixed", "Selected media connections use both relay and direct routes."], ["unknown", "Video route is not available yet. Connect, then check again."]]) {
+    mocks.media = { ...mocks.media, routeStatus }; app.rerender(view()); expect(screen.getByText(label)).toBeTruthy();
+  }
+  expect(screen.getByText("This checks the current connection route. It does not test video quality or sign recognition.")).toBeTruthy(); expect(mocks.room.send).not.toHaveBeenCalled(); expect(mocks.room.askAI).not.toHaveBeenCalled();
+});
 
 test("reviewed text fills an empty room draft once as editable English text, without an automatic send, AI or speech", async () => {
   const text = "  WATER\nPlease help me.  ", consumed = vi.fn();
