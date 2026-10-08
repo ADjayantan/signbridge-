@@ -2,6 +2,10 @@
 
 **Connect your way.** SignBridge brings two people into one conversation. Each person chooses **Type / Speak / Sign** input and **Text / Read aloud / Screen reader** output, with optional saved sign-video playback. Camera and microphone sharing start only when chosen. AI help is optional; human messages and live signing do not need a Gemini key or a recognition model.
 
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https%3A%2F%2Fgithub.com%2FADjayantan%2Fsignbridge-%2Ftree%2Fcodex%2Frender-pilot)
+
+The public pilot source is on [`codex/render-pilot`](https://github.com/ADjayantan/signbridge-/tree/codex/render-pilot). The shortcut uses the Free web-service blueprint; review it in your own Render account before creating the service. Automatic deployments are off, so source updates do not interrupt active rooms until you deliberately deploy. Render account connection, deployment and physical-device checks are still pending. See the [deployment guide](docs/conversations-deployment.md) and [local/cloud implementation plan](docs/parallel-implementation-plan-2026-10-08.md).
+
 ## Start a conversation
 
 1. Open Home → **Start conversation**, or `/#connect`, and set **Communication preferences** on your device.
@@ -12,7 +16,7 @@
 
 The latest 200 messages stay temporarily in server memory. Transport interruption preserves participant slots and the tab's draft; same-ID retries do not duplicate messages. **Leave room**, **End for both**, and opening a separate Tool end the conversation when the server can be reached. An offline exit releases this device’s media but cannot notify the partner; they can leave/end on their device. Reconnect before using End for both. Empty rooms expire after 30 minutes; server restarts also end them. Preferences are browser-local; drafts and room credentials use tab-scoped session storage.
 
-Software is implemented locally. **The Render service has not been created; private Metered setup and physical laptop/mobile tests on different networks are pending.** Automated media tests simulate devices/WebRTC. See [hand recognition activation and tracking feedback](docs/hand-recognition-2026-10-03.md), [conversation retest and fixes](docs/retest-2026-10-03.md), [initial workflow verification](docs/conversation-quality-verification-2026-10-03.md), [earlier conversation verification](docs/conversations-verification-2026-10-02.md), and [deployment and physical-device acceptance](docs/conversations-deployment.md).
+Software is implemented locally and the public pilot source has been pushed to GitHub. **Render deployment is not yet verified; private Metered setup and physical laptop/mobile tests on different networks are pending.** Automated media tests simulate devices/WebRTC. See [hand recognition activation and tracking feedback](docs/hand-recognition-2026-10-03.md), [conversation retest and fixes](docs/retest-2026-10-03.md), [initial workflow verification](docs/conversation-quality-verification-2026-10-03.md), [earlier conversation verification](docs/conversations-verification-2026-10-02.md), and [deployment and physical-device acceptance](docs/conversations-deployment.md).
 
 ## Clarify messages and review plans together
 

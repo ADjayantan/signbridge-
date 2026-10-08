@@ -28,7 +28,7 @@ The twelve-word ASL validation pilot failed every frozen release gate; BOOK/DRIN
 
 Freeze vocabulary, feature order, timing, normalization, signer groups, evaluation metrics and promotion thresholds before experiments. Separate signers between training, validation and a fresh final test. Compare temporal baselines and graph models under the same protocol. Report accepted-known precision, correct-known coverage, false acceptance of unknown/nonsigning input, per-word failures and measured device latency. High accuracy after rejecting almost everything is not useful communication.
 
-The external LSTM repository is a useful example of learning from ordered landmark frames, rather than thousands of raw images. Its original vocabulary has only three labels; its weights and feature representation do not match SignBridge. It is not a graph model or a ready conversational translator. Any later source reuse must retain the applicable MIT notice.
+The external LSTM repository is a useful example of learning from ordered landmark frames, rather than thousands of raw images. Its original notebooks have conflicting three-label lists without a bundled label manifest; its weights and feature representation do not match SignBridge. It is not a graph model or a ready conversational translator. See the [full source assessment](external-lstm-full-analysis-2026-10-08.md). Any later source reuse must retain the applicable MIT notice.
 
 **Gate:** the candidate passes the frozen signer-independent thresholds, browser/export parity checks and supervised live trials. State uncertainty and sample size. No threshold retuning on the final test, automatic promotion or public release after a validation improvement alone.
 
