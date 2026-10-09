@@ -23,3 +23,7 @@ Recognition accuracy remains unproven. Public builds still exclude private resea
 ## Verification
 
 Focused root word-workspace/freshness/graph-capture suites: 65 tests passed. Focused static-sign/live tools: 35 passed. Focused room capture/conversation suites: 77 passed. Integrated `npm run check`: 282 Node + 347 UI tests (629 total) and the regular build passed. The public build passed separately and excluded research weights. Actual AI answers and physical audio remain dependent on private configuration and device testing.
+
+Source commit `6460c123b96e66aae0e0ed112e845e39163348d2` was pushed to `codex/render-pilot`. Render deployment `dep-db4732nlot8c7381pmb0` reached **Deploy succeeded | Live** at 10:16:58 IST on 9 October. In the actual in-app browser, the existing PWA first offered **Update and reload**; applying it loaded the new `index-j1bVl2U-.js` bundle.
+
+With the camera off, a typed `HI` remained in the draft after checking AI setup. The screen showed **AI replies need setup**, with AI sending disabled. **Speak my message** produced browser playback-start and completion feedback while preserving `HI`. This verifies the deployed UI and browser speech callback flow, not an actual recognized HI, an audible result or a Gemini answer. Private screenshots remain in ignored local logs.
