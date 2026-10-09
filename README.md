@@ -217,7 +217,7 @@ Room Optional AI help uses the room server. Older AI tools use the Vite/Vercel f
 | `PORT` | `3001` locally | Standalone listener; leave Render's provided port unchanged |
 | `ROOM_ALLOWED_ORIGINS` | same host and localhost | Additional comma-separated frontend origins for room HTTP/WS access |
 | `METERED_DOMAIN` | unset | Account application hostname, e.g. `your-app.metered.live` |
-| `METERED_TURN_API_KEY` | unset | Private TURN REST API key; server only |
+| `METERED_TURN_API_KEY` | unset | Credential-scoped API key from TURN Server → Credentials → Get credential → Show API Key; kept server-side. Account Secret Key is not used. |
 | `VITE_ROOM_SERVER_URL` | same origin | Public HTTPS room-server origin for a separate frontend; rebuild after changing |
 | `GEMINI_API_KEY` | unset; optional | Server-only key for explicit AI help / AI tools |
 | `GEMINI_MODEL` | `gemini-3.5-flash-lite` | AI text model override |

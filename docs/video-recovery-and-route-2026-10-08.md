@@ -26,11 +26,13 @@ For forced-relay acceptance, both actual devices should enable **Require video r
 
 ## Private account step
 
-The live server currently reports relay unavailable. The [free Open Relay account](https://www.metered.ca/tools/openrelay/) provides the application domain and TURN REST API key needed by the existing backend. The Metered browser tab is at sign-in. The user must complete their private login/signup; passwords and API keys should not be pasted into chat.
+The live server currently reports relay unavailable. The [free Open Relay account](https://www.metered.ca/tools/openrelay/) provides the application domain and credential-scoped TURN API key needed by the existing backend. Use TURN Server → Credentials → Get credential → Show API Key, rather than the account Developers → Secret key. See [Metered authentication](https://www.metered.ca/docs/turn-rest-api/#authentication). The Metered browser tab is at sign-in. The user must complete their private login/signup; passwords and API keys should not be pasted into chat.
 
-The private Render service environment needs `METERED_DOMAIN` and `METERED_TURN_API_KEY`. These are server settings, never `VITE_*` values. Keep the current Free compute plan and do not create a second service. The server already authenticates ICE requests and keeps the master key out of browser responses. Account setup/configuration is separate from proving an actual different-network call.
+The private Render service environment needs `METERED_DOMAIN` and `METERED_TURN_API_KEY`. These are server settings, never `VITE_*` values. Keep the current Free compute plan and do not create a second service. The server already authenticates ICE requests and keeps the credential's API key out of browser responses. It returns the existing ICE username/password to authenticated peers; these are not automatically short-lived. Account setup/configuration is separate from proving an actual different-network call.
 
 Restart/deploy the existing Render service after saving these values. The backend reads its environment at startup. This ends rooms held in server memory, so create a fresh invite afterward.
+
+Setup wording corrected on **9 October 2026** after checking Metered's current primary documentation. A newly created credential may take up to two minutes to propagate; reconnect after that interval before recording a relay failure. The application does not create or rotate credentials. [Credential creation and propagation](https://www.metered.ca/docs/turn-server-service/creating-turn-credentials/).
 
 The existing [physical-device runbook](conversations-deployment.md#physical-two-device-acceptance) remains the acceptance checklist.
 
