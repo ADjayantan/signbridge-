@@ -7,9 +7,10 @@ export default function Home({ onPick, shell }) {
   const signWithAI = () => { onPick("trained-sign"); window.history.replaceState(null, "", "#trained-sign?with=ai"); };
   return <main className="home connect-home" aria-labelledby="home-title">
     <header className="brand"><span className="logo" aria-hidden="true">↔</span><div><p className="eyebrow">SignBridge</p><h1 id="home-title">Connect your way.</h1></div></header>
-    <p className="lede">Talk to another person using text, voice or live sign video. Choose how you send and receive messages.</p>
+    <p className="lede">Understand each other through signs, text and voice. Choose how you send a message and how you receive your partner’s reply.</p>
     <section className="home-conversation" aria-labelledby="home-conversation-title">
       <h2 id="home-conversation-title">Talk to someone</h2>
+      <p className="fine-print">Review a recognized sign, then send its text. Your partner can read and hear it, and reply by typing or speaking. Matching saved videos can show the reply in signs; unsupported signs and phrases need another way to communicate.</p>
       <div className="mode-cards">
         <button className="mode-card mode-sign" type="button" onClick={() => onPick("connect")}>
           <span className="mode-icon" aria-hidden="true">↗</span>
@@ -44,7 +45,7 @@ export default function Home({ onPick, shell }) {
       </div>
       <p className="shortcut-tip">Keyboard: <kbd>S</kbd> opens Sign to text &amp; voice. <kbd>V</kbd> opens Speak with AI.</p>
     </section>
-    <ul className="facts"><li><strong>Choose your output.</strong> Text, read aloud, sign video or screen reader. Change preferences while you talk.</li><li><strong>Sign with your partner.</strong> Share live camera video for ISL or ASL conversations.</li><li><strong>You control sharing.</strong> Camera and microphone start when you choose. AI help is optional.</li></ul>
+    <ul className="facts"><li><strong>Choose your output.</strong> Text, text + voice, saved sign video or screen reader. Change preferences while you talk.</li><li><strong>Sign with your partner.</strong> Share live camera video for ISL or ASL conversations.</li><li><strong>You control sharing.</strong> Camera and microphone start when you choose. AI help is optional.</li></ul>
     <details className="home-tools"><summary>More tools</summary><div className="actions">{[["training-studio", "Training Studio"], ["sign-videos", "Saved sign videos"], ["live-sign", "Experimental video practice"]].map(([mode, title]) => <button key={mode} className="btn btn-ghost btn-small" type="button" onClick={() => onPick(mode)}>{title}</button>)}</div><p className="fine-print">Practice, record your own examples or play saved sign videos.</p></details>
     {shell?.iosHint && <p className="shortcut-tip">Install on iPhone or iPad: tap <strong>Share</strong>, then <strong>Add to Home Screen</strong>.</p>}
   </main>;
