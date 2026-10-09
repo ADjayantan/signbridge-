@@ -28,7 +28,7 @@ function drawTrackingPreview(canvas, video, pose, showJointNumbers) {
 }
 
 // Recognition borrows the call's video. It never acquires or stops a media track.
-export default function RoomSignCapture({ videoRef, cameraStatus, signLanguage, onAppend, onActivityChange, onRead, canRead = false, speaking = false, onStopReading }) {
+export default function RoomSignCapture({ videoRef, cameraStatus, signLanguage, onAppend, addedToDraft, onActivityChange, onReviewChange, onRead, canRead = false, speaking = false, onStopReading }) {
   const [engine, setEngine] = useState("legacy");
   const trained = useWordRecognitionModel(signLanguage, engine);
   const [recognizing, setRecognizing] = useState(false);
@@ -37,6 +37,7 @@ export default function RoomSignCapture({ videoRef, cameraStatus, signLanguage, 
   const [elapsed, setElapsed] = useState(0);
   const [result, setResult] = useState(null);
   const [meaning, setMeaning] = useState("");
+  const [wordAdded, setWordAdded] = useState(false);
   const [quality, setQuality] = useState(null);
   const [error, setError] = useState("");
   const [framing, setFraming] = useState(null);
@@ -61,12 +62,13 @@ export default function RoomSignCapture({ videoRef, cameraStatus, signLanguage, 
   } });
   const cancel = () => { predictionEpoch.current++; trained.cancel(); active.current = false; frames.current = []; setCapturing(false); setRecognizing(false); setElapsed(0); setSampleCount(0); activity.current?.(false); };
   useEffect(() => {
-    cancel(); setResult(null); setMeaning(""); setQuality(null); setError(""); setFraming(null); setJoints({ left: 0, right: 0, total: 0 }); setStale(false); lastFrameAt.current = null;
+    cancel(); setResult(null); setMeaning(""); setWordAdded(false); setQuality(null); setError(""); setFraming(null); setJoints({ left: 0, right: 0, total: 0 }); setStale(false); lastFrameAt.current = null;
     return () => { predictionEpoch.current++; active.current = false; frames.current = []; activity.current?.(false); if (ownedReading.current) stopReading.current?.(); ownedReading.current = false; };
   }, [signLanguage, engine]);
   useEffect(() => {
     if ((active.current || recognizing) && (cameraStatus !== "on" || tracking.status === "error")) { cancel(); setError("Capture stopped. Reconnect the camera or tracking, then try again."); }
   }, [cameraStatus, tracking.status]);
+  useEffect(() => { if (addedToDraft === false) setWordAdded(false); }, [addedToDraft]);
   const pipelineReady = cameraStatus === "on" && tracking.status === "ready";
   const ready = pipelineReady && trained.status === "ready" && framing?.hands > 0 && framing.body && !stale && !recognizing;
   const readinessLabel = stale ? "Tracking frames paused" : ready ? "Ready to capture a word" : trained.status !== "ready" && framing?.hands ? `Hand joints detected · word model ${trained.status === "loading" ? "loading" : "unavailable"}` : "Check your framing";
@@ -79,7 +81,7 @@ export default function RoomSignCapture({ videoRef, cameraStatus, signLanguage, 
   const start = () => {
     if (!ready || active.current) return;
     predictionEpoch.current++; frames.current = []; started.current = performance.now(); active.current = true;
-    setCapturing(true); setElapsed(0); setSampleCount(0); setResult(null); setMeaning(""); setQuality(null); setError(""); activity.current?.(true);
+    setCapturing(true); setElapsed(0); setSampleCount(0); setResult(null); setMeaning(""); setWordAdded(false); setQuality(null); setError(""); activity.current?.(true);
   };
   const finish = () => {
     if (!active.current) return;
@@ -101,9 +103,10 @@ export default function RoomSignCapture({ videoRef, cameraStatus, signLanguage, 
     const timer = setInterval(() => { const ms = performance.now() - started.current; setElapsed(Math.min(ms, 12000)); if (ms >= 12000) finishRef.current(); }, 100);
     return () => clearInterval(timer);
   }, [capturing]);
+  const reviewWord = (value) => { setMeaning(value); setWordAdded(false); setError(""); onReviewChange?.(); };
   return <section className="room-recognition" aria-label="Local word recognition">
     <h3>Hand joints and word capture</h3>
-    <WordModelSelect value={engine} onChange={(next) => { cancel(); setEngine(next); }} />
+    <WordModelSelect value={engine} onChange={(next) => { cancel(); setWordAdded(false); onReviewChange?.(); setEngine(next); }} />
     {trained.status === "ready" && <WordVocabularyHelp key={`${engine}:${signLanguage}`} model={trained.model} signLanguage={signLanguage} engine={engine} disabled={capturing || recognizing} />}
     <p className="hint">Track 21 joints per hand: wrist and all five fingers. Detection runs on this device using your existing camera stream. Experimental {signLanguage.toUpperCase()} word recognition uses the movement over a complete capture; review its meaning before speaking or adding it.</p>
     <ol className="room-recognition-steps"><li>Choose a supported word and keep both shoulders and your signing hand in view.</li><li>Press <strong>Capture a word</strong>, sign the complete word, then press <strong>Finish sign</strong>.</li><li>Review or correct the result. Use <strong>Speak reviewed word</strong> for voice, or <strong>Add reviewed word to message</strong> to compose text. You still choose when to Send.</li></ol>
@@ -124,18 +127,19 @@ export default function RoomSignCapture({ videoRef, cameraStatus, signLanguage, 
       <div className="actions">{capturing ? <><button className="btn btn-primary" type="button" onClick={finish}>Finish sign · {(elapsed / 1000).toFixed(1)}s</button><button className="btn" type="button" onClick={cancel}>Cancel capture</button></> : <button className="btn" type="button" disabled={!ready} onClick={start}>Capture a word</button>}</div></>}
     {tracking.status === "error" && <p role="alert">{tracking.error} <button className="btn btn-small" type="button" onClick={tracking.retry}>Retry tracking</button></p>}
     {result && <div className="room-word-review"><strong>{result.status === "recognized" ? "Tentative word — check the meaning" : "No reliable word match"}</strong><p className="hint">{result.feedback}</p>
+      <p className="hint">{wordAdded ? "Added to your partner message draft. Review the message above, then choose Send to partner." : onRead && canRead ? "Check the word below. Choose Speak reviewed word to hear it on this device, or Add reviewed word to message to prepare it for your partner. Capture alone does not send a message or request an AI reply." : "Check or type the word below, then choose Add reviewed word to message to prepare it for your partner. Capture alone does not send a message or request an AI reply."}</p>
       <SignRecognitionDetails result={result} captureQuality={quality} />
-      {result.candidates?.length > 0 && <div className="actions">{result.candidates.map((candidate) => <button className="btn btn-small" key={candidate.label || candidate.meaning} type="button" onClick={() => setMeaning(candidate.label || candidate.meaning)}>{candidate.label || candidate.meaning}</button>)}</div>}
-      <label className="field">Review or correct the word<input value={meaning} maxLength={2000} onChange={(event) => setMeaning(event.target.value)} /></label>
+      {result.candidates?.length > 0 && <div className="actions">{result.candidates.map((candidate) => <button className="btn btn-small" key={candidate.label || candidate.meaning} type="button" onClick={() => reviewWord(candidate.label || candidate.meaning)}>{candidate.label || candidate.meaning}</button>)}</div>}
+      <label className="field">Review or correct the word<input value={meaning} maxLength={2000} onChange={(event) => reviewWord(event.target.value)} /></label>
       {onRead && (canRead ? <div className="actions"><button className="btn" type="button" disabled={!meaning.trim() || speaking} onClick={() => {
         ownedReading.current = true;
         void Promise.resolve(onRead({ text: meaning.trim(), lang: "en" })).finally(() => { ownedReading.current = false; });
       }}>Speak reviewed word</button>{speaking && <button className="btn" type="button" onClick={onStopReading}>Stop word playback</button>}</div> : <p className="hint">Read aloud is unavailable in this browser. You can add the reviewed word as text.</p>)}
       <button className="btn btn-primary" type="button" disabled={!meaning.trim()} onClick={() => {
         if (onAppend({ text: meaning.trim(), lang: "en", inputMethod: "sign", signLanguage }) === false) {
-          setError("Your message is full. Shorten it, then add this reviewed word again."); return;
+          setWordAdded(false); setError("Your message is full. Shorten it, then add this reviewed word again."); return;
         }
-        setMeaning(""); setError("");
+        setMeaning(""); setWordAdded(true); setError("");
       }}>Add reviewed word to message</button>
       {quality && <div className="room-capture-quality"><p className="fine-print">{quality.count} pose samples · hands visible in {quality.handFrames} samples. Framing describes tracking, not signing accuracy.</p>{quality.hints.map((hint) => <p key={hint} className="hint">{hint}</p>)}</div>}
     </div>}

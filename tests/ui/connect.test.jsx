@@ -152,14 +152,51 @@ test("a reviewed sign that exceeds the message limit is rejected without changin
   setup({ inputMethod: "sign" }); write("x".repeat(1995));
   fireEvent.click(screen.getByRole("switch", { name: "Enable hand-joint tracking and word recognition" }));
   const word = { text: "THANK YOU", lang: "en", inputMethod: "sign", signLanguage: "isl" };
+  const scroll = vi.fn(); draft().scrollIntoView = scroll;
+  const action = screen.getByRole("button", { name: "Add reviewed test sign" }); action.focus();
   let accepted;
   act(() => { accepted = mocks.captureProps.onAppend(word); });
   expect(accepted).toBe(false); expect(draft().value).toBe("x".repeat(1995));
   expect(screen.getByRole("alert").textContent).toMatch(/2,000 characters/);
+  expect(document.activeElement).toBe(action); expect(scroll).not.toHaveBeenCalled();
+  expect(screen.queryByText(/Reviewed sign added to your draft/)).toBeNull();
   write("Hello"); act(() => { accepted = mocks.captureProps.onAppend(word); });
   expect(accepted).toBe(true); expect(draft().value).toBe("Hello THANK YOU");
+  expect(document.activeElement).toBe(draft()); expect(scroll).toHaveBeenCalledWith({ block: "center" });
+  expect(screen.getByText(/Reviewed sign added to your draft/)).toBeTruthy();
   expect(JSON.parse(sessionStorage.getItem("signbridge:conversation-draft"))).toMatchObject({ inputMethod: "sign", signLanguage: "isl" });
   expect(mocks.room.send).not.toHaveBeenCalled();
+});
+
+test("adding a reviewed sign focuses its draft and explains the explicit send; review edits, captures and sending clear the old feedback", async () => {
+  setup({ inputMethod: "sign", receive: "speech" });
+  fireEvent.click(screen.getByRole("switch", { name: "Enable hand-joint tracking and word recognition" }));
+  fireEvent.click(screen.getByRole("button", { name: "Add reviewed test sign" }));
+  expect(document.activeElement).toBe(draft());
+  expect(screen.getByText(/Check the message, then choose Send to partner.*Nothing has been sent yet/)).toBeTruthy();
+  expect(draft().getAttribute("aria-describedby")).toBe("room-sign-added");
+  expect(mocks.room.send).not.toHaveBeenCalled(); expect(mocks.room.askAI).not.toHaveBeenCalled(); expect(mocks.speaker.speak).not.toHaveBeenCalled();
+  act(() => mocks.captureProps.onReviewChange()); expect(screen.queryByText(/Reviewed sign added to your draft/)).toBeNull();
+  fireEvent.click(screen.getByRole("button", { name: "Add reviewed test sign" }));
+  act(() => mocks.captureProps.onActivityChange(true)); expect(screen.queryByText(/Reviewed sign added to your draft/)).toBeNull();
+  act(() => mocks.captureProps.onActivityChange(false));
+  fireEvent.click(screen.getByRole("button", { name: "Add reviewed test sign" }));
+  write("Edited reviewed message"); expect(screen.queryByText(/Reviewed sign added to your draft/)).toBeNull();
+  expect(draft().getAttribute("aria-describedby")).toBeNull();
+  fireEvent.click(screen.getByRole("button", { name: "Add reviewed test sign" }));
+  await act(async () => send());
+  expect(screen.queryByText(/Reviewed sign added to your draft/)).toBeNull(); expect(mocks.captureProps.addedToDraft).toBe(false);
+  expect(draft().value).toBe(""); expect(mocks.room.send).toHaveBeenCalledOnce();
+});
+
+test("a reviewed sign can be kept locally during reconnection without implying delivery or reading its own message", () => {
+  mocks.room.status = "reconnecting"; setup({ inputMethod: "sign", receive: "speech" });
+  fireEvent.click(screen.getByRole("switch", { name: "Enable hand-joint tracking and word recognition" }));
+  fireEvent.click(screen.getByRole("button", { name: "Add reviewed test sign" }));
+  expect(draft().value).toBe("THANK YOU"); expect(document.activeElement).toBe(draft());
+  expect(screen.getByText(/Your draft is kept. Reconnect before sending/)).toBeTruthy();
+  expect(screen.getByRole("button", { name: "Send to partner" }).disabled).toBe(true);
+  expect(mocks.room.send).not.toHaveBeenCalled(); expect(mocks.room.askAI).not.toHaveBeenCalled(); expect(mocks.speaker.speak).not.toHaveBeenCalled();
 });
 
 test("changing input/output and sign language preserves conversation history and the unsent draft", () => {

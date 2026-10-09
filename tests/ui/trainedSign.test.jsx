@@ -211,6 +211,87 @@ test("a dense complete capture bounds pose samples without losing their order", 
 const message = () => screen.getByLabelText("Review or edit your message");
 const aiSetup = async () => { mocks.check.mockResolvedValue({ configured: true }); setup(); openDisclosure("AI replies (optional)"); await act(async () => {}); };
 
+test("a recognized greeting needs one explicit word confirmation for an AI reply without an empty-draft dead end", async () => {
+  mocks.predict.mockReturnValue({ status: "recognized", meaning: "HELLO", feedback: "Check the greeting" });
+  await aiSetup(); capture(); click(/^Finish sign/);
+  expect(screen.getByLabelText("Review or correct the word").value).toBe("HELLO");
+  expect(message().value).toBe(""); expect(mocks.ask).not.toHaveBeenCalled();
+  expect(button("Confirm word & get AI reply").disabled).toBe(false);
+  click("Confirm word & get AI reply"); await act(async () => {});
+  expect(mocks.ask).toHaveBeenCalledOnce();
+  expect(mocks.ask.mock.calls[0][0].messages.at(-1).text).toBe("Typed: HELLO");
+  expect(screen.getByText("I can help you.")).toBeTruthy();
+  expect(screen.getByLabelText("Review or correct the word").value).toBe("");
+  expect(document.activeElement).toBe(screen.getByRole("heading", { name: "AI conversation" }));
+  expect(mocks.speak).not.toHaveBeenCalled();
+});
+
+test("a longer draft must be reviewed as a whole rather than discarded by the word reply action", async () => {
+  await aiSetup(); fireEvent.change(message(), { target: { value: "Please explain" } });
+  capture(); click(/^Finish sign/);
+  expect(screen.queryByRole("button", { name: "Confirm word & get AI reply" })).toBeNull();
+  click("Add word to message"); expect(message().value).toBe("Please explain WATER");
+  click("Send reviewed message"); await act(async () => {});
+  expect(mocks.ask.mock.calls[0][0].messages.at(-1).text).toBe("Typed: Please explain WATER");
+});
+
+test("failed word replies retain the reviewed greeting for an explicit retry", async () => {
+  mocks.ask.mockRejectedValueOnce(new Error("AI connection interrupted"));
+  await aiSetup(); capture(); click(/^Finish sign/);
+  click("Confirm word & get AI reply"); await act(async () => {});
+  expect(screen.getByLabelText("Review or correct the word").value).toBe("WATER");
+  expect(button("Confirm word & get AI reply").disabled).toBe(false);
+  expect(screen.getAllByText("AI connection interrupted").length).toBeGreaterThan(0);
+  expect(mocks.ask).toHaveBeenCalledOnce();
+});
+
+test("a missing key is not advertised as available room AI and local word speech remains usable", async () => {
+  mocks.check.mockResolvedValue({ configured: false, roomAuthRequired: true });
+  setup({}, { initialDestination: "ai" }); await act(async () => {});
+  capture(); click(/^Finish sign/);
+  expect(screen.getByText("AI replies need setup")).toBeTruthy();
+  expect(screen.queryByText("AI help is available inside rooms")).toBeNull();
+  expect(screen.getByText(/AI cannot reply yet: the server has no Gemini key configured/)).toBeTruthy();
+  expect(button("Confirm word & get AI reply").disabled).toBe(true);
+  click("Confirm word & get AI reply"); expect(mocks.ask).not.toHaveBeenCalled();
+  click("Speak this word"); await act(async () => {});
+  expect(mocks.speak).toHaveBeenCalledWith("WATER", expect.objectContaining({ lang: "en-IN" }));
+});
+
+test("speech errors explain silence and retain both the reviewed word and draft", async () => {
+  mocks.speak.mockResolvedValueOnce({ status: "error", error: "Speech playback was blocked. Press Speak again." });
+  setup(); capture(); click(/^Finish sign/);
+  fireEvent.change(message(), { target: { value: "Please help" } });
+  click("Speak this word"); await act(async () => {});
+  expect(screen.getByRole("alert").textContent).toContain("Speech playback was blocked");
+  expect(screen.getByLabelText("Review or correct the word").value).toBe("WATER");
+  expect(message().value).toBe("Please help"); expect(mocks.ask).not.toHaveBeenCalled();
+});
+
+test("stopping speech suppresses a late start or error from the old utterance", async () => {
+  let settle;
+  mocks.speak.mockImplementationOnce(() => new Promise(resolve => { settle = resolve; }));
+  setup(); capture(); click(/^Finish sign/); click("Speak this word");
+  const options = mocks.speak.mock.calls.at(-1)[1];
+  expect(screen.getByLabelText("Voice playback status").textContent).toBe("Starting voice playback…");
+  click("Stop speech");
+  await act(async () => { options.onStart(); settle({ status: "error", error: "Late blocked voice" }); });
+  expect(screen.queryByLabelText("Voice playback status")).toBeNull();
+  expect(screen.queryByText(/Late blocked voice/)).toBeNull();
+  expect(screen.getByLabelText("Review or correct the word").value).toBe("WATER");
+});
+
+test("actual speech start and completion provide feedback without fabricating an AI response", async () => {
+  let settle;
+  mocks.speak.mockImplementationOnce(() => new Promise(resolve => { settle = resolve; }));
+  setup(); capture(); click(/^Finish sign/); click("Speak this word");
+  act(() => mocks.speak.mock.calls.at(-1)[1].onStart());
+  expect(screen.getByLabelText("Voice playback status").textContent).toBe("Speaking: WATER");
+  await act(async () => settle({ status: "ended" }));
+  expect(screen.getByLabelText("Voice playback status").textContent).toContain("Voice playback finished");
+  expect(mocks.ask).not.toHaveBeenCalled();
+});
+
 test("local purpose is the default and changing to AI preserves the camera, reviewed word and draft without sending", async () => {
   mocks.check.mockResolvedValue({ configured: true });
   setup(); capture(); click(/^Finish sign/);

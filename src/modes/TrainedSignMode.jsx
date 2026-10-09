@@ -44,6 +44,9 @@ export default function TrainedSignMode({ settings, update, onBack, onLive, onLi
   const [showJointNumbers, setShowJointNumbers] = useState(false);
   const [speakResults, setSpeakResults] = useState(false);
   const [speaker] = useState(createSpeaker);
+  const [speechFeedback, setSpeechFeedback] = useState("");
+  const [speechError, setSpeechError] = useState("");
+  const playbackEpoch = useRef(0);
   const [ai, setAI] = useState("checking");
   const [checkAttempt, setCheckAttempt] = useState(0);
   const [sampleSession, setSampleSession] = useState(newSessionCode);
@@ -56,6 +59,27 @@ export default function TrainedSignMode({ settings, update, onBack, onLive, onLi
   const canvas = useRef(null);
   const cameraHeading = useRef(null), resultHeading = useRef(null), messageInput = useRef(null);
   const aiOptions = useRef(null);
+  const aiReplyHeading = useRef(null);
+  const stopLocalSpeech = () => { playbackEpoch.current++; speaker.cancel(); setSpeechFeedback(""); setSpeechError(""); };
+  const speakLocal = (text) => {
+    const value = text.trim();
+    if (!value) return;
+    stopLocalSpeech(); session.stopSpeech();
+    const owner = playbackEpoch.current;
+    setSpeechFeedback("Starting voice playback…");
+    const done = (outcome) => {
+      if (owner !== playbackEpoch.current) return;
+      if (outcome?.status === "error") {
+        setSpeechFeedback("");
+        setSpeechError(outcome.error || "Voice playback failed. Check sound and browser permissions, then press Speak again.");
+      } else setSpeechFeedback(outcome?.status === "ended" ? "Voice playback finished. Your text is still available." : "");
+    };
+    try {
+      void Promise.resolve(speaker.speak(value, { lang: "en-IN", rate: settings.rate,
+        onStart: () => { if (owner === playbackEpoch.current) setSpeechFeedback(`Speaking: ${value}`); },
+      })).then(done, () => done({ status: "error" }));
+    } catch { done({ status: "error" }); }
+  };
   const showSection = (ref) => { ref.current?.focus({ preventScroll: true }); ref.current?.scrollIntoView?.({ block: "nearest" }); };
   const thinking = session.phase === "thinking";
   const busy = phase === "capturing" || phase === "recognizing" || thinking || saving;
@@ -108,23 +132,23 @@ export default function TrainedSignMode({ settings, update, onBack, onLive, onLi
   useEffect(() => {
     document.title = "Sign to text & voice · SignBridge";
     document.getElementById("trained-sign-title")?.focus();
-    return () => { reviewEpoch.current++; capture.current = false; frames.current = []; reviewedFrames.current = []; speaker.cancel(); };
+    return () => { reviewEpoch.current++; playbackEpoch.current++; capture.current = false; frames.current = []; reviewedFrames.current = []; speaker.cancel(); };
   }, [speaker]);
   useEffect(() => { if (result && phase === "review") showSection(resultHeading); }, [result, phase]);
   useEffect(() => { if (initialDestination === "ai" && aiOptions.current) aiOptions.current.open = true; }, []);
   useEffect(() => {
     const controller = new AbortController(); setAI("checking");
-    checkSignAI({ signal: controller.signal }).then((data) => { if (!controller.signal.aborted) setAI(data.roomAuthRequired ? "room-only" : data.configured ? "configured" : "missing"); })
+    checkSignAI({ signal: controller.signal }).then((data) => { if (!controller.signal.aborted) setAI(!data.configured ? "missing" : data.roomAuthRequired ? "room-only" : "configured"); })
       .catch(() => { if (!controller.signal.aborted) setAI("unavailable"); });
     return () => controller.abort();
   }, [checkAttempt]);
   const clearReview = () => {
     reviewEpoch.current++; reviewedFrames.current = []; setResult(null); setQuality(null); setMeaning(""); setTrainingLabel(""); setWordAdded(false);
   };
-  const cancel = () => { reviewEpoch.current++; trained.cancel(); capture.current = false; frames.current = []; setPhase("ready"); setElapsed(0); speaker.cancel(); };
+  const cancel = () => { reviewEpoch.current++; trained.cancel(); capture.current = false; frames.current = []; setPhase("ready"); setElapsed(0); stopLocalSpeech(); };
   const start = () => {
     if (!ready || capture.current || busy || freshFrames.current.lastAt === null || performance.now() - freshFrames.current.lastAt >= 2000 || !freshFrames.current.framing?.hands || !freshFrames.current.framing.body) return;
-    speaker.cancel(); session.stopSpeech(); clearReview(); frames.current = []; capture.current = true; started.current = performance.now();
+    stopLocalSpeech(); session.stopSpeech(); clearReview(); frames.current = []; capture.current = true; started.current = performance.now();
     setError(""); setElapsed(0); setPhase("capturing");
   };
   const finish = () => {
@@ -137,7 +161,7 @@ export default function TrainedSignMode({ settings, update, onBack, onLive, onLi
     const commit = (next) => {
       if (epoch !== reviewEpoch.current) return;
       reviewedFrames.current = sequence; setResult(next); setMeaning(next.meaning); setTrainingLabel(next.meaning); setPhase("review");
-      if (engine === "legacy" && next.status === "recognized" && speakResults && canSpeak) speaker.speak(next.meaning, { lang: "en-IN", rate: settings.rate });
+      if (engine === "legacy" && next.status === "recognized" && speakResults && canSpeak) speakLocal(next.meaning);
     };
     const fail = (cause) => { if (epoch !== reviewEpoch.current) return; reviewedFrames.current = []; if (cause?.name !== "AbortError") setError("Could not read this turn. Check the framing and sign again."); setPhase("ready"); };
     try {
@@ -175,7 +199,7 @@ export default function TrainedSignMode({ settings, update, onBack, onLive, onLi
   const end = () => { cancel(); clearReview(); compose({ type: "clear" }); session.end(); setCameraOn(false); setSampleSession(newSessionCode()); };
   const newConversation = () => { cancel(); clearReview(); compose({ type: "clear" }); session.newConversation(); };
   const append = () => { if (!canAppend) return; compose({ type: "append", text: meaning }); setMeaning(""); setWordAdded(true); showSection(messageInput); };
-  const reviewWord = (value) => { setMeaning(value); setTrainingLabel(value); setWordAdded(false); };
+  const reviewWord = (value) => { stopLocalSpeech(); setMeaning(value); setTrainingLabel(value); setWordAdded(false); };
   const chooseDestination = (next) => {
     if (next === "local") {
       if (thinking) session.interrupt();
@@ -184,13 +208,18 @@ export default function TrainedSignMode({ settings, update, onBack, onLive, onLi
     setDestination(next);
     if (aiOptions.current) aiOptions.current.open = next === "ai";
   };
-  const send = async (event) => {
-    event.preventDefault();
-    if (destination !== "ai" || busy || ai !== "configured" || !draft.text.trim()) return;
+  const sendReviewed = async (text, fromWord = false) => {
+    const value = text.trim();
+    if (destination !== "ai" || busy || ai !== "configured" || !value) return;
+    stopLocalSpeech();
     if (!session.active) session.start();
-    const sent = await session.send(draft.text, { signed: true });
-    if (sent?.ok) compose({ type: "clear" });
+    const sent = await session.send(value, { signed: true });
+    if (sent?.ok) {
+      if (fromWord) { setMeaning(""); setWordAdded(true); showSection(aiReplyHeading); }
+      else compose({ type: "clear" });
+    }
   };
+  const send = (event) => { event.preventDefault(); return sendReviewed(draft.text); };
 
   return <main className="mode live-sign-mode sign-workspace" aria-labelledby="trained-sign-title">
     <TopBar title="Sign to text & voice" titleId="trained-sign-title" onBack={onBack} />
@@ -240,21 +269,29 @@ export default function TrainedSignMode({ settings, update, onBack, onLive, onLi
         <h2 id="workspace-result-heading" ref={resultHeading} tabIndex={-1} className="workspace-step-heading"><span>2</span> Check the result</h2>
         {!result ? <div className="workspace-result-empty"><strong>Your word appears here after Finish sign.</strong><p>You can also type your message in step 3, without using the camera.</p></div> : <>
           <div className={"live-interpretation " + result.status}><span className="fine-print">{result.status === "recognized" ? "Tentative word — check the meaning" : "You can retry or type the meaning"}</span><strong>{result.status === "recognized" ? result.meaning : result.status === "no_sign" ? "Could not read this capture" : "No reliable word match"}</strong><p>{result.feedback}</p></div>
-          <div className="live-meaning-form"><label htmlFor="trained-meaning">Review or correct the word</label><input id="trained-meaning" value={meaning} disabled={busy} maxLength={80} onChange={(e) => reviewWord(e.target.value)} /><div className="actions"><button type="button" className="btn btn-primary" disabled={!canAppend} onClick={append}>Add word to message</button><button type="button" className="btn" disabled={!canSpeak || !meaning.trim() || busy} onClick={() => speaker.speak(meaning.trim(), { lang: "en-IN", rate: settings.rate })}>Speak this word</button></div><p className="fine-print">Correcting or choosing a word is your review, not proof that the model recognized it.</p></div>
+          <div className="live-meaning-form"><label htmlFor="trained-meaning">Review or correct the word</label><input id="trained-meaning" value={meaning} disabled={busy} maxLength={80} onChange={(e) => reviewWord(e.target.value)} />
+            <p className="hint" role="status" aria-label="Next action after sign recognition">{wordAdded ? "Word used. You can capture another sign or review your message below." : destination === "ai" ? "Check the word first. Confirm it below to ask AI, or add it to a longer message." : "Check the word, then press Speak this word to hear it on this device, or Add word to message. Recognition alone does not send a message or get an AI reply."}</p>
+            <div className="actions"><button type="button" className="btn btn-primary" disabled={!canAppend} onClick={append}>Add word to message</button><button type="button" className="btn" disabled={!canSpeak || !meaning.trim() || busy} onClick={() => speakLocal(meaning)}>Speak this word</button>
+              {destination === "ai" && !draft.text.trim() && <button type="button" className="btn btn-primary" disabled={busy || !meaning.trim() || ai !== "configured"} onClick={() => void sendReviewed(meaning, true)}>Confirm word &amp; get AI reply</button>}
+            </div>
+            {destination === "ai" && ai !== "configured" && <p className="notice" role="status">{ai === "missing" ? "AI cannot reply yet: the server has no Gemini key configured. You can still speak the reviewed word without AI." : ai === "room-only" ? "AI on this server requires a conversation room. Open Talk to a partner, then use Optional AI help." : ai === "checking" ? "Checking whether AI replies are ready…" : "AI replies are unavailable. Check the server connection or speak the reviewed word locally."}</p>}
+            <p className="fine-print">Correcting or choosing a word is your review, not proof that the model recognized it.</p></div>
           <details className="workspace-disclosure workspace-more-result"><summary>More result options</summary>
             {result.candidates?.length > 0 && <div className="workspace-candidates"><p className="fine-print">Tentative suggestions. Choose only if this is the word you signed.</p><div className="actions">{result.candidates.map((candidate) => <button type="button" className="btn btn-small" key={candidate.label} disabled={busy} onClick={() => reviewWord(candidate.label)}>Choose {candidate.label}</button>)}<button type="button" className="btn btn-ghost btn-small" disabled={busy} onClick={() => reviewWord("")}>None of these</button></div></div>}
             <SignRecognitionDetails result={result} captureQuality={quality} />
             <TrainingSampleForm key={reviewEpoch.current} frames={reviewedFrames.current} result={result} signLanguage={settings.signLanguage} sessionCode={sampleSession} signerCode={sampleSigner} onSignerChange={setSampleSigner} label={trainingLabel} onLabelChange={setTrainingLabel} busy={busy} onSaving={setSaving} />
           </details>
         </>}
-        <div className="workspace-composer"><div className="workspace-section-heading"><h2 className="workspace-step-heading"><span>3</span> Your text & voice</h2><span>{draft.text.length}/2000</span></div><label htmlFor="trained-message">Review or edit your message</label><textarea id="trained-message" ref={messageInput} rows={3} maxLength={2000} value={draft.text} disabled={busy} placeholder="Type here, or add a reviewed word…" onChange={(e) => compose({ type: "edit", text: e.target.value })} /><div className="actions">{canSpeak && <button type="button" className="btn btn-primary" disabled={busy || !draft.text.trim()} onClick={() => speaker.speak(draft.text.trim(), { lang: "en-IN", rate: settings.rate })}>Speak my message</button>}{canSpeak && <button type="button" className="btn btn-ghost btn-small" onClick={() => { speaker.cancel(); session.stopSpeech(); }}>Stop speech</button>}<button type="button" className="btn btn-small" disabled={busy || !draft.history.length} onClick={() => compose({ type: "undo" })}>Undo last edit</button><button type="button" className="btn btn-ghost btn-small" disabled={busy || !draft.text} onClick={() => compose({ type: "clear" })}>Clear message</button></div><p className="fine-print">Typing and local speech need no AI key. Word labels and speech are in English.</p>{!canSpeak && <p className="hint">Voice output is unavailable in this browser. Your text remains usable.</p>}</div>
+        <div className="workspace-composer"><div className="workspace-section-heading"><h2 className="workspace-step-heading"><span>3</span> Your text & voice</h2><span>{draft.text.length}/2000</span></div><label htmlFor="trained-message">Review or edit your message</label><textarea id="trained-message" ref={messageInput} rows={3} maxLength={2000} value={draft.text} disabled={busy} placeholder="Type here, or add a reviewed word…" onChange={(e) => compose({ type: "edit", text: e.target.value })} /><div className="actions">{canSpeak && <button type="button" className="btn btn-primary" disabled={busy || !draft.text.trim()} onClick={() => speakLocal(draft.text)}>Speak my message</button>}{canSpeak && <button type="button" className="btn btn-ghost btn-small" onClick={() => { stopLocalSpeech(); session.stopSpeech(); }}>Stop speech</button>}<button type="button" className="btn btn-small" disabled={busy || !draft.history.length} onClick={() => compose({ type: "undo" })}>Undo last edit</button><button type="button" className="btn btn-ghost btn-small" disabled={busy || !draft.text} onClick={() => compose({ type: "clear" })}>Clear message</button></div><p className="fine-print">Typing and local speech need no AI key. Word labels and speech are in English.</p>{!canSpeak && <p className="hint">Voice output is unavailable in this browser. Your text remains usable.</p>}</div>
+        {speechFeedback && <p className="notice" role="status" aria-label="Voice playback status">{speechFeedback}</p>}
+        {speechError && <p className="notice error" role="alert">{speechError} Your reviewed text is still available.</p>}
         <details className="workspace-disclosure workspace-ai-options" ref={aiOptions} onToggle={(event) => { if (event.currentTarget.open) setDestination("ai"); }}><summary onClick={() => { if (!aiOptions.current?.open) setDestination("ai"); }}>AI replies (optional)</summary>
           <p className="hint">Ask AI about the reviewed message above. Only that text is sent when you press Send.</p>
           <LanguageSelect value={settings.lang} onChange={(lang) => update({ lang })} id="workspace-reply-language" />
           <p className="fine-print">Changing the reply language stops the camera and clears this page’s draft, results and AI conversation.</p>
           <form className="workspace-ai-send" onSubmit={send}><button type="submit" className="btn" disabled={destination !== "ai" || busy || !draft.text.trim() || ai !== "configured"}>Send reviewed message</button></form>
-          {ai !== "configured" && <aside className="workspace-ai-status notice" aria-label="AI setup"><strong>{ai === "room-only" ? "AI help is available inside rooms" : ai === "checking" ? "Checking AI setup…" : ai === "missing" ? "AI replies need setup" : "AI server unavailable"}</strong><p>Local recognition, message editing and speech work without an AI key. {ai === "room-only" ? "Open Connect from Home for optional AI draft help. This tool’s AI replies are available on the laptop’s development server." : ai === "missing" ? "Add GEMINI_API_KEY to .env.local and restart the server to enable replies." : "Replies need the server and an internet connection."}</p><button type="button" className="btn btn-small" disabled={ai === "checking"} onClick={() => setCheckAttempt((n) => n + 1)}>Check AI setup again</button></aside>}
-          <div className="workspace-section-heading"><h3 className="panel-title">AI conversation</h3><button type="button" className="btn btn-ghost btn-small" disabled={saving} onClick={newConversation}>New conversation</button></div>
+          {ai !== "configured" && <aside className="workspace-ai-status notice" aria-label="AI setup"><strong>{ai === "room-only" ? "AI help is available inside rooms" : ai === "checking" ? "Checking AI setup…" : ai === "missing" ? "AI replies need setup" : "AI server unavailable"}</strong><p>Local recognition, message editing and speech work without an AI key. {ai === "room-only" ? "Open Connect from Home for optional AI draft help. This tool’s AI replies are available on the laptop’s development server." : ai === "missing" ? "Set GEMINI_API_KEY privately in the server environment, then restart it. On Render use the existing service’s Environment page; locally use .env.local. Public hosting also requires a room for AI help." : "Replies need the server and an internet connection."}</p><button type="button" className="btn btn-small" disabled={ai === "checking"} onClick={() => setCheckAttempt((n) => n + 1)}>Check AI setup again</button></aside>}
+          <div className="workspace-section-heading"><h3 className="panel-title" ref={aiReplyHeading} tabIndex={-1}>AI conversation</h3><button type="button" className="btn btn-ghost btn-small" disabled={saving} onClick={newConversation}>New conversation</button></div>
           {!session.log.length && <p className="hint">Replies appear here after you send a reviewed message.</p>}
           <div className="live-turns" role="log" aria-label="Conversation history" aria-live="polite" aria-relevant="additions text">{session.log.map((turn) => <article key={turn.id} className="live-turn"><div className="live-user-turn"><span>You · reviewed message</span><p>{turn.said}</p></div><div className="live-ai-turn"><span>SignBridge</span>{turn.pending ? <p>Thinking…</p> : turn.interrupted ? <p>Interrupted. Your draft is ready to review.</p> : turn.error ? <p className="error">{turn.error}</p> : <p>{turn.reply}</p>}{turn.reply && canSpeak && <button type="button" className="btn btn-small" onClick={() => session.speak(turn)}>Speak this reply</button>}</div></article>)}</div>
           {lastReply && settings.videoReplies && <SignVideoPlayer key={lastReply.id} text={lastReply.reply} clips={videos.clips} signLanguage={lastReply.signLanguage} textLanguage={lastReply.lang} />}
@@ -266,7 +303,7 @@ export default function TrainedSignMode({ settings, update, onBack, onLive, onLi
     <details className="workspace-disclosure workspace-advanced"><summary>Advanced settings</summary>
       <div className="workspace-advanced-grid"><div><WordModelSelect value={engine} disabled={saving} onChange={(next) => { cancel(); clearReview(); setEngine(next); }} /><CameraSelect id="trained-camera-device" camera={camera} value={deviceId} disabled={busy} onChange={setDeviceId} />
         <Switch checked={showJointNumbers} onChange={setShowJointNumbers} description="Number the 21 landmarks in each detected hand.">Show hand-joint numbers</Switch>
-        {canSpeak && engine === "legacy" && <Switch checked={speakResults} onChange={(on) => { setSpeakResults(on); if (!on) speaker.cancel(); }} description="Speaks an accepted word in English. Uncertain results and suggestions stay silent.">Speak recognized words</Switch>}
+        {canSpeak && engine === "legacy" && <Switch checked={speakResults} onChange={(on) => { setSpeakResults(on); if (!on) stopLocalSpeech(); }} description="Speaks an accepted word in English. Uncertain results and suggestions stay silent.">Speak recognized words</Switch>}
         {engine === "graph" && <p className="hint">New joint-model predictions stay silent until you review the meaning and choose Speak this word.</p>}
       </div><div>
         {quality && <details className="workspace-quality"><summary>Capture quality · {quality.count} samples</summary><dl><div><dt>Duration</dt><dd>{(quality.durationMs / 1000).toFixed(1)}s</dd></div><div><dt>Hands tracked</dt><dd>{quality.handFrames}/{quality.count}</dd></div><div><dt>Shoulders tracked</dt><dd>{quality.shoulderFrames}/{quality.count}</dd></div><div><dt>Sampling</dt><dd>{quality.samplesPerSecond.toFixed(1)}/s</dd></div><div><dt>Longest tracking gap</dt><dd>{quality.largestGapMs == null ? "Unavailable" : Math.round(quality.largestGapMs) + "ms"}</dd></div></dl>{quality.hints.map((hint) => <p key={hint} className="hint">{hint}</p>)}<p className="fine-print">Tracking measurements describe the capture, not how correctly you signed.</p></details>}

@@ -115,6 +115,26 @@ test("missing AI configuration explains the blocker but still permits local came
   expect(mocks.record).toHaveBeenCalledOnce(); expect(mocks.interpret).not.toHaveBeenCalled();
 });
 
+test.each([
+  ["missing key in a room-auth server", { configured: false, roomAuthRequired: true }, "AI setup needed"],
+  ["configured room-only server", { configured: true, roomAuthRequired: true }, "AI help is available inside rooms"],
+  ["unreachable AI server", null, "AI server unavailable"],
+])("%s keeps local recording and reviewed speech usable without sending clips or text", async (_case, status, heading) => {
+  if (status) mocks.check.mockResolvedValue(status);
+  else mocks.check.mockRejectedValue(new Error("No connection"));
+  await start(); await recordClip(); consent();
+  expect(screen.getByText(heading)).toBeTruthy();
+  const typed = screen.getByLabelText("Or type a turn");
+  fireEvent.change(typed, { target: { value: "Keep my typed greeting" } });
+  fireEvent.change(reviewField(), { target: { value: "Hello" } });
+  expect(button("Interpret my signs").disabled).toBe(true);
+  expect(button("Confirm meaning & get reply").disabled).toBe(true);
+  fireEvent.submit(typed.closest("form")); fireEvent.submit(reviewField().closest("form"));
+  expect(typed.value).toBe("Keep my typed greeting"); expect(reviewField().value).toBe("Hello");
+  expect(mocks.ask).not.toHaveBeenCalled(); expect(mocks.interpret).not.toHaveBeenCalled();
+  click("Speak my message"); expect(mocks.speak).toHaveBeenCalledWith("Hello", expect.anything());
+});
+
 test("sending a replacement recording requires fresh consent and reviewed text can be spoken locally", async () => {
   await start(); await recordClip(); consent();
   fireEvent.change(reviewField(), { target: { value: "Hello there" } }); click("Speak my message");

@@ -44,6 +44,35 @@ test("borrows the call video and infers only a finished turn; review is required
   expect(screen.getByLabelText("Review or correct the word").value).toBe("");
 });
 
+test("recognized-word guidance explains local voice and partner draft actions without speaking or adding", () => {
+  const read = vi.fn(); render(view({ onRead: read, canRead: true })); start(); emit(); click(/^Finish sign/);
+  expect(screen.getByText(/Choose Speak reviewed word to hear it on this device/)).toBeTruthy();
+  expect(screen.getByText(/Capture alone does not send a message or request an AI reply/)).toBeTruthy();
+  expect(mock.append).not.toHaveBeenCalled(); expect(read).not.toHaveBeenCalled();
+});
+
+test("added-word feedback clears when editing, selecting another candidate, or starting another capture", () => {
+  mock.predict.mockReturnValue({ status: "recognized", meaning: "HELLO", feedback: "Review this meaning", candidates: [{ label: "THANK YOU", score: .5 }] });
+  const reviewed = vi.fn(); render(view({ onReviewChange: reviewed })); start(); emit(); click(/^Finish sign/);
+  const added = () => screen.queryByText(/Added to your partner message draft/);
+  click("Add reviewed word to message"); expect(added()).toBeTruthy();
+  fireEvent.change(screen.getByLabelText("Review or correct the word"), { target: { value: "HELLO THERE" } });
+  expect(added()).toBeNull(); expect(reviewed).toHaveBeenCalledOnce();
+  click("Add reviewed word to message"); expect(added()).toBeTruthy();
+  click("THANK YOU"); expect(added()).toBeNull(); expect(reviewed).toHaveBeenCalledTimes(2);
+  click("Add reviewed word to message"); expect(added()).toBeTruthy();
+  start(); expect(added()).toBeNull(); expect(screen.queryByLabelText("Review or correct the word")).toBeNull();
+});
+
+test("the room can clear added-word feedback after its draft changes or is sent", () => {
+  const app = render(view({ addedToDraft: false })); start(); emit(); click(/^Finish sign/);
+  click("Add reviewed word to message"); app.rerender(view({ addedToDraft: true }));
+  expect(screen.getByText(/Added to your partner message draft/)).toBeTruthy();
+  app.rerender(view({ addedToDraft: false }));
+  expect(screen.queryByText(/Added to your partner message draft/)).toBeNull();
+  expect(mock.append).toHaveBeenCalledOnce();
+});
+
 test("a rejected message addition preserves the reviewed word for editing and retry", () => {
   mock.append.mockReturnValueOnce(false).mockReturnValueOnce(true);
   render(view()); start(); emit(); click(/^Finish sign/);
@@ -52,6 +81,7 @@ test("a rejected message addition preserves the reviewed word for editing and re
   click("Add reviewed word to message");
   expect(mock.append).toHaveBeenCalledOnce();
   expect(review.value).toBe("WATER PLEASE");
+  expect(screen.queryByText(/Added to your partner message draft/)).toBeNull();
   expect(screen.getByRole("alert").textContent).toMatch(/Shorten it/);
   expect(screen.getByRole("button", { name: "Add reviewed word to message" }).disabled).toBe(false);
   expect(mock.predict).toHaveBeenCalledOnce();
@@ -59,6 +89,7 @@ test("a rejected message addition preserves the reviewed word for editing and re
   expect(mock.append).toHaveBeenCalledTimes(2);
   expect(mock.append.mock.calls[1][0]).toMatchObject({ text: "WATER PLEASE", inputMethod: "sign", signLanguage: "isl" });
   expect(review.value).toBe("");
+  expect(screen.getByText(/Added to your partner message draft/)).toBeTruthy();
   expect(screen.queryByRole("alert")).toBeNull();
 });
 
