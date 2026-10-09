@@ -1,0 +1,111 @@
+.connect-mode { max-width: 1440px; }
+.connect-intro { display: flex; align-items: center; justify-content: space-between; gap: 2rem; margin: 1.5rem 0 2rem; }
+.connect-intro h2 { font-size: clamp(2rem, 4vw, 3.6rem); letter-spacing: -.065em; line-height: 1.1; margin: .35rem 0 .8rem; }
+.connect-intro p { max-width: 44rem; }
+.connect-human-note { flex: 0 0 auto; border: 1px solid var(--accent); padding: .7rem 1rem; border-radius: 100px; color: var(--accent); font-weight: 700; }
+.room-quick-setup, .room-sign-availability, .room-partner-sign-reply { padding: 1rem 1.25rem; margin-bottom: 1.3rem; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); }
+.room-quick-setup h3, .room-sign-availability h3, .room-partner-sign-reply h3 { font-size: 1.05rem; margin-bottom: .65rem; }
+.room-quick-setup > p, .room-sign-availability > p { max-width: 66rem; margin-block: .65rem; }
+.room-setup-choices { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .8rem; margin-block: 1rem; }
+.room-setup-choice { display: grid; align-content: start; gap: .5rem; text-align: left; min-width: 0; min-height: 88px; white-space: normal; }
+.room-setup-choice strong { font-size: 1rem; }
+.room-setup-choice span { font-size: .8rem; font-weight: 400; line-height: 1.5; }
+.room-setup-choice[aria-pressed="true"] { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 8%, var(--surface)); }
+.room-sign-availability { border-left: 3px solid var(--accent); }
+.room-partner-sign-reply { margin-block: 1.25rem 0; }
+.room-connection { display: inline-flex; align-items: center; gap: .5rem; color: var(--muted); font-size: .8rem; }
+.room-connection > span { width: 9px; height: 9px; border-radius: 50%; background: var(--muted); }
+.room-connection.connected > span { background: var(--accent); }
+.room-connection.ended > span, .room-connection.error > span { background: var(--danger); }
+.room-preferences, .room-entry, .room-call, .room-messages, .room-ai-helper { border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); }
+.room-preferences { padding: 1rem 1.25rem; margin-bottom: 1.3rem; }
+.room-preferences summary, .room-ai-helper summary, .room-network-options summary, .room-footer summary { cursor: pointer; font-weight: 600; min-height: 40px; padding: .4rem 0; }
+.room-preferences summary span { color: var(--muted); font-weight: 400; font-size: .8rem; margin-left: .6rem; }
+.room-preference-grid { display: grid; grid-template-columns: 1fr 1.4fr; gap: 1rem 2rem; padding: 1rem 0; }
+.room-preference-grid fieldset { border: 0; min-width: 0; }
+.room-preference-grid legend { color: var(--muted); font-size: .85rem; margin-bottom: .6rem; }
+.room-choice-row { display: flex; flex-wrap: wrap; gap: .5rem; }
+.room-choice { display: flex; align-items: center; gap: .5rem; min-height: 48px; padding: .5rem .8rem; border: 1px solid var(--border); border-radius: var(--radius-sm); cursor: pointer; background: var(--bg-soft); }
+.room-choice.selected { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 8%, var(--surface)); }
+.room-choice input { accent-color: var(--accent); width: 18px; height: 18px; }
+.room-entry { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; padding: clamp(1.25rem, 3vw, 2.2rem); }
+.room-entry h3 { font-size: 1.65rem; letter-spacing: -.035em; margin: .4rem 0 .8rem; }
+.room-entry-controls, .room-entry-controls form { display: grid; align-content: start; gap: 1rem; }
+.room-invite-strip { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; padding: 1rem 0 1.5rem; }
+.room-invite-copy { display: flex; flex: 1; gap: .5rem; min-width: min(100%, 280px); }
+.room-invite-copy input { min-width: 0; width: 100%; font-size: .75rem; }
+.room-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.08fr); gap: 1.25rem; align-items: start; }
+.room-call, .room-messages { padding: 1.2rem; min-width: 0; overflow: hidden; }
+.room-panel-heading { display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: .5rem; margin-bottom: 1rem; }
+.room-panel-heading h3 { font-size: 1.05rem; }
+.room-panel-heading > span { font-size: .7rem; color: var(--muted); }
+.room-video-stage { position: relative; min-height: 310px; aspect-ratio: 4 / 3; overflow: hidden; border-radius: var(--radius-sm); background: var(--bg-soft); border: 1px solid var(--border); }
+.room-video-stage > video { width: 100%; height: 100%; object-fit: contain; position: absolute; inset: 0; }
+.room-video-placeholder { position: absolute; inset: 0; padding: 2rem; display: grid; align-content: center; justify-items: center; text-align: center; gap: .7rem; }
+.room-video-placeholder > span { color: var(--accent); font-size: 3rem; line-height: 1; }
+.room-video-placeholder p { max-width: 22rem; color: var(--muted); font-size: .85rem; }
+.room-self-view { position: absolute; bottom: .75rem; right: .75rem; width: 29%; aspect-ratio: 4 / 3; border-radius: 10px; overflow: hidden; background: var(--surface-2); border: 1px solid var(--border); z-index: 1; }
+.room-self-view video { width: 100%; height: 100%; object-fit: cover; }
+.room-self-view > span { position: absolute; inset: 0; display: grid; place-items: center; font-size: .65rem; }
+.room-media-controls { display: flex; flex-wrap: wrap; gap: .5rem; margin: 1rem 0; }
+.room-media-controls .btn { font-size: .75rem; padding-inline: .8rem; }
+.room-network-options { border-top: 1px solid var(--border); margin-top: .5rem; padding-top: .4rem; }
+.room-network-options summary { font-size: .8rem; color: var(--muted); }
+.room-message-list { max-height: 400px; min-height: 230px; overflow-y: auto; overflow-wrap: anywhere; padding: .2rem .25rem .5rem; scrollbar-gutter: stable; }
+.room-empty-chat { display: grid; gap: .65rem; align-content: center; min-height: 220px; color: var(--muted); text-align: center; padding: 1.5rem; }
+.room-empty-chat strong { color: var(--text); font-size: 1.25rem; }
+.room-message { padding: .8rem 1rem; margin: .4rem 0 .8rem; border: 1px solid var(--border); background: var(--bg-soft); border-radius: 3px 14px 14px 14px; }
+.room-message.mine { margin-left: 2rem; border-radius: 14px 3px 14px 14px; background: color-mix(in srgb, var(--accent) 6%, var(--surface)); border-color: color-mix(in srgb, var(--accent) 32%, var(--border)); }
+.room-message.theirs { margin-right: 1.5rem; }
+.room-message p { white-space: pre-wrap; }
+.room-message-label, .room-message-meta { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: .5rem; }
+.room-message-label { margin-bottom: .4rem; }
+.room-message-label strong { font-size: .75rem; }
+.room-message-label > span, .room-message-meta > span { font-size: .65rem; color: var(--muted); }
+.room-message-meta { margin-top: .4rem; }
+.room-inline-button { border: 0; background: transparent; color: var(--accent-2); cursor: pointer; padding: .35rem .2rem; min-height: 40px; font-size: .7rem; text-decoration: underline; text-underline-offset: 3px; }
+.room-inline-button:disabled { color: var(--muted); cursor: default; opacity: .6; }
+.room-composer { display: grid; gap: .55rem; padding-top: 1rem; border-top: 1px solid var(--border); }
+.room-composer > label { font-size: .85rem; font-weight: 600; }
+.room-composer textarea { width: 100%; min-height: 105px; resize: vertical; color: var(--text); background: var(--bg-soft); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: .8rem; font: inherit; line-height: 1.5; }
+.room-composer-meta { display: flex; justify-content: space-between; align-items: center; gap: .5rem; }
+.room-composer-meta > span { font-size: .7rem; color: var(--muted); }
+.room-input-assist { margin-top: 1.25rem; border-top: 1px solid var(--border); padding-top: 1rem; }
+.room-input-assist h4 { margin-bottom: .6rem; font-size: .95rem; }
+.room-input-assist .actions { margin-block: .7rem; }
+.room-recognition { padding-top: .6rem; }
+.room-speech-tools { border-top: 1px solid var(--border); padding-top: .75rem; margin-top: .75rem; }
+.room-speech-tools .actions { margin-top: .5rem; }
+.room-speech-status { border-left: 3px solid var(--accent); padding: .7rem .9rem; margin-top: 1rem; background: var(--bg-soft); }
+.room-recognition h3 { font-size: .9rem; }
+.room-recognition .fine-print { max-height: 90px; overflow-y: auto; }
+.room-word-review { display: grid; gap: .6rem; padding: .8rem; margin-top: .8rem; background: var(--bg-soft); border-radius: 10px; }
+.room-notice { margin: 1rem 0; border-left: 3px solid var(--warning); padding: .85rem 1rem; background: var(--warning-bg); border-radius: 0 10px 10px 0; font-size: .85rem; }
+.room-notice.error { border-color: var(--danger); background: var(--danger-bg); }
+.room-transferred-message { padding: 1rem 1.2rem; margin-bottom: 1.2rem; border: 1px solid var(--accent); border-radius: var(--radius-sm); background: var(--surface); }
+.room-transferred-message h3 { font-size: 1rem; margin-bottom: .7rem; }
+.room-transferred-message .actions { margin-top: .8rem; }
+.room-transferred-message .fine-print { margin-top: .6rem; }
+.room-transferred-text { padding: .7rem .85rem; margin-block: .6rem; max-height: 10rem; overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere; background: var(--bg-soft); border-radius: var(--radius-sm); }
+.room-ai-helper { padding: 1rem 1.2rem; margin-top: 1.2rem; }
+.room-ai-helper p { margin-block: .7rem; max-width: 55rem; }
+.room-footer { padding-top: 1.5rem; color: var(--muted); font-size: .75rem; }
+.room-footer > p { max-width: 62rem; margin-bottom: .8rem; }
+.connect-mode .sign-video-player { margin-top: 1rem; }
+.connect-home .home-conversation h2, .connect-home .home-quick-tools h2 { font-size: 1.15rem; line-height: 1.4; }
+.connect-home .mode-cards { margin-block: .9rem 1rem; }
+.connect-home .home-quick-tools { border-top: 1px solid var(--border); padding-top: 1.5rem; }
+.connect-home .home-quick-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; margin-block: .9rem; }
+.connect-home .home-quick-tool { display: grid; align-content: start; gap: .6rem; min-width: 0; padding: 1.2rem; text-align: left; font: inherit; color: var(--text); background: var(--bg-soft); border: 1px solid var(--border); border-radius: var(--radius-sm); cursor: pointer; }
+.connect-home .home-quick-title { display: flex; align-items: baseline; justify-content: space-between; gap: .7rem; font-size: 1.15rem; font-weight: 700; }
+.connect-home .home-quick-title > span { color: var(--accent); }
+.connect-home .home-quick-tool:hover, .connect-home .home-quick-tool:focus-visible { border-color: var(--accent); }
+.connect-home .home-tool-note { color: var(--muted); font-size: .8rem; }
+.connect-home .shortcut-tip kbd { display: inline-block; min-width: 1.6em; padding: .05rem .25rem; text-align: center; color: var(--text); background: var(--surface); border: 1px solid var(--border); border-radius: 4px; font: inherit; font-weight: 600; }
+.connect-home .home-tools { border-top: 1px solid var(--border); padding-top: 1rem; margin-top: 1.5rem; }
+.connect-home .home-tools summary { min-height: 44px; cursor: pointer; font-weight: 600; }
+.connect-home .home-tools .actions { margin: 1rem 0; }
+@media (max-width: 650px) { .connect-home .home-quick-grid { grid-template-columns: 1fr; } .connect-home .mode-card { padding: 1.3rem; } }
+@media (max-width: 950px) { .room-layout { grid-template-columns: 1fr; } .room-video-stage { max-height: 480px; min-height: 260px; } }
+@media (max-width: 650px) { .connect-intro { align-items: flex-start; gap: 1rem; } .connect-human-note { display: none; } .room-preference-grid, .room-entry, .room-setup-choices { grid-template-columns: 1fr; gap: 1rem; } .room-preferences summary span { display: block; margin-left: 0; } .room-call, .room-messages, .room-quick-setup, .room-sign-availability, .room-partner-sign-reply { padding: .8rem; } .room-message.mine { margin-left: 1rem; } .room-message.theirs { margin-right: .75rem; } .room-connection { max-width: 12rem; } .room-invite-copy { flex-basis: 100%; } }
+@media (prefers-reduced-motion: reduce) { .connect-mode .btn { transition: none; } }

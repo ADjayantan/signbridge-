@@ -77,4 +77,23 @@ describe("client api", () => {
       reply: "Hi! How can I help?",
     });
   });
+
+  test("voice handles the last JSON event even when there is no trailing newline", async (t) => {
+    t.mock.method(globalThis, "fetch", async () => new Response('{"type":"delta","text":"Hello."}\n{"type":"done"}'));
+    assert.equal((await collect(streamVoice({ lang: "en", messages: [] }))).join(""), "Hello.");
+    t.mock.method(globalThis, "fetch", async () => new Response('{"type":"delta","text":"Hello."}\n{"type":"error","message":"Lost connection"}'));
+    await assert.rejects(collect(streamVoice({ lang: "en", messages: [] })), /Lost connection/);
+  });
+
+  test("truncated voice streams never silently count as successful answers", async (t) => {
+    t.mock.method(globalThis, "fetch", async () => ndjsonResponse([{ type: "delta", text: "Partial" }]));
+    await assert.rejects(collect(streamVoice({ lang: "en", messages: [] })), { code: "incomplete_stream" });
+  });
+
+  test("malformed or empty sign responses produce a usable error", async (t) => {
+    t.mock.method(globalThis, "fetch", async () => new Response("not JSON"));
+    await assert.rejects(askSign({ lang: "en", messages: [] }), { name: "ApiError", code: "bad_response" });
+    t.mock.method(globalThis, "fetch", async () => Response.json({ reply: {} }));
+    await assert.rejects(askSign({ lang: "en", messages: [] }), { code: "bad_response" });
+  });
 });

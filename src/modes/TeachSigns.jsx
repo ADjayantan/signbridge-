@@ -30,6 +30,7 @@ export default function TeachSigns({
   ready,
   handsVisible,
   saveError,
+  signLanguage = "isl",
 }) {
   const [word, setWord] = useState("");
   const [phase, setPhase] = useState({ step: "idle" });
@@ -107,11 +108,11 @@ export default function TeachSigns({
   };
 
   const exportSigns = () => {
-    const blob = new Blob([JSON.stringify(classifier.toJSON())], { type: "application/json" });
+    const blob = new Blob([JSON.stringify({ ...classifier.toJSON(), signLanguage })], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "signbridge-signs.json";
+    a.download = `signbridge-${signLanguage}-signs.json`;
     document.body.appendChild(a);
     a.click();
     a.remove();
@@ -123,7 +124,13 @@ export default function TeachSigns({
     e.target.value = "";
     if (!file) return;
     try {
-      const incoming = SignClassifier.fromJSON(JSON.parse(await file.text())).toJSON();
+      if (file.size > 5 * 1024 * 1024) throw new Error("Choose a signs file under 5 MB.");
+      const parsed = JSON.parse(await file.text());
+      if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) throw new Error("Choose a SignBridge signs export file.");
+      const incomingLanguage = parsed.signLanguage || "isl";
+      if (!["isl", "asl"].includes(incomingLanguage)) throw new Error("This file has an unsupported sign language. Choose an ISL or ASL export.");
+      if (incomingLanguage !== signLanguage) throw new Error(`These recordings belong to ${incomingLanguage.toUpperCase()}. Choose that sign language before importing.`);
+      const incoming = SignClassifier.fromJSON(parsed).toJSON();
       const mine = classifier.toJSON();
       for (const [label, list] of Object.entries(incoming.signs)) mine.signs[label] = [...(mine.signs[label] || []), ...list];
       onReplace(SignClassifier.fromJSON(mine));
@@ -141,7 +148,7 @@ export default function TeachSigns({
       <h2 className="panel-title">Teach a sign</h2>
       <p className="hint">
         Type the word, press Record, and hold the sign in front of the camera for 3 seconds. Signs are saved in this
-        browser. Moving signs aren't supported yet: hold the key handshape.
+        browser, in your {signLanguage.toUpperCase()} library. Moving signs aren't supported yet: hold the key handshape.
       </p>
       <form className="teach-form" onSubmit={record}>
         <div className="field">
@@ -216,7 +223,7 @@ export default function TeachSigns({
         </button>
         <label className="btn btn-small file-button">
           Import signs
-          <input type="file" accept="application/json,.json" onChange={importSigns} />
+          <input aria-label="Import taught signs" type="file" accept="application/json,.json" onChange={importSigns} />
         </label>
         {fileMessage && (
           <p className="fine-print" role="status">
@@ -226,7 +233,7 @@ export default function TeachSigns({
       </div>
 
       <h3 className="subhead">Built-in gestures</h3>
-      <p className="hint">Recognized out of the box. These are shortcuts, not Indian Sign Language — rename or switch them off.</p>
+      <p className="hint">Optional handshape shortcuts. Enable “Use gesture shortcuts” in the camera panel to use these mappings. They do not translate ISL or ASL; an open palm can appear in many different signs.</p>
       <table className="gesture-table">
         <thead>
           <tr>

@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useState } from "react";
 
-const MODES = ["home", "voice", "sign"];
+const MODES = ["home", "connect", "voice", "sign", "live-sign", "trained-sign", "sign-workspace", "training-studio", "sign-videos"];
 
 function fromHash() {
-  const hash = window.location.hash.replace(/^#\/?/, "");
+  const hash = window.location.hash.replace(/^#\/?/, "").split("?")[0];
   return MODES.includes(hash) ? hash : "home";
 }
 

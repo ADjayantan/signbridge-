@@ -1,0 +1,533 @@
+{
+  "format": "signbridge-frozen-selection-v1",
+  "language": "isl",
+  "run_root": "C:\\Users\\adjay\\Downloads\\signbridge\\training\\artifacts\\graph-v1\\comparison-2026-10-04\\isl",
+  "stage": "validation-only selection, before candidate final test",
+  "prepared_data_sha256": "223f31ef2c240ad60592905a7bfa4b5b9b635d5100fc3182c5e8ea565132fdd4",
+  "legacy_prepared_path": "C:\\Users\\adjay\\Downloads\\signbridge\\.training-data\\prepared\\isl.npz",
+  "legacy_prepared_sha256": "b1e5b66e23001d1c642d04fde0ddd7d04f97042c769409cb6794cc93cd83c13b",
+  "budget": {
+    "epochs": 80,
+    "minimumEpochs": 20,
+    "patience": 20,
+    "batchSize": 64,
+    "learningRate": 0.002,
+    "weightDecay": 0.0001,
+    "maxSeconds": 1200,
+    "threads": 4
+  },
+  "selected_architecture": null,
+  "representative_seed": 42,
+  "selection_rule": "All3 validation seeds meet screens and mean accepted-correct coverage improves >=5pp over GRU27; highest mean coverage then macro recall, GRU75 tie; representative seed42 fixed",
+  "summaries": {
+    "gru27": {
+      "mean_correct_coverage": 0.17094017094017092,
+      "coverage_range": [
+        0.08547008547008547,
+        0.26495726495726496
+      ],
+      "all_seeds_screen_passed": false,
+      "mean_macro_recall": 0.7857142857142856
+    },
+    "gru75": {
+      "mean_correct_coverage": 0.301994301994302,
+      "coverage_range": [
+        0.18803418803418803,
+        0.452991452991453
+      ],
+      "all_seeds_screen_passed": false,
+      "mean_macro_recall": 0.9178004535147393
+    },
+    "stgcn": {
+      "mean_correct_coverage": 0.1623931623931624,
+      "coverage_range": [
+        0.15384615384615385,
+        0.1794871794871795
+      ],
+      "all_seeds_screen_passed": false,
+      "mean_macro_recall": 0.6020408163265306
+    }
+  },
+  "runs": [
+    {
+      "architecture": "gru27",
+      "seed": 42,
+      "weights_sha256": "b87f9edc49849b7d45ac4c196c92c21530d4e8f4bc368e1522bc1279155076b4",
+      "run_json_sha256": "cfd0875ec9406d9d04c96edc02c20246cc031b17c7bbfa9b5ab3471c296d5382",
+      "validation_predictions_sha256": "918488898c773c2687777d4cb4a5cbf8fe7beca2a15dba30b464c2fc8154fcf5",
+      "calibration_sha256": "6bfe46ee6bcff201f06ed0d88d84d2649b58e5a734458923798c485193c96119",
+      "calibration": {
+        "threshold": 0.89,
+        "margin": 0.5,
+        "acceptanceEnabled": true,
+        "screen_passed": false,
+        "metrics": {
+          "known_count": 117,
+          "unknown_count": 100,
+          "top1_correct": 91,
+          "top1_accuracy": 0.7777777777777778,
+          "macro_recall": 0.7585034013605442,
+          "accepted_correct": 31,
+          "accepted_wrong": 1,
+          "known_rejected": 85,
+          "unknown_false_accepts": 5,
+          "known_accepted_precision": 0.96875,
+          "correct_known_coverage": 0.26495726495726496,
+          "unknown_false_accept_rate": 0.05,
+          "mixture_precision": 0.8378378378378378,
+          "mixture": "All supplied known examples plus all supplied unknown-sign examples; nonsigning camera negatives not yet collected",
+          "wilson95": {
+            "known_precision": [
+              0.8425573617998744,
+              0.9944621398359969
+            ],
+            "correct_coverage": [
+              0.19339151004200789,
+              0.35146668236355055
+            ],
+            "unknown_false_accept_rate": [
+              0.02154367915436796,
+              0.11175046923191913
+            ],
+            "mixture_precision": [
+              0.6886351629906503,
+              0.9234879276598885
+            ]
+          }
+        }
+      },
+      "validation_macro_recall": 0.7585034013605442,
+      "epochs": 75,
+      "training_seconds": 34.40860960000282,
+      "parameters": 31409,
+      "stop_reason": "validation-early-stop"
+    },
+    {
+      "architecture": "gru27",
+      "seed": 43,
+      "weights_sha256": "b9d51d0fd6fc4a846ce4652e7cf723ae6bbd59ff394490f80846dc6508f0901e",
+      "run_json_sha256": "c7d90a268f8e6b53c07f3a62c638854eac76bf168cb651058c3b347b68ebc9d2",
+      "validation_predictions_sha256": "df8e2db41124295a614c9c30649d2eb5f47a3f4605fa3770c3afbdd0793b276a",
+      "calibration_sha256": "7c8240318bd06281ba8c6853361ee15b1210f4617c4e2ffae8764a032d659a56",
+      "calibration": {
+        "threshold": 0.98,
+        "margin": 0.5,
+        "acceptanceEnabled": true,
+        "screen_passed": false,
+        "metrics": {
+          "known_count": 117,
+          "unknown_count": 100,
+          "top1_correct": 98,
+          "top1_accuracy": 0.8376068376068376,
+          "macro_recall": 0.8401360544217686,
+          "accepted_correct": 10,
+          "accepted_wrong": 0,
+          "known_rejected": 107,
+          "unknown_false_accepts": 2,
+          "known_accepted_precision": 1.0,
+          "correct_known_coverage": 0.08547008547008547,
+          "unknown_false_accept_rate": 0.02,
+          "mixture_precision": 0.8333333333333334,
+          "mixture": "All supplied known examples plus all supplied unknown-sign examples; nonsigning camera negatives not yet collected",
+          "wilson95": {
+            "known_precision": [
+              0.7224672001371107,
+              0.9999999999999999
+            ],
+            "correct_coverage": [
+              0.047087483244617576,
+              0.15020787427064003
+            ],
+            "unknown_false_accept_rate": [
+              0.00550196755016235,
+              0.07001179072854388
+            ],
+            "mixture_precision": [
+              0.5519691377470266,
+              0.9530348578161463
+            ]
+          }
+        }
+      },
+      "validation_macro_recall": 0.8401360544217686,
+      "epochs": 80,
+      "training_seconds": 23.277863400006026,
+      "parameters": 31409,
+      "stop_reason": "epoch-ceiling"
+    },
+    {
+      "architecture": "gru27",
+      "seed": 44,
+      "weights_sha256": "81701e42866ac6f12e6d78de984f066c1b90dc1c7e05b0541af89b863e077393",
+      "run_json_sha256": "d95b688bf499973bc722dbfc3632cbae2e933e0e72fb7de1e5ee6cfe0ab6c66b",
+      "validation_predictions_sha256": "c2b2c00210a4b4b00aaf17f89f4c2b02525a5e5ff340cdf6d0b6c09bff171e24",
+      "calibration_sha256": "1a35c58bb7e9e486bc4160c58840baea3218e3366eab93006b572e1ac0152612",
+      "calibration": {
+        "threshold": 0.96,
+        "margin": 0.5,
+        "acceptanceEnabled": true,
+        "screen_passed": false,
+        "metrics": {
+          "known_count": 117,
+          "unknown_count": 100,
+          "top1_correct": 91,
+          "top1_accuracy": 0.7777777777777778,
+          "macro_recall": 0.7585034013605442,
+          "accepted_correct": 19,
+          "accepted_wrong": 1,
+          "known_rejected": 97,
+          "unknown_false_accepts": 1,
+          "known_accepted_precision": 0.95,
+          "correct_known_coverage": 0.1623931623931624,
+          "unknown_false_accept_rate": 0.01,
+          "mixture_precision": 0.9047619047619048,
+          "mixture": "All supplied known examples plus all supplied unknown-sign examples; nonsigning camera negatives not yet collected",
+          "wilson95": {
+            "known_precision": [
+              0.763868806553258,
+              0.9911185511992047
+            ],
+            "correct_coverage": [
+              0.10649805976106343,
+              0.23975279842146602
+            ],
+            "unknown_false_accept_rate": [
+              0.0017674320641406505,
+              0.054486196178705315
+            ],
+            "mixture_precision": [
+              0.7108586092608176,
+              0.9734812325619255
+            ]
+          }
+        }
+      },
+      "validation_macro_recall": 0.7585034013605442,
+      "epochs": 80,
+      "training_seconds": 24.312898600001063,
+      "parameters": 31409,
+      "stop_reason": "epoch-ceiling"
+    },
+    {
+      "architecture": "gru75",
+      "seed": 42,
+      "weights_sha256": "d2e3b8b0437c78484295af9477496f39c34746667033de4dbcfde54cd24512da",
+      "run_json_sha256": "5e4a3c0290c8c368ca51f954158d370180b616cbf3445a9c79ce2e1141f0d812",
+      "validation_predictions_sha256": "edd6b0aae8ee1a94e7380d1a551a8ab2042bac22ba75746b37a69da47e9be49e",
+      "calibration_sha256": "231e95c1183db5afbe026887781337f2dba3c552bb4a49062375735be60955c0",
+      "calibration": {
+        "threshold": 0.94,
+        "margin": 0.5,
+        "acceptanceEnabled": true,
+        "screen_passed": false,
+        "metrics": {
+          "known_count": 117,
+          "unknown_count": 100,
+          "top1_correct": 108,
+          "top1_accuracy": 0.9230769230769231,
+          "macro_recall": 0.9132653061224489,
+          "accepted_correct": 31,
+          "accepted_wrong": 0,
+          "known_rejected": 86,
+          "unknown_false_accepts": 4,
+          "known_accepted_precision": 1.0,
+          "correct_known_coverage": 0.26495726495726496,
+          "unknown_false_accept_rate": 0.04,
+          "mixture_precision": 0.8857142857142857,
+          "mixture": "All supplied known examples plus all supplied unknown-sign examples; nonsigning camera negatives not yet collected",
+          "wilson95": {
+            "known_precision": [
+              0.889744604539564,
+              1.0
+            ],
+            "correct_coverage": [
+              0.19339151004200789,
+              0.35146668236355055
+            ],
+            "unknown_false_accept_rate": [
+              0.01566330399154762,
+              0.0983707143588792
+            ],
+            "mixture_precision": [
+              0.7404853135378618,
+              0.9546482066690264
+            ]
+          }
+        }
+      },
+      "validation_macro_recall": 0.9132653061224489,
+      "epochs": 61,
+      "training_seconds": 24.23922550000134,
+      "parameters": 59057,
+      "stop_reason": "validation-early-stop"
+    },
+    {
+      "architecture": "gru75",
+      "seed": 43,
+      "weights_sha256": "05415f277cb8577562ffb8dcaa76af5f60f00607783ac50103d4afe18751068b",
+      "run_json_sha256": "2e4c8e9cadbb969ae7e3d8694acb0164fb9ecf798d3d9e90581c5f8094692a76",
+      "validation_predictions_sha256": "d8ccc1050aa7d461b5e083c54de00291ac2a3cbaddc7dd57e1f5cc2e27a675e0",
+      "calibration_sha256": "3fd2ee1ce32cd3ede3f3111aa5a1513f68c9bb7e6ea6bc0992b163d921be34e2",
+      "calibration": {
+        "threshold": 0.97,
+        "margin": 0.5,
+        "acceptanceEnabled": true,
+        "screen_passed": false,
+        "metrics": {
+          "known_count": 117,
+          "unknown_count": 100,
+          "top1_correct": 109,
+          "top1_accuracy": 0.9316239316239316,
+          "macro_recall": 0.9217687074829933,
+          "accepted_correct": 22,
+          "accepted_wrong": 0,
+          "known_rejected": 95,
+          "unknown_false_accepts": 2,
+          "known_accepted_precision": 1.0,
+          "correct_known_coverage": 0.18803418803418803,
+          "unknown_false_accept_rate": 0.02,
+          "mixture_precision": 0.9166666666666666,
+          "mixture": "All supplied known examples plus all supplied unknown-sign examples; nonsigning camera negatives not yet collected",
+          "wilson95": {
+            "known_precision": [
+              0.8513451253913791,
+              1.0
+            ],
+            "correct_coverage": [
+              0.12758198294157508,
+              0.2683207087967116
+            ],
+            "unknown_false_accept_rate": [
+              0.00550196755016235,
+              0.07001179072854388
+            ],
+            "mixture_precision": [
+              0.741511978067893,
+              0.9768411847029567
+            ]
+          }
+        }
+      },
+      "validation_macro_recall": 0.9217687074829933,
+      "epochs": 77,
+      "training_seconds": 28.749620599999616,
+      "parameters": 59057,
+      "stop_reason": "validation-early-stop"
+    },
+    {
+      "architecture": "gru75",
+      "seed": 44,
+      "weights_sha256": "1132316858ef0dddd991692e9ce21274b0673ff56d5b9884813190027dd77b9c",
+      "run_json_sha256": "f087a926bec7ec129256306902d9b88ed618ce64774732a96d492a1621e82faf",
+      "validation_predictions_sha256": "8bfa09b7704be09b353fef73762f8d9ebeaaeb21ebb046233578050cd7943b14",
+      "calibration_sha256": "fe5e41e71498903634d2e48968d8c5f78d2613f454d63674f90ebfd51695959a",
+      "calibration": {
+        "threshold": 0.98,
+        "margin": 0.5,
+        "acceptanceEnabled": true,
+        "screen_passed": false,
+        "metrics": {
+          "known_count": 117,
+          "unknown_count": 100,
+          "top1_correct": 108,
+          "top1_accuracy": 0.9230769230769231,
+          "macro_recall": 0.9183673469387755,
+          "accepted_correct": 53,
+          "accepted_wrong": 0,
+          "known_rejected": 64,
+          "unknown_false_accepts": 5,
+          "known_accepted_precision": 1.0,
+          "correct_known_coverage": 0.452991452991453,
+          "unknown_false_accept_rate": 0.05,
+          "mixture_precision": 0.9137931034482759,
+          "mixture": "All supplied known examples plus all supplied unknown-sign examples; nonsigning camera negatives not yet collected",
+          "wilson95": {
+            "known_precision": [
+              0.932418011423458,
+              0.9999999999999999
+            ],
+            "correct_coverage": [
+              0.36572041742148637,
+              0.5432512210596254
+            ],
+            "unknown_false_accept_rate": [
+              0.02154367915436796,
+              0.11175046923191913
+            ],
+            "mixture_precision": [
+              0.8135637093712647,
+              0.962614616873809
+            ]
+          }
+        }
+      },
+      "validation_macro_recall": 0.9183673469387755,
+      "epochs": 80,
+      "training_seconds": 30.0137631999969,
+      "parameters": 59057,
+      "stop_reason": "epoch-ceiling"
+    },
+    {
+      "architecture": "stgcn",
+      "seed": 42,
+      "weights_sha256": "32d58f686d097da34284e746f945563d1a5502a4d90f3e9ea435007f88abcece",
+      "run_json_sha256": "314eecec77b7bc9554c9cf24aaf07219131b935cd9dd2405e0b0b28a64acc325",
+      "validation_predictions_sha256": "ef31d6d8a4b0bc3a4bf13703103efae0b3f37c047678cd756ef23004e775402d",
+      "calibration_sha256": "1a5acf069fb75d747982d61aa9f19693866aa2071e103e0f31735c27d203a5f6",
+      "calibration": {
+        "threshold": 0.93,
+        "margin": 0.5,
+        "acceptanceEnabled": true,
+        "screen_passed": false,
+        "metrics": {
+          "known_count": 117,
+          "unknown_count": 100,
+          "top1_correct": 69,
+          "top1_accuracy": 0.5897435897435898,
+          "macro_recall": 0.5884353741496599,
+          "accepted_correct": 21,
+          "accepted_wrong": 0,
+          "known_rejected": 96,
+          "unknown_false_accepts": 5,
+          "known_accepted_precision": 1.0,
+          "correct_known_coverage": 0.1794871794871795,
+          "unknown_false_accept_rate": 0.05,
+          "mixture_precision": 0.8076923076923077,
+          "mixture": "All supplied known examples plus all supplied unknown-sign examples; nonsigning camera negatives not yet collected",
+          "wilson95": {
+            "known_precision": [
+              0.8453609810751531,
+              1.0
+            ],
+            "correct_coverage": [
+              0.1204989935741263,
+              0.25885308697890796
+            ],
+            "unknown_false_accept_rate": [
+              0.02154367915436796,
+              0.11175046923191913
+            ],
+            "mixture_precision": [
+              0.6212374288068301,
+              0.9149293885105758
+            ]
+          }
+        }
+      },
+      "validation_macro_recall": 0.5884353741496599,
+      "epochs": 80,
+      "training_seconds": 580.0618602000031,
+      "parameters": 12785,
+      "stop_reason": "epoch-ceiling"
+    },
+    {
+      "architecture": "stgcn",
+      "seed": 43,
+      "weights_sha256": "a991d48ee298addf63d51ba2da7c28a1b5669e11871f1ff5f99ecf93ca3967b3",
+      "run_json_sha256": "5111a42fb57a37aed9bfd2c7f3fffe6fe56922bcce10540281ad92611e419449",
+      "validation_predictions_sha256": "7f4fc1107912b476981d11951e83074e4a6213eec387f503676ccbf012cf2a58",
+      "calibration_sha256": "3bc10e4e986487713bbe9fc22cb07b42f7490d862659716a6ae31eb020864a45",
+      "calibration": {
+        "threshold": 0.95,
+        "margin": 0.5,
+        "acceptanceEnabled": true,
+        "screen_passed": false,
+        "metrics": {
+          "known_count": 117,
+          "unknown_count": 100,
+          "top1_correct": 70,
+          "top1_accuracy": 0.5982905982905983,
+          "macro_recall": 0.6122448979591837,
+          "accepted_correct": 18,
+          "accepted_wrong": 0,
+          "known_rejected": 99,
+          "unknown_false_accepts": 3,
+          "known_accepted_precision": 1.0,
+          "correct_known_coverage": 0.15384615384615385,
+          "unknown_false_accept_rate": 0.03,
+          "mixture_precision": 0.8571428571428571,
+          "mixture": "All supplied known examples plus all supplied unknown-sign examples; nonsigning camera negatives not yet collected",
+          "wilson95": {
+            "known_precision": [
+              0.8241207763533425,
+              1.0
+            ],
+            "correct_coverage": [
+              0.09958656287229517,
+              0.23011368412498184
+            ],
+            "unknown_false_accept_rate": [
+              0.010254524024038925,
+              0.0845193642905276
+            ],
+            "mixture_precision": [
+              0.6536393971937906,
+              0.9501898750027473
+            ]
+          }
+        }
+      },
+      "validation_macro_recall": 0.6122448979591837,
+      "epochs": 80,
+      "training_seconds": 581.369040000005,
+      "parameters": 12785,
+      "stop_reason": "epoch-ceiling"
+    },
+    {
+      "architecture": "stgcn",
+      "seed": 44,
+      "weights_sha256": "a1f6682ecf2fb356def709775e9f989c842c552e0d685cf7a889aeb03c5aacb9",
+      "run_json_sha256": "d2060784b8de0de39e138a90722f8cd87029777f162003ba04ba8f909e0bdb8c",
+      "validation_predictions_sha256": "bd5fb5115f89d2734bb38ab19dc4ca3d2cd8c919a8e0a65896d718112c011a51",
+      "calibration_sha256": "caa96641cac5d692a36113a9bd091e023f27ed3c67302782228438283b741892",
+      "calibration": {
+        "threshold": 0.95,
+        "margin": 0.5,
+        "acceptanceEnabled": true,
+        "screen_passed": false,
+        "metrics": {
+          "known_count": 117,
+          "unknown_count": 100,
+          "top1_correct": 71,
+          "top1_accuracy": 0.6068376068376068,
+          "macro_recall": 0.6054421768707483,
+          "accepted_correct": 18,
+          "accepted_wrong": 0,
+          "known_rejected": 99,
+          "unknown_false_accepts": 5,
+          "known_accepted_precision": 1.0,
+          "correct_known_coverage": 0.15384615384615385,
+          "unknown_false_accept_rate": 0.05,
+          "mixture_precision": 0.782608695652174,
+          "mixture": "All supplied known examples plus all supplied unknown-sign examples; nonsigning camera negatives not yet collected",
+          "wilson95": {
+            "known_precision": [
+              0.8241207763533425,
+              1.0
+            ],
+            "correct_coverage": [
+              0.09958656287229517,
+              0.23011368412498184
+            ],
+            "unknown_false_accept_rate": [
+              0.02154367915436796,
+              0.11175046923191913
+            ],
+            "mixture_precision": [
+              0.5809651698373599,
+              0.9033602197341379
+            ]
+          }
+        }
+      },
+      "validation_macro_recall": 0.6054421768707483,
+      "epochs": 80,
+      "training_seconds": 572.6604450000013,
+      "parameters": 12785,
+      "stop_reason": "epoch-ceiling"
+    }
+  ],
+  "promotion": false,
+  "reason": "No eligible candidate",
+  "test_previously_inspected": true
+}

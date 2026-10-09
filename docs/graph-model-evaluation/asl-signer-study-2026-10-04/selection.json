@@ -1,0 +1,407 @@
+{
+  "format": "signbridge-signer-frozen-selection-v1",
+  "language": "asl",
+  "run_root": "C:\\Users\\adjay\\Downloads\\signbridge\\training\\artifacts\\graph-v1\\asl-signer-study-2026-10-04",
+  "stage": "validation-only selection; no final X/y arrays or predictions used",
+  "inputs": {
+    "graph": {
+      "path": "C:\\Users\\adjay\\Downloads\\signbridge\\.training-data\\graph-v1\\asl-signer-disjoint-strict\\asl.npz",
+      "sha256": "1e4a49374eca6feef9a8b18f05403fbac07fe4cb3afe8279dd84c1fc1aec9b21"
+    },
+    "legacy": {
+      "path": "C:\\Users\\adjay\\Downloads\\signbridge\\.training-data\\graph-v1\\asl-signer-disjoint-strict\\asl-legacy.npz",
+      "sha256": "9b059c7118940a4f0e21ef5f7fde94068930fd6534f0adadddc9831e99269081"
+    },
+    "graphMetadata": {
+      "path": "C:\\Users\\adjay\\Downloads\\signbridge\\.training-data\\graph-v1\\asl-signer-disjoint-strict\\asl.metadata.json",
+      "sha256": "ececad8a83880341b1f8a5e58219a6f7eb16b7e8531561aed7d7d1f19b39b734"
+    },
+    "legacyMetadata": {
+      "path": "C:\\Users\\adjay\\Downloads\\signbridge\\.training-data\\graph-v1\\asl-signer-disjoint-strict\\asl-legacy.metadata.json",
+      "sha256": "d7eb7ed4e93545f99da8b05b76d4bbb039729d09cf89803715caf60d5992b978"
+    },
+    "strictProtocol": {
+      "path": "C:\\Users\\adjay\\Downloads\\signbridge\\docs\\graph-model-evaluation\\asl-strict-negative-protocol-2026-10-04.json",
+      "sha256": "b843920f2ffb36ff62651808d1439727fc552f95a3d927b28951eebb11d98674"
+    },
+    "preregistration": {
+      "path": "C:\\Users\\adjay\\Downloads\\signbridge\\docs\\graph-model-evaluation\\asl-signer-study-2026-10-04\\experiment.json",
+      "sha256": "af2a601a6731f225ecd5937497a786bec5fd2cb75214de3a7aa3d29dabc8d1d4"
+    },
+    "inventory": {
+      "path": "C:\\Users\\adjay\\Downloads\\signbridge\\docs\\graph-model-evaluation\\asl-signer-strict-study-2026-10-04.json",
+      "sha256": "fd2613d7ca81a462dfe128edc6defdc5b348d56c094da6612c833c7a1c3129f6"
+    }
+  },
+  "training_experiment": {
+    "path": "C:\\Users\\adjay\\Downloads\\signbridge\\training\\artifacts\\graph-v1\\asl-signer-study-2026-10-04\\experiment.json",
+    "sha256": "329458773b76252d0040ce3ed6f6c375b9a88a22bbf3b14ac2f21d08a89ba9a9"
+  },
+  "labels_sha256": "c6fab9653f17d03b648fbf259fae16a05444019f4de81a01db73c7026ef99bd0",
+  "splits": {
+    "train": {
+      "count": 1202,
+      "signers": 67,
+      "orderedClipIdsSha256": "0b0f9acf2bbde8f57eb73a51e4e106fa0262bb2abe8e5ef66b23d426b79d416a"
+    },
+    "val": {
+      "count": 373,
+      "signers": 14,
+      "orderedClipIdsSha256": "b59498a1c4a09b98c15ca633f517e90a890b7f3a40d7b39d54cdc03656ee19be"
+    },
+    "test": {
+      "count": 450,
+      "signers": 15,
+      "orderedClipIdsSha256": "c8e96e01fb9bf443eaf0d9785a80450cabd2664082946d1b6577ac5ac4576404"
+    },
+    "unknown_validation": {
+      "count": 40,
+      "signers": 11,
+      "orderedClipIdsSha256": "b1e1c9330c4d65e67d6c1508cccbfede18592d76584c205eb21407e858f0184f"
+    },
+    "unknown_test": {
+      "count": 112,
+      "signers": 13,
+      "orderedClipIdsSha256": "f9e838195e3b963bf0ffa5c47547e8e42afd066c783a3a4e9ab0aac14da2a3ac"
+    }
+  },
+  "budget": {
+    "epochs": 80,
+    "minimumEpochs": 20,
+    "patience": 20,
+    "batchSize": 64,
+    "learningRate": 0.002,
+    "weightDecay": 0.0001,
+    "maxSeconds": 1200,
+    "threads": 4
+  },
+  "selected_architecture": null,
+  "representative_seed": 42,
+  "selection_rule": "GRU75 requires all three validation precision>=95%, correct coverage>=60%, unknown FAR<=5% gates and >=5pp mean coverage gain over matched GRU27; representative seed42 fixed",
+  "summaries": {
+    "gru27": {
+      "mean_correct_coverage": 0.00804289544235925,
+      "coverage_range": [
+        0.0,
+        0.024128686327077747
+      ],
+      "all_seeds_screen_passed": false,
+      "mean_macro_recall": 0.31936772486772486
+    },
+    "gru75": {
+      "mean_correct_coverage": 0.0062555853440571935,
+      "coverage_range": [
+        0.0,
+        0.0160857908847185
+      ],
+      "all_seeds_screen_passed": false,
+      "mean_macro_recall": 0.3127328042328042
+    }
+  },
+  "runs": [
+    {
+      "architecture": "gru27",
+      "seed": 42,
+      "weights_sha256": "d314e1383113bcaf55a58e3369d6888491fa11e55a883cc130ff25374cb9516b",
+      "run_json_sha256": "1cac140223329036269a2d9797f0032ccaa8658e67c6a130a8504981f4a423e3",
+      "validation_predictions_sha256": "6b1badf8e6c1a377fb4e73c1ff9351f8d9f89fc8f10dad67423f83bbde6bd362",
+      "calibration": {
+        "threshold": 0.99,
+        "margin": 0.5,
+        "acceptanceEnabled": false,
+        "screen_passed": false,
+        "metrics": {
+          "known_count": 373,
+          "unknown_count": 40,
+          "top1_correct": 126,
+          "top1_accuracy": 0.3378016085790885,
+          "macro_recall": 0.3418968253968254,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "known_rejected": 373,
+          "unknown_false_accepts": 0,
+          "known_accepted_precision": null,
+          "correct_known_coverage": 0.0,
+          "unknown_false_accept_rate": 0.0,
+          "mixture_precision": null,
+          "mixture": "All supplied known examples plus all supplied unknown-sign examples; nonsigning camera negatives not yet collected",
+          "wilson95": {
+            "known_precision": null,
+            "correct_coverage": [
+              0.0,
+              0.010193832793015323
+            ],
+            "unknown_false_accept_rate": [
+              0.0,
+              0.08762160119728664
+            ],
+            "mixture_precision": null
+          }
+        }
+      },
+      "validation_macro_recall": 0.3418968253968254,
+      "epochs": 80,
+      "training_seconds": 65.41462409999804,
+      "parameters": 34724,
+      "stop_reason": "epoch-ceiling",
+      "calibration_sha256": "008bd2a576d9528fc5fb38c3e39da9dc5400dfcec6684fb60e44085f9fff6198"
+    },
+    {
+      "architecture": "gru27",
+      "seed": 43,
+      "weights_sha256": "cd8f3ac8da49dddb08a83f0c3a24780a31241b95e0ea1f4829d47ab75c3514b1",
+      "run_json_sha256": "56e64bb5ec3824d2fe3c63d14eaba1f9a3a2e1cd4e9ad60ed8eb5792bb5443fb",
+      "validation_predictions_sha256": "bc9518d0142c8573f40178b5466caa48a8a6ae5ca0546262e02766da1c28307e",
+      "calibration": {
+        "threshold": 0.92,
+        "margin": 0.5,
+        "acceptanceEnabled": true,
+        "screen_passed": false,
+        "metrics": {
+          "known_count": 373,
+          "unknown_count": 40,
+          "top1_correct": 102,
+          "top1_accuracy": 0.2734584450402145,
+          "macro_recall": 0.28894444444444445,
+          "accepted_correct": 9,
+          "accepted_wrong": 0,
+          "known_rejected": 364,
+          "unknown_false_accepts": 0,
+          "known_accepted_precision": 1.0,
+          "correct_known_coverage": 0.024128686327077747,
+          "unknown_false_accept_rate": 0.0,
+          "mixture_precision": 1.0,
+          "mixture": "All supplied known examples plus all supplied unknown-sign examples; nonsigning camera negatives not yet collected",
+          "wilson95": {
+            "known_precision": [
+              0.7008549515804559,
+              1.0
+            ],
+            "correct_coverage": [
+              0.012745084674787768,
+              0.04521419318451636
+            ],
+            "unknown_false_accept_rate": [
+              0.0,
+              0.08762160119728664
+            ],
+            "mixture_precision": [
+              0.7008549515804559,
+              1.0
+            ]
+          }
+        }
+      },
+      "validation_macro_recall": 0.28894444444444445,
+      "epochs": 76,
+      "training_seconds": 56.14975250000134,
+      "parameters": 34724,
+      "stop_reason": "validation-early-stop",
+      "calibration_sha256": "7f6cc7d9be150e685a3b52dbab31a92d717f8fcfb6a0fed52f9de05f0efcffd0"
+    },
+    {
+      "architecture": "gru27",
+      "seed": 44,
+      "weights_sha256": "7345d6450cecceacaf1eda2289f20eb696cbb133c5982f86014d99fbb932af90",
+      "run_json_sha256": "31345c774d8f9e2dba31702218c5c8cb898cfc19fec0f39b50e5111f4da53141",
+      "validation_predictions_sha256": "6086f698df463bdba8f2d294922df468ca713080c7e7535befd28863d1836f74",
+      "calibration": {
+        "threshold": 0.99,
+        "margin": 0.5,
+        "acceptanceEnabled": false,
+        "screen_passed": false,
+        "metrics": {
+          "known_count": 373,
+          "unknown_count": 40,
+          "top1_correct": 113,
+          "top1_accuracy": 0.30294906166219837,
+          "macro_recall": 0.32726190476190475,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "known_rejected": 373,
+          "unknown_false_accepts": 0,
+          "known_accepted_precision": null,
+          "correct_known_coverage": 0.0,
+          "unknown_false_accept_rate": 0.0,
+          "mixture_precision": null,
+          "mixture": "All supplied known examples plus all supplied unknown-sign examples; nonsigning camera negatives not yet collected",
+          "wilson95": {
+            "known_precision": null,
+            "correct_coverage": [
+              0.0,
+              0.010193832793015323
+            ],
+            "unknown_false_accept_rate": [
+              0.0,
+              0.08762160119728664
+            ],
+            "mixture_precision": null
+          }
+        }
+      },
+      "validation_macro_recall": 0.32726190476190475,
+      "epochs": 80,
+      "training_seconds": 63.987796700006584,
+      "parameters": 34724,
+      "stop_reason": "epoch-ceiling",
+      "calibration_sha256": "8101e8e465c2f5f0200d98d38f6335826d7236e23e1d184ff5ac606b935ed746"
+    },
+    {
+      "architecture": "gru75",
+      "seed": 42,
+      "weights_sha256": "1c89bb8f969ff79d699884decf056ad7c8dc13fa26063bd50d0209743a7b42d0",
+      "run_json_sha256": "3a735096655e3ceda7f6917e44fcf6b0fd8a872bc4ff9f972135f05b3512a648",
+      "validation_predictions_sha256": "0641b3c5c3062fcf3231ddf28311ddf049e226ab3dfb4cca8e9314941cdc0eab",
+      "calibration": {
+        "threshold": 0.79,
+        "margin": 0.5,
+        "acceptanceEnabled": true,
+        "screen_passed": false,
+        "metrics": {
+          "known_count": 373,
+          "unknown_count": 40,
+          "top1_correct": 103,
+          "top1_accuracy": 0.2761394101876676,
+          "macro_recall": 0.29773809523809525,
+          "accepted_correct": 6,
+          "accepted_wrong": 0,
+          "known_rejected": 367,
+          "unknown_false_accepts": 0,
+          "known_accepted_precision": 1.0,
+          "correct_known_coverage": 0.0160857908847185,
+          "unknown_false_accept_rate": 0.0,
+          "mixture_precision": 1.0,
+          "mixture": "All supplied known examples plus all supplied unknown-sign examples; nonsigning camera negatives not yet collected",
+          "wilson95": {
+            "known_precision": [
+              0.6096657120978346,
+              1.0
+            ],
+            "correct_coverage": [
+              0.007392577027257936,
+              0.03464488580994993
+            ],
+            "unknown_false_accept_rate": [
+              0.0,
+              0.08762160119728664
+            ],
+            "mixture_precision": [
+              0.6096657120978346,
+              1.0
+            ]
+          }
+        }
+      },
+      "validation_macro_recall": 0.29773809523809525,
+      "epochs": 49,
+      "training_seconds": 45.6786274999904,
+      "parameters": 62372,
+      "stop_reason": "validation-early-stop",
+      "calibration_sha256": "b67de647539efcc65072885d8243da600cd7e2ea961d0bccaf6ac98abb4a865d"
+    },
+    {
+      "architecture": "gru75",
+      "seed": 43,
+      "weights_sha256": "15789ad640afc089fbd66aceda988d1bfa4dd8afab3ec309d9909459ad5504aa",
+      "run_json_sha256": "5f6bbf90a2de4faa611eb9b02085eae1294f108a76b89914b5c4e97038b56631",
+      "validation_predictions_sha256": "2403ee2f37de2426debaaa0c6cf8a8670cc806d18d01b0290d7e32ddeaef4b2a",
+      "calibration": {
+        "threshold": 0.97,
+        "margin": 0.5,
+        "acceptanceEnabled": true,
+        "screen_passed": false,
+        "metrics": {
+          "known_count": 373,
+          "unknown_count": 40,
+          "top1_correct": 115,
+          "top1_accuracy": 0.30831099195710454,
+          "macro_recall": 0.30822222222222223,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "known_rejected": 372,
+          "unknown_false_accepts": 0,
+          "known_accepted_precision": 1.0,
+          "correct_known_coverage": 0.002680965147453083,
+          "unknown_false_accept_rate": 0.0,
+          "mixture_precision": 1.0,
+          "mixture": "All supplied known examples plus all supplied unknown-sign examples; nonsigning camera negatives not yet collected",
+          "wilson95": {
+            "known_precision": [
+              0.20654931437723745,
+              1.0
+            ],
+            "correct_coverage": [
+              0.0004734130475862273,
+              0.015027691419461187
+            ],
+            "unknown_false_accept_rate": [
+              0.0,
+              0.08762160119728664
+            ],
+            "mixture_precision": [
+              0.20654931437723745,
+              1.0
+            ]
+          }
+        }
+      },
+      "validation_macro_recall": 0.30822222222222223,
+      "epochs": 67,
+      "training_seconds": 62.23724620000576,
+      "parameters": 62372,
+      "stop_reason": "validation-early-stop",
+      "calibration_sha256": "ceda65d590bcd20bd3441846a70451b0b98fe686d3d7651bb40da67416c7a3e1"
+    },
+    {
+      "architecture": "gru75",
+      "seed": 44,
+      "weights_sha256": "0767c00dde1ad7f62c3f729d1e8193306f233c7671a0a02f0372a671b31a1bd2",
+      "run_json_sha256": "1546c73e538216330bc773e50588c1025c73887d8340afcdec15fadf034386b2",
+      "validation_predictions_sha256": "b11709385684c920c5668f01d7c934f3dec19a2c89134174cca3a22de0803fc2",
+      "calibration": {
+        "threshold": 0.99,
+        "margin": 0.5,
+        "acceptanceEnabled": false,
+        "screen_passed": false,
+        "metrics": {
+          "known_count": 373,
+          "unknown_count": 40,
+          "top1_correct": 117,
+          "top1_accuracy": 0.3136729222520107,
+          "macro_recall": 0.3322380952380953,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "known_rejected": 373,
+          "unknown_false_accepts": 0,
+          "known_accepted_precision": null,
+          "correct_known_coverage": 0.0,
+          "unknown_false_accept_rate": 0.0,
+          "mixture_precision": null,
+          "mixture": "All supplied known examples plus all supplied unknown-sign examples; nonsigning camera negatives not yet collected",
+          "wilson95": {
+            "known_precision": null,
+            "correct_coverage": [
+              0.0,
+              0.010193832793015323
+            ],
+            "unknown_false_accept_rate": [
+              0.0,
+              0.08762160119728664
+            ],
+            "mixture_precision": null
+          }
+        }
+      },
+      "validation_macro_recall": 0.3322380952380953,
+      "epochs": 80,
+      "training_seconds": 95.3641740000021,
+      "parameters": 62372,
+      "stop_reason": "epoch-ceiling",
+      "calibration_sha256": "9aed5ff453a18c59decabdc81e50cbfe2043aadbc359f0f8951d45ad22190d06"
+    }
+  ],
+  "promotion": false,
+  "final_test_evaluated": false,
+  "reason": "No eligible candidate; both fixed architectures remain descriptive final comparisons",
+  "historical_corpus_previously_inspected": true
+}

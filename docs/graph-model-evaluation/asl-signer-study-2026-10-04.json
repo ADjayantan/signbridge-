@@ -1,0 +1,93 @@
+{
+  "format": "signbridge-signer-study-inventory-v1",
+  "signLanguage": "asl",
+  "preparedAt": "2026-10-04T06:15:35.631954+00:00",
+  "knownClasses": 100,
+  "knownClips": 2025,
+  "knownSigners": 96,
+  "algorithm": {
+    "seed": 42,
+    "sort": "distinct known signer IDs sorted numeric ascending into int64 array",
+    "rng": "numpy.random.default_rng(seed): PCG64",
+    "shuffle": "one in-place shuffle",
+    "assignment": "first floor(N*0.70) train; next floor(N*0.15) validation; remainder test",
+    "clipOrder": "original train, val, test concatenation, stable filter by assigned signer",
+    "numpyVersion": "2.5.3",
+    "unknownPolicy": "original unknown_validation and unknown_test unchanged"
+  },
+  "groups": {
+    "train": {
+      "signers": 67,
+      "clips": 1202,
+      "classes": 100,
+      "perClassMinimum": 9,
+      "perClassMaximum": 33
+    },
+    "val": {
+      "signers": 14,
+      "clips": 373,
+      "classes": 100,
+      "perClassMinimum": 1,
+      "perClassMaximum": 14
+    },
+    "test": {
+      "signers": 15,
+      "clips": 450,
+      "classes": 100,
+      "perClassMinimum": 1,
+      "perClassMaximum": 10
+    }
+  },
+  "knownSignerOverlap": {
+    "trainValidation": 0,
+    "trainTest": 0,
+    "validationTest": 0
+  },
+  "unknownSignerOverlap": {
+    "unknown_validation": {
+      "clips": 100,
+      "signersWithAvailableIds": 40,
+      "missingSignerIds": 0,
+      "overlapWithKnownGroups": {
+        "train": 22,
+        "val": 7,
+        "test": 9
+      }
+    },
+    "unknown_test": {
+      "clips": 200,
+      "signersWithAvailableIds": 52,
+      "missingSignerIds": 0,
+      "overlapWithKnownGroups": {
+        "train": 32,
+        "val": 9,
+        "test": 10
+      }
+    }
+  },
+  "unknownValidationTestSignerOverlap": 31,
+  "unknownClipsUnchanged": true,
+  "assignmentManifestHash": "45c6392cef3f2a41d7a7f357b6a029e55f75f896a25373eb84aa4840578afca9",
+  "sourceHashes": {
+    "graph": "6b8c67eda358ebbf2c7154ce884f1205a9be73230b2a2694d3073c9304c5482f",
+    "legacy": "c67da34858718cd98d33a058fba9134739172d9dd946e9953f08c65b4252446a",
+    "graphMetadata": "57ed93aba374fb7590c48f47d00751ebf47f2c1fe75bc6e2d5a446fa0e48ba25",
+    "legacyMetadata": "5991f8564b9e83d5b643e6a5cd62639498a39607967db0ee6ba9383ae339d82e"
+  },
+  "trained": false,
+  "accuracyMeasured": false,
+  "limits": [
+    "Known signer groups are disjoint; unknown calibration/test retain original overlapping signer identities",
+    "Unknown validation exposes some held-out known signers to threshold calibration; fully signer-independent acceptance is not established",
+    "Same existing corpus, not newly collected signing or a newly untouched recording test",
+    "All architectures require fresh training on these groups; historical weights are not an unseen-signer control",
+    "No live-camera or fluent-user accuracy established; source dataset use remains local research"
+  ],
+  "sourceInputsUnchanged": true,
+  "dataHashes": {
+    "graph": "b6098e314daa80a57f3b40eda154468f5abefff7b7acf54a1bb0d84f0dd4ad7e",
+    "legacy": "f171ff8296bdc67b6406bb099a1e4b9f46b54a657b86aa49ccb6c2cc409f1184"
+  },
+  "knownTestSignerOverlapThroughUnknownValidation": 9,
+  "fullySignerDisjointAcceptanceEvaluation": false
+}

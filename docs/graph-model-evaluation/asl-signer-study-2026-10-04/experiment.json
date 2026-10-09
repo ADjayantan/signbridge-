@@ -1,0 +1,99 @@
+{
+  "format": "signbridge-asl-signer-comparison-protocol-v1",
+  "signLanguage": "asl",
+  "recordedAt": "2026-10-04T18:06:45.106627+00:00",
+  "models": [
+    "gru27",
+    "gru75"
+  ],
+  "seeds": [
+    42,
+    43,
+    44
+  ],
+  "dataSha256": "1e4a49374eca6feef9a8b18f05403fbac07fe4cb3afe8279dd84c1fc1aec9b21",
+  "legacyDataSha256": "9b059c7118940a4f0e21ef5f7fde94068930fd6534f0adadddc9831e99269081",
+  "metadataSha256": "ececad8a83880341b1f8a5e58219a6f7eb16b7e8531561aed7d7d1f19b39b734",
+  "legacyMetadataSha256": "d7eb7ed4e93545f99da8b05b76d4bbb039729d09cf89803715caf60d5992b978",
+  "strictProtocolSha256": "b843920f2ffb36ff62651808d1439727fc552f95a3d927b28951eebb11d98674",
+  "inventorySha256": "fd2613d7ca81a462dfe128edc6defdc5b348d56c094da6612c833c7a1c3129f6",
+  "inventoryPath": "C:\\Users\\adjay\\Downloads\\signbridge\\docs\\graph-model-evaluation\\asl-signer-strict-study-2026-10-04.json",
+  "paths": {
+    "graph": "C:\\Users\\adjay\\Downloads\\signbridge\\.training-data\\graph-v1\\asl-signer-disjoint-strict\\asl.npz",
+    "legacy": "C:\\Users\\adjay\\Downloads\\signbridge\\.training-data\\graph-v1\\asl-signer-disjoint-strict\\asl-legacy.npz",
+    "strictProtocol": "C:\\Users\\adjay\\Downloads\\signbridge\\docs\\graph-model-evaluation\\asl-strict-negative-protocol-2026-10-04.json",
+    "inventory": "C:\\Users\\adjay\\Downloads\\signbridge\\docs\\graph-model-evaluation\\asl-signer-strict-study-2026-10-04.json"
+  },
+  "labelsSha256": "c6fab9653f17d03b648fbf259fae16a05444019f4de81a01db73c7026ef99bd0",
+  "classes": 100,
+  "splits": {
+    "train": {
+      "count": 1202,
+      "signers": 67,
+      "orderedClipIdsSha256": "0b0f9acf2bbde8f57eb73a51e4e106fa0262bb2abe8e5ef66b23d426b79d416a"
+    },
+    "val": {
+      "count": 373,
+      "signers": 14,
+      "orderedClipIdsSha256": "b59498a1c4a09b98c15ca633f517e90a890b7f3a40d7b39d54cdc03656ee19be"
+    },
+    "test": {
+      "count": 450,
+      "signers": 15,
+      "orderedClipIdsSha256": "c8e96e01fb9bf443eaf0d9785a80450cabd2664082946d1b6577ac5ac4576404"
+    },
+    "unknown_validation": {
+      "count": 40,
+      "signers": 11,
+      "orderedClipIdsSha256": "b1e1c9330c4d65e67d6c1508cccbfede18592d76584c205eb21407e858f0184f"
+    },
+    "unknown_test": {
+      "count": 112,
+      "signers": 13,
+      "orderedClipIdsSha256": "f9e838195e3b963bf0ffa5c47547e8e42afd066c783a3a4e9ab0aac14da2a3ac"
+    }
+  },
+  "training": {
+    "epochs": 80,
+    "minimumEpochs": 20,
+    "patience": 20,
+    "batchSize": 64,
+    "learningRate": 0.002,
+    "weightDecay": 0.0001,
+    "maxSeconds": 1200,
+    "threads": 4
+  },
+  "augmentation": "none",
+  "checkpoint": "Validation macro recall; tie lower validation loss",
+  "calibration": {
+    "confidence": [
+      0.5,
+      0.99,
+      0.01
+    ],
+    "margin": [
+      0.05,
+      0.5,
+      0.05
+    ],
+    "selection": "Maximize correctly accepted validation coverage after precision/FAR screening; existing fixed grid and tie rules"
+  },
+  "acceptance": {
+    "minimumKnownPrecision": 0.95,
+    "minimumCorrectKnownCoverage": 0.6,
+    "maximumUnknownFalseAcceptRate": 0.05
+  },
+  "minimumCoverageImprovement": 0.05,
+  "representativeSeed": 42,
+  "selection": "GRU75 eligible only if all3 seeds pass validation screens and mean correct coverage improves >=5pp over matched GRU27; freeze before one final comparison",
+  "trained": false,
+  "testPredictionsPerformed": false,
+  "promoted": false,
+  "limits": [
+    "Signer-isolated partition of previously inspected historical corpus; not newly collected or untouched recordings",
+    "Only 40 calibration and 112 test out-of-vocabulary negatives; correlated clips and one shared unknown word",
+    "No idle-camera negatives, facial/depth features, sentences, live-device or fluent-user validation",
+    "Compare only within this matched split; never treat historical-split scores as a matched control",
+    "Model improvement and promotion are not guaranteed; runtime/device/distribution gates remain required"
+  ]
+}

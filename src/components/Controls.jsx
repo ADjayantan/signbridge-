@@ -1,9 +1,17 @@
 import { LANGUAGES } from "../lib/languages.js";
 
-export function LanguageSelect({ value, onChange, id = "language" }) {
+export function CameraSelect({ camera, value, onChange, disabled = false, id = "camera-device" }) {
+  if (!camera.devices?.length) return null;
+  return <div className="field"><label htmlFor={id}>Camera device</label><select id={id} value={value || camera.selectedDeviceId || ""} onChange={(e) => onChange(e.target.value)} disabled={disabled}>
+    <option value="">Automatic · prefer laptop webcam</option>
+    {camera.devices.map((d, i) => <option key={d.deviceId} value={d.deviceId}>{d.label || `Camera ${i + 1}`}</option>)}
+  </select><p className="fine-print">Choose Integrated Camera for the laptop. Phone and virtual cameras are listed separately.</p></div>;
+}
+
+export function LanguageSelect({ value, onChange, id = "language", label = "Reply language" }) {
   return (
     <div className="field">
-      <label htmlFor={id}>Reply language</label>
+      <label htmlFor={id}>{label}</label>
       <select id={id} value={value} onChange={(e) => onChange(e.target.value)}>
         {LANGUAGES.map((l) => (
           <option key={l.code} value={l.code} lang={l.bcp47}>
@@ -15,10 +23,10 @@ export function LanguageSelect({ value, onChange, id = "language" }) {
   );
 }
 
-export function Switch({ checked, onChange, children, description }) {
+export function Switch({ checked, onChange, children, description, disabled = false }) {
   return (
     <label className="switch">
-      <input type="checkbox" role="switch" checked={checked} onChange={(e) => onChange(e.target.checked)} />
+      <input type="checkbox" role="switch" checked={checked} disabled={disabled} onChange={(e) => onChange(e.target.checked)} />
       <span className="switch-track" aria-hidden="true" />
       <span className="switch-text">
         {children}

@@ -1,0 +1,3951 @@
+{
+  "format": "signbridge-final-benchmark-v1",
+  "language": "isl",
+  "frozen_selection_sha256": "1511634497888e73cbaa561adef054ee2cc24c313986e9144171630dc2a22476",
+  "selected_architecture": null,
+  "representative_seed": 42,
+  "candidate_dataset_gate_passed": false,
+  "test_mean_correct_coverage": {
+    "gru27": 0.16319444444444445,
+    "gru75": 0.2621527777777778,
+    "stgcn": 0.13194444444444445
+  },
+  "runs": [
+    {
+      "architecture": "gru27",
+      "seed": 42,
+      "threshold": 0.89,
+      "margin": 0.5,
+      "acceptance_enabled": true,
+      "test_screen_passed": false,
+      "metrics": {
+        "known_count": 192,
+        "unknown_count": 200,
+        "top1_correct": 138,
+        "top1_accuracy": 0.71875,
+        "macro_recall": 0.7347748623258825,
+        "accepted_correct": 56,
+        "accepted_wrong": 2,
+        "known_rejected": 134,
+        "unknown_false_accepts": 20,
+        "known_accepted_precision": 0.9655172413793104,
+        "correct_known_coverage": 0.2916666666666667,
+        "unknown_false_accept_rate": 0.1,
+        "mixture_precision": 0.717948717948718,
+        "mixture": "All supplied known examples plus all supplied unknown-sign examples; nonsigning camera negatives not yet collected",
+        "wilson95": {
+          "known_precision": [
+            0.8827085453568732,
+            0.9904920716688347
+          ],
+          "correct_coverage": [
+            0.23196339072421923,
+            0.35954292013692846
+          ],
+          "unknown_false_accept_rate": [
+            0.06567044866909588,
+            0.1494058124327174
+          ],
+          "mixture_precision": [
+            0.6096907122939889,
+            0.8057466527032598
+          ]
+        }
+      },
+      "per_word": [
+        {
+          "label": "DOG",
+          "count": 7,
+          "top1_correct": 5,
+          "accepted_correct": 1,
+          "accepted_wrong": 1,
+          "most_common_wrong": "CAR"
+        },
+        {
+          "label": "LOUD",
+          "count": 6,
+          "top1_correct": 4,
+          "accepted_correct": 3,
+          "accepted_wrong": 1,
+          "most_common_wrong": "BIRD"
+        },
+        {
+          "label": "CAR",
+          "count": 4,
+          "top1_correct": 3,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": "DOG"
+        },
+        {
+          "label": "ELECTION",
+          "count": 2,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "TRAIN TICKET",
+          "count": 8,
+          "top1_correct": 6,
+          "accepted_correct": 2,
+          "accepted_wrong": 0,
+          "most_common_wrong": "DEATH"
+        },
+        {
+          "label": "HOUSE",
+          "count": 1,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "DEATH",
+          "count": 5,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "ELECTION"
+        },
+        {
+          "label": "QUIET",
+          "count": 3,
+          "top1_correct": 3,
+          "accepted_correct": 2,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "COURT",
+          "count": 3,
+          "top1_correct": 3,
+          "accepted_correct": 3,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "STORE OR SHOP",
+          "count": 4,
+          "top1_correct": 4,
+          "accepted_correct": 3,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "WINDOW",
+          "count": 3,
+          "top1_correct": 2,
+          "accepted_correct": 2,
+          "accepted_wrong": 0,
+          "most_common_wrong": "SHOES"
+        },
+        {
+          "label": "HAPPY",
+          "count": 3,
+          "top1_correct": 3,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "PEN",
+          "count": 2,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "RED"
+        },
+        {
+          "label": "BANK",
+          "count": 6,
+          "top1_correct": 6,
+          "accepted_correct": 3,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "HAT",
+          "count": 6,
+          "top1_correct": 5,
+          "accepted_correct": 3,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BOY"
+        },
+        {
+          "label": "BIRD",
+          "count": 1,
+          "top1_correct": 1,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "I",
+          "count": 3,
+          "top1_correct": 3,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "PAINT",
+          "count": 3,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "TIME"
+        },
+        {
+          "label": "T-SHIRT",
+          "count": 3,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "SHOES"
+        },
+        {
+          "label": "SHOES",
+          "count": 4,
+          "top1_correct": 4,
+          "accepted_correct": 3,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "IT",
+          "count": 9,
+          "top1_correct": 7,
+          "accepted_correct": 2,
+          "accepted_wrong": 0,
+          "most_common_wrong": "YOU (PLURAL)"
+        },
+        {
+          "label": "YOU (PLURAL)",
+          "count": 3,
+          "top1_correct": 3,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "RED",
+          "count": 2,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "HELLO",
+          "count": 7,
+          "top1_correct": 3,
+          "accepted_correct": 2,
+          "accepted_wrong": 0,
+          "most_common_wrong": "GOOD MORNING"
+        },
+        {
+          "label": "COW",
+          "count": 3,
+          "top1_correct": 3,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "GOOD MORNING",
+          "count": 4,
+          "top1_correct": 2,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": "YOU (PLURAL)"
+        },
+        {
+          "label": "FAN",
+          "count": 3,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "BLACK",
+          "count": 5,
+          "top1_correct": 4,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "CELL PHONE"
+        },
+        {
+          "label": "CELL PHONE",
+          "count": 4,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "HAT"
+        },
+        {
+          "label": "THANK YOU",
+          "count": 7,
+          "top1_correct": 7,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "WHITE",
+          "count": 1,
+          "top1_correct": 1,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "FATHER",
+          "count": 2,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "TIME"
+        },
+        {
+          "label": "SUMMER",
+          "count": 3,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "FAN"
+        },
+        {
+          "label": "FALL",
+          "count": 3,
+          "top1_correct": 3,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "BROTHER",
+          "count": 5,
+          "top1_correct": 5,
+          "accepted_correct": 3,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "MONDAY",
+          "count": 2,
+          "top1_correct": 2,
+          "accepted_correct": 2,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "BOY",
+          "count": 4,
+          "top1_correct": 2,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": "GIRL"
+        },
+        {
+          "label": "GIRL",
+          "count": 2,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "YEAR",
+          "count": 7,
+          "top1_correct": 7,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "LONG",
+          "count": 6,
+          "top1_correct": 4,
+          "accepted_correct": 3,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BIG LARGE"
+        },
+        {
+          "label": "SHORT",
+          "count": 6,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "SMALL LITTLE"
+        },
+        {
+          "label": "BIG LARGE",
+          "count": 4,
+          "top1_correct": 4,
+          "accepted_correct": 2,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "TEACHER",
+          "count": 3,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "TIME"
+        },
+        {
+          "label": "SMALL LITTLE",
+          "count": 4,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "LOUD"
+        },
+        {
+          "label": "TIME",
+          "count": 3,
+          "top1_correct": 2,
+          "accepted_correct": 2,
+          "accepted_wrong": 0,
+          "most_common_wrong": "FATHER"
+        },
+        {
+          "label": "HOT",
+          "count": 6,
+          "top1_correct": 3,
+          "accepted_correct": 2,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BANK"
+        },
+        {
+          "label": "PRIEST",
+          "count": 1,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "NEW",
+          "count": 3,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "FALL"
+        },
+        {
+          "label": "GOOD",
+          "count": 3,
+          "top1_correct": 2,
+          "accepted_correct": 2,
+          "accepted_wrong": 0,
+          "most_common_wrong": "GOOD MORNING"
+        }
+      ]
+    },
+    {
+      "architecture": "gru27",
+      "seed": 43,
+      "threshold": 0.98,
+      "margin": 0.5,
+      "acceptance_enabled": true,
+      "test_screen_passed": false,
+      "metrics": {
+        "known_count": 192,
+        "unknown_count": 200,
+        "top1_correct": 146,
+        "top1_accuracy": 0.7604166666666666,
+        "macro_recall": 0.7741172659540007,
+        "accepted_correct": 12,
+        "accepted_wrong": 0,
+        "known_rejected": 180,
+        "unknown_false_accepts": 6,
+        "known_accepted_precision": 1.0,
+        "correct_known_coverage": 0.0625,
+        "unknown_false_accept_rate": 0.03,
+        "mixture_precision": 0.6666666666666666,
+        "mixture": "All supplied known examples plus all supplied unknown-sign examples; nonsigning camera negatives not yet collected",
+        "wilson95": {
+          "known_precision": [
+            0.7575059933447592,
+            1.0
+          ],
+          "correct_coverage": [
+            0.03611064877145607,
+            0.1060526040369538
+          ],
+          "unknown_false_accept_rate": [
+            0.013820314340111346,
+            0.06389429245451925
+          ],
+          "mixture_precision": [
+            0.43749467295945105,
+            0.837212252491663
+          ]
+        }
+      },
+      "per_word": [
+        {
+          "label": "DOG",
+          "count": 7,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "HAPPY"
+        },
+        {
+          "label": "LOUD",
+          "count": 6,
+          "top1_correct": 6,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "CAR",
+          "count": 4,
+          "top1_correct": 4,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "ELECTION",
+          "count": 2,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "T-SHIRT"
+        },
+        {
+          "label": "TRAIN TICKET",
+          "count": 8,
+          "top1_correct": 6,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": "CAR"
+        },
+        {
+          "label": "HOUSE",
+          "count": 1,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "DEATH",
+          "count": 5,
+          "top1_correct": 4,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "HOUSE"
+        },
+        {
+          "label": "QUIET",
+          "count": 3,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "COURT",
+          "count": 3,
+          "top1_correct": 3,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "STORE OR SHOP",
+          "count": 4,
+          "top1_correct": 4,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "WINDOW",
+          "count": 3,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "HAPPY",
+          "count": 3,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "HOT"
+        },
+        {
+          "label": "PEN",
+          "count": 2,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "BANK",
+          "count": 6,
+          "top1_correct": 5,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": "COURT"
+        },
+        {
+          "label": "HAT",
+          "count": 6,
+          "top1_correct": 6,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "BIRD",
+          "count": 1,
+          "top1_correct": 1,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "I",
+          "count": 3,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "PAINT",
+          "count": 3,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "CAR"
+        },
+        {
+          "label": "T-SHIRT",
+          "count": 3,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "SHOES",
+          "count": 4,
+          "top1_correct": 4,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "IT",
+          "count": 9,
+          "top1_correct": 8,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BANK"
+        },
+        {
+          "label": "YOU (PLURAL)",
+          "count": 3,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "RED"
+        },
+        {
+          "label": "RED",
+          "count": 2,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "WHITE"
+        },
+        {
+          "label": "HELLO",
+          "count": 7,
+          "top1_correct": 4,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "YOU (PLURAL)"
+        },
+        {
+          "label": "COW",
+          "count": 3,
+          "top1_correct": 3,
+          "accepted_correct": 2,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "GOOD MORNING",
+          "count": 4,
+          "top1_correct": 4,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "FAN",
+          "count": 3,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "BLACK",
+          "count": 5,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "FAN"
+        },
+        {
+          "label": "CELL PHONE",
+          "count": 4,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "RED"
+        },
+        {
+          "label": "THANK YOU",
+          "count": 7,
+          "top1_correct": 6,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "HOT"
+        },
+        {
+          "label": "WHITE",
+          "count": 1,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "FATHER",
+          "count": 2,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "T-SHIRT"
+        },
+        {
+          "label": "SUMMER",
+          "count": 3,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "RED"
+        },
+        {
+          "label": "FALL",
+          "count": 3,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "TEACHER"
+        },
+        {
+          "label": "BROTHER",
+          "count": 5,
+          "top1_correct": 5,
+          "accepted_correct": 3,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "MONDAY",
+          "count": 2,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "BOY",
+          "count": 4,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "RED"
+        },
+        {
+          "label": "GIRL",
+          "count": 2,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BOY"
+        },
+        {
+          "label": "YEAR",
+          "count": 7,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "TIME"
+        },
+        {
+          "label": "LONG",
+          "count": 6,
+          "top1_correct": 5,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "STORE OR SHOP"
+        },
+        {
+          "label": "SHORT",
+          "count": 6,
+          "top1_correct": 4,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "SMALL LITTLE"
+        },
+        {
+          "label": "BIG LARGE",
+          "count": 4,
+          "top1_correct": 3,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": "STORE OR SHOP"
+        },
+        {
+          "label": "TEACHER",
+          "count": 3,
+          "top1_correct": 3,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "SMALL LITTLE",
+          "count": 4,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BANK"
+        },
+        {
+          "label": "TIME",
+          "count": 3,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "TEACHER"
+        },
+        {
+          "label": "HOT",
+          "count": 6,
+          "top1_correct": 4,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "THANK YOU"
+        },
+        {
+          "label": "PRIEST",
+          "count": 1,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "NEW",
+          "count": 3,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "GOOD",
+          "count": 3,
+          "top1_correct": 3,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        }
+      ]
+    },
+    {
+      "architecture": "gru27",
+      "seed": 44,
+      "threshold": 0.96,
+      "margin": 0.5,
+      "acceptance_enabled": true,
+      "test_screen_passed": false,
+      "metrics": {
+        "known_count": 192,
+        "unknown_count": 200,
+        "top1_correct": 143,
+        "top1_accuracy": 0.7447916666666666,
+        "macro_recall": 0.7341998704243602,
+        "accepted_correct": 26,
+        "accepted_wrong": 0,
+        "known_rejected": 166,
+        "unknown_false_accepts": 9,
+        "known_accepted_precision": 1.0,
+        "correct_known_coverage": 0.13541666666666666,
+        "unknown_false_accept_rate": 0.045,
+        "mixture_precision": 0.7428571428571429,
+        "mixture": "All supplied known examples plus all supplied unknown-sign examples; nonsigning camera negatives not yet collected",
+        "wilson95": {
+          "known_precision": [
+            0.8712710781407846,
+            1.0
+          ],
+          "correct_coverage": [
+            0.09411532926835339,
+            0.1910207147386548
+          ],
+          "unknown_false_accept_rate": [
+            0.023852543001492997,
+            0.0832967040018196
+          ],
+          "mixture_precision": [
+            0.5793069315616084,
+            0.8583697293093955
+          ]
+        }
+      },
+      "per_word": [
+        {
+          "label": "DOG",
+          "count": 7,
+          "top1_correct": 4,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "HAPPY"
+        },
+        {
+          "label": "LOUD",
+          "count": 6,
+          "top1_correct": 6,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "CAR",
+          "count": 4,
+          "top1_correct": 4,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "ELECTION",
+          "count": 2,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "PAINT"
+        },
+        {
+          "label": "TRAIN TICKET",
+          "count": 8,
+          "top1_correct": 7,
+          "accepted_correct": 2,
+          "accepted_wrong": 0,
+          "most_common_wrong": "T-SHIRT"
+        },
+        {
+          "label": "HOUSE",
+          "count": 1,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "DEATH",
+          "count": 5,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "FATHER"
+        },
+        {
+          "label": "QUIET",
+          "count": 3,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "WHITE"
+        },
+        {
+          "label": "COURT",
+          "count": 3,
+          "top1_correct": 3,
+          "accepted_correct": 3,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "STORE OR SHOP",
+          "count": 4,
+          "top1_correct": 4,
+          "accepted_correct": 2,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "WINDOW",
+          "count": 3,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "HAPPY",
+          "count": 3,
+          "top1_correct": 2,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": "SHORT"
+        },
+        {
+          "label": "PEN",
+          "count": 2,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "GOOD MORNING"
+        },
+        {
+          "label": "BANK",
+          "count": 6,
+          "top1_correct": 6,
+          "accepted_correct": 2,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "HAT",
+          "count": 6,
+          "top1_correct": 6,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "BIRD",
+          "count": 1,
+          "top1_correct": 1,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "I",
+          "count": 3,
+          "top1_correct": 3,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "PAINT",
+          "count": 3,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "CAR"
+        },
+        {
+          "label": "T-SHIRT",
+          "count": 3,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "HAPPY"
+        },
+        {
+          "label": "SHOES",
+          "count": 4,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "T-SHIRT"
+        },
+        {
+          "label": "IT",
+          "count": 9,
+          "top1_correct": 8,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": "YOU (PLURAL)"
+        },
+        {
+          "label": "YOU (PLURAL)",
+          "count": 3,
+          "top1_correct": 3,
+          "accepted_correct": 2,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "RED",
+          "count": 2,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "HELLO",
+          "count": 7,
+          "top1_correct": 4,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BLACK"
+        },
+        {
+          "label": "COW",
+          "count": 3,
+          "top1_correct": 3,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "GOOD MORNING",
+          "count": 4,
+          "top1_correct": 4,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "FAN",
+          "count": 3,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "BLACK",
+          "count": 5,
+          "top1_correct": 4,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "FAN"
+        },
+        {
+          "label": "CELL PHONE",
+          "count": 4,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "HELLO"
+        },
+        {
+          "label": "THANK YOU",
+          "count": 7,
+          "top1_correct": 7,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "WHITE",
+          "count": 1,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "RED"
+        },
+        {
+          "label": "FATHER",
+          "count": 2,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "TIME"
+        },
+        {
+          "label": "SUMMER",
+          "count": 3,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "FAN"
+        },
+        {
+          "label": "FALL",
+          "count": 3,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "PEN"
+        },
+        {
+          "label": "BROTHER",
+          "count": 5,
+          "top1_correct": 5,
+          "accepted_correct": 2,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "MONDAY",
+          "count": 2,
+          "top1_correct": 2,
+          "accepted_correct": 2,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "BOY",
+          "count": 4,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "GIRL"
+        },
+        {
+          "label": "GIRL",
+          "count": 2,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "RED"
+        },
+        {
+          "label": "YEAR",
+          "count": 7,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "DOG"
+        },
+        {
+          "label": "LONG",
+          "count": 6,
+          "top1_correct": 3,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BROTHER"
+        },
+        {
+          "label": "SHORT",
+          "count": 6,
+          "top1_correct": 5,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "HAPPY"
+        },
+        {
+          "label": "BIG LARGE",
+          "count": 4,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "COW"
+        },
+        {
+          "label": "TEACHER",
+          "count": 3,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "TIME"
+        },
+        {
+          "label": "SMALL LITTLE",
+          "count": 4,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "SHORT"
+        },
+        {
+          "label": "TIME",
+          "count": 3,
+          "top1_correct": 3,
+          "accepted_correct": 2,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "HOT",
+          "count": 6,
+          "top1_correct": 4,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "HOUSE"
+        },
+        {
+          "label": "PRIEST",
+          "count": 1,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "NEW",
+          "count": 3,
+          "top1_correct": 2,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": "YOU (PLURAL)"
+        },
+        {
+          "label": "GOOD",
+          "count": 3,
+          "top1_correct": 3,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        }
+      ]
+    },
+    {
+      "architecture": "gru75",
+      "seed": 42,
+      "threshold": 0.94,
+      "margin": 0.5,
+      "acceptance_enabled": true,
+      "test_screen_passed": false,
+      "metrics": {
+        "known_count": 192,
+        "unknown_count": 200,
+        "top1_correct": 170,
+        "top1_accuracy": 0.8854166666666666,
+        "macro_recall": 0.893561710398445,
+        "accepted_correct": 45,
+        "accepted_wrong": 0,
+        "known_rejected": 147,
+        "unknown_false_accepts": 6,
+        "known_accepted_precision": 1.0,
+        "correct_known_coverage": 0.234375,
+        "unknown_false_accept_rate": 0.03,
+        "mixture_precision": 0.8823529411764706,
+        "mixture": "All supplied known examples plus all supplied unknown-sign examples; nonsigning camera negatives not yet collected",
+        "wilson95": {
+          "known_precision": [
+            0.9213484012671117,
+            1.0
+          ],
+          "correct_coverage": [
+            0.18002895821580783,
+            0.2991415881321553
+          ],
+          "unknown_false_accept_rate": [
+            0.013820314340111346,
+            0.06389429245451925
+          ],
+          "mixture_precision": [
+            0.7661915568567753,
+            0.9449492632208182
+          ]
+        }
+      },
+      "per_word": [
+        {
+          "label": "DOG",
+          "count": 7,
+          "top1_correct": 6,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "CAR"
+        },
+        {
+          "label": "LOUD",
+          "count": 6,
+          "top1_correct": 6,
+          "accepted_correct": 2,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "CAR",
+          "count": 4,
+          "top1_correct": 4,
+          "accepted_correct": 2,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "ELECTION",
+          "count": 2,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "TRAIN TICKET",
+          "count": 8,
+          "top1_correct": 7,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": "TEACHER"
+        },
+        {
+          "label": "HOUSE",
+          "count": 1,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "DEATH",
+          "count": 5,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "DOG"
+        },
+        {
+          "label": "QUIET",
+          "count": 3,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "COURT",
+          "count": 3,
+          "top1_correct": 3,
+          "accepted_correct": 2,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "STORE OR SHOP",
+          "count": 4,
+          "top1_correct": 4,
+          "accepted_correct": 2,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "WINDOW",
+          "count": 3,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "HAPPY",
+          "count": 3,
+          "top1_correct": 3,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "PEN",
+          "count": 2,
+          "top1_correct": 1,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": "HELLO"
+        },
+        {
+          "label": "BANK",
+          "count": 6,
+          "top1_correct": 6,
+          "accepted_correct": 5,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "HAT",
+          "count": 6,
+          "top1_correct": 6,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "BIRD",
+          "count": 1,
+          "top1_correct": 1,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "I",
+          "count": 3,
+          "top1_correct": 3,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "PAINT",
+          "count": 3,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "T-SHIRT",
+          "count": 3,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "THANK YOU"
+        },
+        {
+          "label": "SHOES",
+          "count": 4,
+          "top1_correct": 4,
+          "accepted_correct": 2,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "IT",
+          "count": 9,
+          "top1_correct": 9,
+          "accepted_correct": 3,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "YOU (PLURAL)",
+          "count": 3,
+          "top1_correct": 1,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": "FALL"
+        },
+        {
+          "label": "RED",
+          "count": 2,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "HELLO",
+          "count": 7,
+          "top1_correct": 6,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BOY"
+        },
+        {
+          "label": "COW",
+          "count": 3,
+          "top1_correct": 3,
+          "accepted_correct": 2,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "GOOD MORNING",
+          "count": 4,
+          "top1_correct": 4,
+          "accepted_correct": 2,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "FAN",
+          "count": 3,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "BLACK",
+          "count": 5,
+          "top1_correct": 5,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "CELL PHONE",
+          "count": 4,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "RED"
+        },
+        {
+          "label": "THANK YOU",
+          "count": 7,
+          "top1_correct": 7,
+          "accepted_correct": 4,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "WHITE",
+          "count": 1,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "FATHER",
+          "count": 2,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "SUMMER",
+          "count": 3,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "CELL PHONE"
+        },
+        {
+          "label": "FALL",
+          "count": 3,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "BROTHER",
+          "count": 5,
+          "top1_correct": 5,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "MONDAY",
+          "count": 2,
+          "top1_correct": 2,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "BOY",
+          "count": 4,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "GIRL"
+        },
+        {
+          "label": "GIRL",
+          "count": 2,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "YEAR",
+          "count": 7,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "LONG"
+        },
+        {
+          "label": "LONG",
+          "count": 6,
+          "top1_correct": 6,
+          "accepted_correct": 4,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "SHORT",
+          "count": 6,
+          "top1_correct": 6,
+          "accepted_correct": 2,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "BIG LARGE",
+          "count": 4,
+          "top1_correct": 4,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "TEACHER",
+          "count": 3,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "TRAIN TICKET"
+        },
+        {
+          "label": "SMALL LITTLE",
+          "count": 4,
+          "top1_correct": 3,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": "SHORT"
+        },
+        {
+          "label": "TIME",
+          "count": 3,
+          "top1_correct": 2,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": "FATHER"
+        },
+        {
+          "label": "HOT",
+          "count": 6,
+          "top1_correct": 4,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": "THANK YOU"
+        },
+        {
+          "label": "PRIEST",
+          "count": 1,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "NEW",
+          "count": 3,
+          "top1_correct": 3,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "GOOD",
+          "count": 3,
+          "top1_correct": 3,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        }
+      ]
+    },
+    {
+      "architecture": "gru75",
+      "seed": 43,
+      "threshold": 0.97,
+      "margin": 0.5,
+      "acceptance_enabled": true,
+      "test_screen_passed": false,
+      "metrics": {
+        "known_count": 192,
+        "unknown_count": 200,
+        "top1_correct": 172,
+        "top1_accuracy": 0.8958333333333334,
+        "macro_recall": 0.893974732750243,
+        "accepted_correct": 34,
+        "accepted_wrong": 0,
+        "known_rejected": 158,
+        "unknown_false_accepts": 4,
+        "known_accepted_precision": 1.0,
+        "correct_known_coverage": 0.17708333333333334,
+        "unknown_false_accept_rate": 0.02,
+        "mixture_precision": 0.8947368421052632,
+        "mixture": "All supplied known examples plus all supplied unknown-sign examples; nonsigning camera negatives not yet collected",
+        "wilson95": {
+          "known_precision": [
+            0.8984854458466761,
+            0.9999999999999999
+          ],
+          "correct_coverage": [
+            0.12957935565746764,
+            0.2372554261773111
+          ],
+          "unknown_false_accept_rate": [
+            0.0078044264163494685,
+            0.050287086905826436
+          ],
+          "mixture_precision": [
+            0.7586947827711269,
+            0.9582974265244647
+          ]
+        }
+      },
+      "per_word": [
+        {
+          "label": "DOG",
+          "count": 7,
+          "top1_correct": 7,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "LOUD",
+          "count": 6,
+          "top1_correct": 6,
+          "accepted_correct": 2,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "CAR",
+          "count": 4,
+          "top1_correct": 4,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "ELECTION",
+          "count": 2,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "STORE OR SHOP"
+        },
+        {
+          "label": "TRAIN TICKET",
+          "count": 8,
+          "top1_correct": 8,
+          "accepted_correct": 3,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "HOUSE",
+          "count": 1,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "DEATH",
+          "count": 5,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "DOG"
+        },
+        {
+          "label": "QUIET",
+          "count": 3,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "COURT",
+          "count": 3,
+          "top1_correct": 3,
+          "accepted_correct": 3,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "STORE OR SHOP",
+          "count": 4,
+          "top1_correct": 4,
+          "accepted_correct": 2,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "WINDOW",
+          "count": 3,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "T-SHIRT"
+        },
+        {
+          "label": "HAPPY",
+          "count": 3,
+          "top1_correct": 3,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "PEN",
+          "count": 2,
+          "top1_correct": 1,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": "I"
+        },
+        {
+          "label": "BANK",
+          "count": 6,
+          "top1_correct": 5,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": "LONG"
+        },
+        {
+          "label": "HAT",
+          "count": 6,
+          "top1_correct": 6,
+          "accepted_correct": 2,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "BIRD",
+          "count": 1,
+          "top1_correct": 1,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "I",
+          "count": 3,
+          "top1_correct": 3,
+          "accepted_correct": 2,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "PAINT",
+          "count": 3,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "T-SHIRT",
+          "count": 3,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "SHOES",
+          "count": 4,
+          "top1_correct": 4,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "IT",
+          "count": 9,
+          "top1_correct": 9,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "YOU (PLURAL)",
+          "count": 3,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "RED",
+          "count": 2,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "HELLO",
+          "count": 7,
+          "top1_correct": 7,
+          "accepted_correct": 2,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "COW",
+          "count": 3,
+          "top1_correct": 3,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "GOOD MORNING",
+          "count": 4,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "HELLO"
+        },
+        {
+          "label": "FAN",
+          "count": 3,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BLACK"
+        },
+        {
+          "label": "BLACK",
+          "count": 5,
+          "top1_correct": 4,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BOY"
+        },
+        {
+          "label": "CELL PHONE",
+          "count": 4,
+          "top1_correct": 4,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "THANK YOU",
+          "count": 7,
+          "top1_correct": 7,
+          "accepted_correct": 4,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "WHITE",
+          "count": 1,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "FATHER",
+          "count": 2,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "SUMMER",
+          "count": 3,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "GIRL"
+        },
+        {
+          "label": "FALL",
+          "count": 3,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "BROTHER",
+          "count": 5,
+          "top1_correct": 5,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "MONDAY",
+          "count": 2,
+          "top1_correct": 2,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "BOY",
+          "count": 4,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "GIRL"
+        },
+        {
+          "label": "GIRL",
+          "count": 2,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BLACK"
+        },
+        {
+          "label": "YEAR",
+          "count": 7,
+          "top1_correct": 4,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "CAR"
+        },
+        {
+          "label": "LONG",
+          "count": 6,
+          "top1_correct": 6,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "SHORT",
+          "count": 6,
+          "top1_correct": 5,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "DOG"
+        },
+        {
+          "label": "BIG LARGE",
+          "count": 4,
+          "top1_correct": 4,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "TEACHER",
+          "count": 3,
+          "top1_correct": 3,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "SMALL LITTLE",
+          "count": 4,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "DOG"
+        },
+        {
+          "label": "TIME",
+          "count": 3,
+          "top1_correct": 3,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "HOT",
+          "count": 6,
+          "top1_correct": 4,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "HOUSE"
+        },
+        {
+          "label": "PRIEST",
+          "count": 1,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "NEW",
+          "count": 3,
+          "top1_correct": 3,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "GOOD",
+          "count": 3,
+          "top1_correct": 3,
+          "accepted_correct": 2,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        }
+      ]
+    },
+    {
+      "architecture": "gru75",
+      "seed": 44,
+      "threshold": 0.98,
+      "margin": 0.5,
+      "acceptance_enabled": true,
+      "test_screen_passed": false,
+      "metrics": {
+        "known_count": 192,
+        "unknown_count": 200,
+        "top1_correct": 174,
+        "top1_accuracy": 0.90625,
+        "macro_recall": 0.91567055393586,
+        "accepted_correct": 72,
+        "accepted_wrong": 0,
+        "known_rejected": 120,
+        "unknown_false_accepts": 10,
+        "known_accepted_precision": 1.0,
+        "correct_known_coverage": 0.375,
+        "unknown_false_accept_rate": 0.05,
+        "mixture_precision": 0.8780487804878049,
+        "mixture": "All supplied known examples plus all supplied unknown-sign examples; nonsigning camera negatives not yet collected",
+        "wilson95": {
+          "known_precision": [
+            0.9493488274035422,
+            1.0
+          ],
+          "correct_coverage": [
+            0.3096041840859204,
+            0.44529960243076816
+          ],
+          "unknown_false_accept_rate": [
+            0.02738264560076393,
+            0.08957814813877599
+          ],
+          "mixture_precision": [
+            0.7898702600481664,
+            0.9323914635032211
+          ]
+        }
+      },
+      "per_word": [
+        {
+          "label": "DOG",
+          "count": 7,
+          "top1_correct": 7,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "LOUD",
+          "count": 6,
+          "top1_correct": 6,
+          "accepted_correct": 5,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "CAR",
+          "count": 4,
+          "top1_correct": 4,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "ELECTION",
+          "count": 2,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "TRAIN TICKET",
+          "count": 8,
+          "top1_correct": 7,
+          "accepted_correct": 3,
+          "accepted_wrong": 0,
+          "most_common_wrong": "T-SHIRT"
+        },
+        {
+          "label": "HOUSE",
+          "count": 1,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "DEATH",
+          "count": 5,
+          "top1_correct": 4,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "HOUSE"
+        },
+        {
+          "label": "QUIET",
+          "count": 3,
+          "top1_correct": 3,
+          "accepted_correct": 3,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "COURT",
+          "count": 3,
+          "top1_correct": 3,
+          "accepted_correct": 2,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "STORE OR SHOP",
+          "count": 4,
+          "top1_correct": 4,
+          "accepted_correct": 2,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "WINDOW",
+          "count": 3,
+          "top1_correct": 3,
+          "accepted_correct": 2,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "HAPPY",
+          "count": 3,
+          "top1_correct": 3,
+          "accepted_correct": 2,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "PEN",
+          "count": 2,
+          "top1_correct": 2,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "BANK",
+          "count": 6,
+          "top1_correct": 6,
+          "accepted_correct": 4,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "HAT",
+          "count": 6,
+          "top1_correct": 6,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "BIRD",
+          "count": 1,
+          "top1_correct": 1,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "I",
+          "count": 3,
+          "top1_correct": 3,
+          "accepted_correct": 2,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "PAINT",
+          "count": 3,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "T-SHIRT",
+          "count": 3,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "SHOES",
+          "count": 4,
+          "top1_correct": 4,
+          "accepted_correct": 4,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "IT",
+          "count": 9,
+          "top1_correct": 9,
+          "accepted_correct": 3,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "YOU (PLURAL)",
+          "count": 3,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "RED",
+          "count": 2,
+          "top1_correct": 2,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "HELLO",
+          "count": 7,
+          "top1_correct": 4,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BLACK"
+        },
+        {
+          "label": "COW",
+          "count": 3,
+          "top1_correct": 3,
+          "accepted_correct": 3,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "GOOD MORNING",
+          "count": 4,
+          "top1_correct": 4,
+          "accepted_correct": 2,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "FAN",
+          "count": 3,
+          "top1_correct": 3,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "BLACK",
+          "count": 5,
+          "top1_correct": 4,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": "FAN"
+        },
+        {
+          "label": "CELL PHONE",
+          "count": 4,
+          "top1_correct": 4,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "THANK YOU",
+          "count": 7,
+          "top1_correct": 6,
+          "accepted_correct": 5,
+          "accepted_wrong": 0,
+          "most_common_wrong": "HOT"
+        },
+        {
+          "label": "WHITE",
+          "count": 1,
+          "top1_correct": 1,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "FATHER",
+          "count": 2,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "TRAIN TICKET"
+        },
+        {
+          "label": "SUMMER",
+          "count": 3,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "PRIEST"
+        },
+        {
+          "label": "FALL",
+          "count": 3,
+          "top1_correct": 2,
+          "accepted_correct": 2,
+          "accepted_wrong": 0,
+          "most_common_wrong": "HELLO"
+        },
+        {
+          "label": "BROTHER",
+          "count": 5,
+          "top1_correct": 5,
+          "accepted_correct": 2,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "MONDAY",
+          "count": 2,
+          "top1_correct": 2,
+          "accepted_correct": 2,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "BOY",
+          "count": 4,
+          "top1_correct": 4,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "GIRL",
+          "count": 2,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BOY"
+        },
+        {
+          "label": "YEAR",
+          "count": 7,
+          "top1_correct": 5,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "DOG"
+        },
+        {
+          "label": "LONG",
+          "count": 6,
+          "top1_correct": 6,
+          "accepted_correct": 4,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "SHORT",
+          "count": 6,
+          "top1_correct": 6,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "BIG LARGE",
+          "count": 4,
+          "top1_correct": 4,
+          "accepted_correct": 2,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "TEACHER",
+          "count": 3,
+          "top1_correct": 3,
+          "accepted_correct": 2,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "SMALL LITTLE",
+          "count": 4,
+          "top1_correct": 3,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": "SHORT"
+        },
+        {
+          "label": "TIME",
+          "count": 3,
+          "top1_correct": 3,
+          "accepted_correct": 2,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "HOT",
+          "count": 6,
+          "top1_correct": 3,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": "T-SHIRT"
+        },
+        {
+          "label": "PRIEST",
+          "count": 1,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "NEW",
+          "count": 3,
+          "top1_correct": 3,
+          "accepted_correct": 2,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "GOOD",
+          "count": 3,
+          "top1_correct": 2,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": "GOOD MORNING"
+        }
+      ]
+    },
+    {
+      "architecture": "stgcn",
+      "seed": 42,
+      "threshold": 0.93,
+      "margin": 0.5,
+      "acceptance_enabled": true,
+      "test_screen_passed": false,
+      "metrics": {
+        "known_count": 192,
+        "unknown_count": 200,
+        "top1_correct": 103,
+        "top1_accuracy": 0.5364583333333334,
+        "macro_recall": 0.5548023971493359,
+        "accepted_correct": 33,
+        "accepted_wrong": 1,
+        "known_rejected": 158,
+        "unknown_false_accepts": 15,
+        "known_accepted_precision": 0.9705882352941176,
+        "correct_known_coverage": 0.171875,
+        "unknown_false_accept_rate": 0.075,
+        "mixture_precision": 0.673469387755102,
+        "mixture": "All supplied known examples plus all supplied unknown-sign examples; nonsigning camera negatives not yet collected",
+        "wilson95": {
+          "known_precision": [
+            0.8508442670731406,
+            0.9947890937237309
+          ],
+          "correct_coverage": [
+            0.1250822162512063,
+            0.2315402233551011
+          ],
+          "unknown_false_accept_rate": [
+            0.04597491718438201,
+            0.12004361023629456
+          ],
+          "mixture_precision": [
+            0.5337920531457014,
+            0.7879250299818812
+          ]
+        }
+      },
+      "per_word": [
+        {
+          "label": "DOG",
+          "count": 7,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "CAR"
+        },
+        {
+          "label": "LOUD",
+          "count": 6,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "HAPPY"
+        },
+        {
+          "label": "CAR",
+          "count": 4,
+          "top1_correct": 3,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": "TRAIN TICKET"
+        },
+        {
+          "label": "ELECTION",
+          "count": 2,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "DOG"
+        },
+        {
+          "label": "TRAIN TICKET",
+          "count": 8,
+          "top1_correct": 5,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "DOG"
+        },
+        {
+          "label": "HOUSE",
+          "count": 1,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "CAR"
+        },
+        {
+          "label": "DEATH",
+          "count": 5,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "FATHER"
+        },
+        {
+          "label": "QUIET",
+          "count": 3,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "COURT",
+          "count": 3,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "IT"
+        },
+        {
+          "label": "STORE OR SHOP",
+          "count": 4,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "COURT"
+        },
+        {
+          "label": "WINDOW",
+          "count": 3,
+          "top1_correct": 3,
+          "accepted_correct": 2,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "HAPPY",
+          "count": 3,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "T-SHIRT"
+        },
+        {
+          "label": "PEN",
+          "count": 2,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "GOOD MORNING"
+        },
+        {
+          "label": "BANK",
+          "count": 6,
+          "top1_correct": 2,
+          "accepted_correct": 2,
+          "accepted_wrong": 0,
+          "most_common_wrong": "IT"
+        },
+        {
+          "label": "HAT",
+          "count": 6,
+          "top1_correct": 5,
+          "accepted_correct": 2,
+          "accepted_wrong": 0,
+          "most_common_wrong": "FALL"
+        },
+        {
+          "label": "BIRD",
+          "count": 1,
+          "top1_correct": 1,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "I",
+          "count": 3,
+          "top1_correct": 3,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "PAINT",
+          "count": 3,
+          "top1_correct": 3,
+          "accepted_correct": 2,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "T-SHIRT",
+          "count": 3,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "DOG"
+        },
+        {
+          "label": "SHOES",
+          "count": 4,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "HOUSE"
+        },
+        {
+          "label": "IT",
+          "count": 9,
+          "top1_correct": 8,
+          "accepted_correct": 5,
+          "accepted_wrong": 0,
+          "most_common_wrong": "I"
+        },
+        {
+          "label": "YOU (PLURAL)",
+          "count": 3,
+          "top1_correct": 2,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": "FALL"
+        },
+        {
+          "label": "RED",
+          "count": 2,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "WHITE"
+        },
+        {
+          "label": "HELLO",
+          "count": 7,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "GOOD"
+        },
+        {
+          "label": "COW",
+          "count": 3,
+          "top1_correct": 3,
+          "accepted_correct": 2,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "GOOD MORNING",
+          "count": 4,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "GOOD"
+        },
+        {
+          "label": "FAN",
+          "count": 3,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BOY"
+        },
+        {
+          "label": "BLACK",
+          "count": 5,
+          "top1_correct": 4,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": "CELL PHONE"
+        },
+        {
+          "label": "CELL PHONE",
+          "count": 4,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "GOOD"
+        },
+        {
+          "label": "THANK YOU",
+          "count": 7,
+          "top1_correct": 5,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "COURT"
+        },
+        {
+          "label": "WHITE",
+          "count": 1,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "FATHER",
+          "count": 2,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "ELECTION"
+        },
+        {
+          "label": "SUMMER",
+          "count": 3,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "HELLO"
+        },
+        {
+          "label": "FALL",
+          "count": 3,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "YOU (PLURAL)"
+        },
+        {
+          "label": "BROTHER",
+          "count": 5,
+          "top1_correct": 4,
+          "accepted_correct": 2,
+          "accepted_wrong": 0,
+          "most_common_wrong": "YOU (PLURAL)"
+        },
+        {
+          "label": "MONDAY",
+          "count": 2,
+          "top1_correct": 1,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": "HOUSE"
+        },
+        {
+          "label": "BOY",
+          "count": 4,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "NEW"
+        },
+        {
+          "label": "GIRL",
+          "count": 2,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "RED"
+        },
+        {
+          "label": "YEAR",
+          "count": 7,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "PAINT"
+        },
+        {
+          "label": "LONG",
+          "count": 6,
+          "top1_correct": 4,
+          "accepted_correct": 2,
+          "accepted_wrong": 1,
+          "most_common_wrong": "BROTHER"
+        },
+        {
+          "label": "SHORT",
+          "count": 6,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "HAPPY"
+        },
+        {
+          "label": "BIG LARGE",
+          "count": 4,
+          "top1_correct": 4,
+          "accepted_correct": 2,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "TEACHER",
+          "count": 3,
+          "top1_correct": 1,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BANK"
+        },
+        {
+          "label": "SMALL LITTLE",
+          "count": 4,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "FATHER"
+        },
+        {
+          "label": "TIME",
+          "count": 3,
+          "top1_correct": 3,
+          "accepted_correct": 3,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "HOT",
+          "count": 6,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "COURT"
+        },
+        {
+          "label": "PRIEST",
+          "count": 1,
+          "top1_correct": 1,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "NEW",
+          "count": 3,
+          "top1_correct": 2,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": "RED"
+        },
+        {
+          "label": "GOOD",
+          "count": 3,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "GOOD MORNING"
+        }
+      ]
+    },
+    {
+      "architecture": "stgcn",
+      "seed": 43,
+      "threshold": 0.95,
+      "margin": 0.5,
+      "acceptance_enabled": true,
+      "test_screen_passed": false,
+      "metrics": {
+        "known_count": 192,
+        "unknown_count": 200,
+        "top1_correct": 108,
+        "top1_accuracy": 0.5625,
+        "macro_recall": 0.5852931648850016,
+        "accepted_correct": 21,
+        "accepted_wrong": 1,
+        "known_rejected": 170,
+        "unknown_false_accepts": 6,
+        "known_accepted_precision": 0.9545454545454546,
+        "correct_known_coverage": 0.109375,
+        "unknown_false_accept_rate": 0.03,
+        "mixture_precision": 0.75,
+        "mixture": "All supplied known examples plus all supplied unknown-sign examples; nonsigning camera negatives not yet collected",
+        "wilson95": {
+          "known_precision": [
+            0.7820195416134267,
+            0.991930572378736
+          ],
+          "correct_coverage": [
+            0.07265855054023301,
+            0.16141578232441864
+          ],
+          "unknown_false_accept_rate": [
+            0.013820314340111346,
+            0.06389429245451925
+          ],
+          "mixture_precision": [
+            0.5664432968100104,
+            0.8732350508070668
+          ]
+        }
+      },
+      "per_word": [
+        {
+          "label": "DOG",
+          "count": 7,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "ELECTION"
+        },
+        {
+          "label": "LOUD",
+          "count": 6,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "HAPPY"
+        },
+        {
+          "label": "CAR",
+          "count": 4,
+          "top1_correct": 3,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": "TRAIN TICKET"
+        },
+        {
+          "label": "ELECTION",
+          "count": 2,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "HOT"
+        },
+        {
+          "label": "TRAIN TICKET",
+          "count": 8,
+          "top1_correct": 6,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "HOUSE"
+        },
+        {
+          "label": "HOUSE",
+          "count": 1,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "YEAR"
+        },
+        {
+          "label": "DEATH",
+          "count": 5,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "FATHER"
+        },
+        {
+          "label": "QUIET",
+          "count": 3,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "COURT",
+          "count": 3,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "STORE OR SHOP"
+        },
+        {
+          "label": "STORE OR SHOP",
+          "count": 4,
+          "top1_correct": 4,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "WINDOW",
+          "count": 3,
+          "top1_correct": 3,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "HAPPY",
+          "count": 3,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "THANK YOU"
+        },
+        {
+          "label": "PEN",
+          "count": 2,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "STORE OR SHOP"
+        },
+        {
+          "label": "BANK",
+          "count": 6,
+          "top1_correct": 4,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "STORE OR SHOP"
+        },
+        {
+          "label": "HAT",
+          "count": 6,
+          "top1_correct": 4,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": "FAN"
+        },
+        {
+          "label": "BIRD",
+          "count": 1,
+          "top1_correct": 1,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "I",
+          "count": 3,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "PAINT",
+          "count": 3,
+          "top1_correct": 3,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "T-SHIRT",
+          "count": 3,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "DOG"
+        },
+        {
+          "label": "SHOES",
+          "count": 4,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BANK"
+        },
+        {
+          "label": "IT",
+          "count": 9,
+          "top1_correct": 8,
+          "accepted_correct": 4,
+          "accepted_wrong": 0,
+          "most_common_wrong": "I"
+        },
+        {
+          "label": "YOU (PLURAL)",
+          "count": 3,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "NEW"
+        },
+        {
+          "label": "RED",
+          "count": 2,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "WHITE"
+        },
+        {
+          "label": "HELLO",
+          "count": 7,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "NEW"
+        },
+        {
+          "label": "COW",
+          "count": 3,
+          "top1_correct": 3,
+          "accepted_correct": 2,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "GOOD MORNING",
+          "count": 4,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "GOOD"
+        },
+        {
+          "label": "FAN",
+          "count": 3,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "RED"
+        },
+        {
+          "label": "BLACK",
+          "count": 5,
+          "top1_correct": 4,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "CELL PHONE"
+        },
+        {
+          "label": "CELL PHONE",
+          "count": 4,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "HELLO"
+        },
+        {
+          "label": "THANK YOU",
+          "count": 7,
+          "top1_correct": 4,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "COURT"
+        },
+        {
+          "label": "WHITE",
+          "count": 1,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "FATHER",
+          "count": 2,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "SUMMER",
+          "count": 3,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "THANK YOU"
+        },
+        {
+          "label": "FALL",
+          "count": 3,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "SUMMER"
+        },
+        {
+          "label": "BROTHER",
+          "count": 5,
+          "top1_correct": 4,
+          "accepted_correct": 3,
+          "accepted_wrong": 0,
+          "most_common_wrong": "TEACHER"
+        },
+        {
+          "label": "MONDAY",
+          "count": 2,
+          "top1_correct": 2,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "BOY",
+          "count": 4,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "GIRL"
+        },
+        {
+          "label": "GIRL",
+          "count": 2,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "PEN"
+        },
+        {
+          "label": "YEAR",
+          "count": 7,
+          "top1_correct": 4,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BIRD"
+        },
+        {
+          "label": "LONG",
+          "count": 6,
+          "top1_correct": 4,
+          "accepted_correct": 3,
+          "accepted_wrong": 1,
+          "most_common_wrong": "DEATH"
+        },
+        {
+          "label": "SHORT",
+          "count": 6,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "HAPPY"
+        },
+        {
+          "label": "BIG LARGE",
+          "count": 4,
+          "top1_correct": 3,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BIRD"
+        },
+        {
+          "label": "TEACHER",
+          "count": 3,
+          "top1_correct": 1,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": "TRAIN TICKET"
+        },
+        {
+          "label": "SMALL LITTLE",
+          "count": 4,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "HAPPY"
+        },
+        {
+          "label": "TIME",
+          "count": 3,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "HOT",
+          "count": 6,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "FATHER"
+        },
+        {
+          "label": "PRIEST",
+          "count": 1,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "NEW",
+          "count": 3,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "RED"
+        },
+        {
+          "label": "GOOD",
+          "count": 3,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "GOOD MORNING"
+        }
+      ]
+    },
+    {
+      "architecture": "stgcn",
+      "seed": 44,
+      "threshold": 0.95,
+      "margin": 0.5,
+      "acceptance_enabled": true,
+      "test_screen_passed": false,
+      "metrics": {
+        "known_count": 192,
+        "unknown_count": 200,
+        "top1_correct": 97,
+        "top1_accuracy": 0.5052083333333334,
+        "macro_recall": 0.5342727567217364,
+        "accepted_correct": 22,
+        "accepted_wrong": 0,
+        "known_rejected": 170,
+        "unknown_false_accepts": 9,
+        "known_accepted_precision": 1.0,
+        "correct_known_coverage": 0.11458333333333333,
+        "unknown_false_accept_rate": 0.045,
+        "mixture_precision": 0.7096774193548387,
+        "mixture": "All supplied known examples plus all supplied unknown-sign examples; nonsigning camera negatives not yet collected",
+        "wilson95": {
+          "known_precision": [
+            0.8513451253913791,
+            1.0
+          ],
+          "correct_coverage": [
+            0.07689746970711998,
+            0.167389205386003
+          ],
+          "unknown_false_accept_rate": [
+            0.023852543001492997,
+            0.0832967040018196
+          ],
+          "mixture_precision": [
+            0.5340767066925007,
+            0.8390419984369939
+          ]
+        }
+      },
+      "per_word": [
+        {
+          "label": "DOG",
+          "count": 7,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "ELECTION"
+        },
+        {
+          "label": "LOUD",
+          "count": 6,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "HAPPY"
+        },
+        {
+          "label": "CAR",
+          "count": 4,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "TRAIN TICKET"
+        },
+        {
+          "label": "ELECTION",
+          "count": 2,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "HAPPY"
+        },
+        {
+          "label": "TRAIN TICKET",
+          "count": 8,
+          "top1_correct": 4,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "QUIET"
+        },
+        {
+          "label": "HOUSE",
+          "count": 1,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "YEAR"
+        },
+        {
+          "label": "DEATH",
+          "count": 5,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "FATHER"
+        },
+        {
+          "label": "QUIET",
+          "count": 3,
+          "top1_correct": 3,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "COURT",
+          "count": 3,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "STORE OR SHOP"
+        },
+        {
+          "label": "STORE OR SHOP",
+          "count": 4,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "GOOD MORNING"
+        },
+        {
+          "label": "WINDOW",
+          "count": 3,
+          "top1_correct": 2,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": "SMALL LITTLE"
+        },
+        {
+          "label": "HAPPY",
+          "count": 3,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "HOT"
+        },
+        {
+          "label": "PEN",
+          "count": 2,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "GOOD MORNING"
+        },
+        {
+          "label": "BANK",
+          "count": 6,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "COURT"
+        },
+        {
+          "label": "HAT",
+          "count": 6,
+          "top1_correct": 5,
+          "accepted_correct": 2,
+          "accepted_wrong": 0,
+          "most_common_wrong": "FALL"
+        },
+        {
+          "label": "BIRD",
+          "count": 1,
+          "top1_correct": 1,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "I",
+          "count": 3,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "PAINT",
+          "count": 3,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "T-SHIRT",
+          "count": 3,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "ELECTION"
+        },
+        {
+          "label": "SHOES",
+          "count": 4,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "SHORT"
+        },
+        {
+          "label": "IT",
+          "count": 9,
+          "top1_correct": 8,
+          "accepted_correct": 5,
+          "accepted_wrong": 0,
+          "most_common_wrong": "I"
+        },
+        {
+          "label": "YOU (PLURAL)",
+          "count": 3,
+          "top1_correct": 2,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": "FALL"
+        },
+        {
+          "label": "RED",
+          "count": 2,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "WHITE"
+        },
+        {
+          "label": "HELLO",
+          "count": 7,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "NEW"
+        },
+        {
+          "label": "COW",
+          "count": 3,
+          "top1_correct": 3,
+          "accepted_correct": 2,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "GOOD MORNING",
+          "count": 4,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "GOOD"
+        },
+        {
+          "label": "FAN",
+          "count": 3,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "CELL PHONE"
+        },
+        {
+          "label": "BLACK",
+          "count": 5,
+          "top1_correct": 4,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "CELL PHONE"
+        },
+        {
+          "label": "CELL PHONE",
+          "count": 4,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "HELLO"
+        },
+        {
+          "label": "THANK YOU",
+          "count": 7,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "HOT"
+        },
+        {
+          "label": "WHITE",
+          "count": 1,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "FATHER",
+          "count": 2,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "DEATH"
+        },
+        {
+          "label": "SUMMER",
+          "count": 3,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "HOUSE"
+        },
+        {
+          "label": "FALL",
+          "count": 3,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "SUMMER"
+        },
+        {
+          "label": "BROTHER",
+          "count": 5,
+          "top1_correct": 4,
+          "accepted_correct": 2,
+          "accepted_wrong": 0,
+          "most_common_wrong": "TEACHER"
+        },
+        {
+          "label": "MONDAY",
+          "count": 2,
+          "top1_correct": 2,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "BOY",
+          "count": 4,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "GIRL"
+        },
+        {
+          "label": "GIRL",
+          "count": 2,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "RED"
+        },
+        {
+          "label": "YEAR",
+          "count": 7,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BIRD"
+        },
+        {
+          "label": "LONG",
+          "count": 6,
+          "top1_correct": 4,
+          "accepted_correct": 2,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BROTHER"
+        },
+        {
+          "label": "SHORT",
+          "count": 6,
+          "top1_correct": 1,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "SMALL LITTLE"
+        },
+        {
+          "label": "BIG LARGE",
+          "count": 4,
+          "top1_correct": 3,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": "BIRD"
+        },
+        {
+          "label": "TEACHER",
+          "count": 3,
+          "top1_correct": 1,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": "HOUSE"
+        },
+        {
+          "label": "SMALL LITTLE",
+          "count": 4,
+          "top1_correct": 2,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": "FATHER"
+        },
+        {
+          "label": "TIME",
+          "count": 3,
+          "top1_correct": 3,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "HOT",
+          "count": 6,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "STORE OR SHOP"
+        },
+        {
+          "label": "PRIEST",
+          "count": 1,
+          "top1_correct": 1,
+          "accepted_correct": 1,
+          "accepted_wrong": 0,
+          "most_common_wrong": null
+        },
+        {
+          "label": "NEW",
+          "count": 3,
+          "top1_correct": 2,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "RED"
+        },
+        {
+          "label": "GOOD",
+          "count": 3,
+          "top1_correct": 0,
+          "accepted_correct": 0,
+          "accepted_wrong": 0,
+          "most_common_wrong": "GOOD MORNING"
+        }
+      ]
+    }
+  ],
+  "promoted": false,
+  "remaining_gates": [
+    "PyTorch/ONNX/WebWASM parity",
+    "Actual Chrome camera/device performance/lifecycle run sheet",
+    "Fluent-signer/live accuracy not established"
+  ],
+  "limits": [
+    "Previously inspected historical benchmark",
+    "Unknown signs are not nonsigning negatives",
+    "No sentence translation",
+    "Seeds are correlated predictions of the same clips; never pool as independent test samples"
+  ]
+}

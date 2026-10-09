@@ -68,11 +68,46 @@ describe("decideSign", () => {
     assert.deepEqual(d, { label: "YES", source: "gesture", confidence: 0.9 });
   });
 
+  test("each enabled gesture shortcut keeps its distinct mapped word", () => {
+    for (const [name, word] of [
+      ["Open_Palm", "HELLO"], ["Thumb_Up", "YES"], ["Thumb_Down", "NO"],
+      ["Closed_Fist", "STOP"], ["Pointing_Up", "WAIT"], ["Victory", "BYE"],
+      ["ILoveYou", "I LOVE YOU"],
+    ]) {
+      assert.deepEqual(decideSign(withGesture(name, .9), 4 / 3, null, gestureMap()),
+        { label: word, source: "gesture", confidence: .9 });
+    }
+  });
+
+  test("a stronger disabled gesture on one hand cannot mask another hand's enabled shortcut", () => {
+    const hands = [
+      makeHand(px, { gesture: { name: "Open_Palm", score: .98 } }),
+      makeHand(px, { side: "Left", gesture: { name: "Thumb_Up", score: .9 } }),
+    ];
+    const map = gestureMap({ Open_Palm: { enabled: false } });
+    assert.deepEqual(decideSign(hands, 4 / 3, null, map),
+      { label: "YES", source: "gesture", confidence: .9 });
+  });
+
+  test("a fully disabled shortcut map produces no words even for confident gestures", () => {
+    const map = gestureMap(Object.fromEntries(BUILT_IN_GESTURES.map((g) => [g.id, { enabled: false }])));
+    for (const gesture of BUILT_IN_GESTURES) {
+      assert.deepEqual(decideSign(withGesture(gesture.id, .99), 4 / 3, null, map),
+        { label: null, source: null, confidence: 0 });
+    }
+  });
+
   test("ignores disabled, unsure and 'None' gestures", () => {
     assert.equal(decideSign(thumbsUp, 4 / 3, null, gestureMap({ Thumb_Up: { enabled: false } })).label, null);
     assert.equal(decideSign(withGesture("Thumb_Up", 0.3), 4 / 3, null, gestureMap()).label, null);
     assert.equal(decideSign(withGesture("None", 0.99), 4 / 3, null, gestureMap()).label, null);
     assert.equal(decideSign([], 4 / 3, null, gestureMap()).label, null);
+  });
+
+  test("careful mode rejects borderline gesture scores accepted by balanced mode", () => {
+    const borderline = withGesture("Thumb_Up", 0.65);
+    assert.equal(decideSign(borderline, 4 / 3, null, gestureMap()).label, "YES");
+    assert.equal(decideSign(borderline, 4 / 3, null, gestureMap(), { minGestureScore: 0.7 }).label, null);
   });
 
   test("a taught sign wins over a built-in gesture", () => {
