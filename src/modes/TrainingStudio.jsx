@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { TopBar } from "../components/Controls.jsx";
 import NonsigningCapture from "../components/NonsigningCapture.jsx";
+import RecognitionReplay from "../components/RecognitionReplay.jsx";
 import { useTrainingSamples } from "../hooks/useTrainingSamples.js";
 import { exportTrainingDataset } from "../lib/trainingSamples.js";
 import "../styles/trainingStudio.css";
@@ -20,6 +21,7 @@ export default function TrainingStudio({ settings, onBack, onCapture }) {
   const [notice, setNotice] = useState("");
   const [actionError, setActionError] = useState("");
   const [nonsigningOpen, setNonsigningOpen] = useState(false);
+  const [replayOpen, setReplayOpen] = useState(false);
   const operationRef = useRef(null);
   const downloads = useRef(new Map());
   const mounted = useRef(true);
@@ -108,6 +110,7 @@ export default function TrainingStudio({ settings, onBack, onCapture }) {
       <div><p className="eyebrow">Your labelled signing recordings</p><h2 id="training-intro-title">Build examples worth learning from.</h2><p>Capture a whole sign, check its label and save its pose sequence after choosing to keep it. ISL and ASL examples stay labelled separately.</p></div>
       <div className="training-capture"><span className="training-local">Local browser data</span><button type="button" className="btn btn-primary" onClick={onCapture}>Capture a sample <span aria-hidden="true">↗</span></button><p>Capture opens your {settings.signLanguage.toUpperCase()} session. This view filter does not change its language.</p></div>
     </section>
+    {import.meta.env?.MODE !== "public-demo" && <details className="training-nonsigning" onToggle={(event) => setReplayOpen(event.currentTarget.open)}><summary>Recognition diagnostics · check a reference video</summary>{replayOpen && <RecognitionReplay key={settings.signLanguage} signLanguage={settings.signLanguage} />}</details>}
     <details className="training-nonsigning" onToggle={(event) => setNonsigningOpen(event.currentTarget.open)}><summary>Record no-sign examples · no sign-language knowledge needed</summary>{nonsigningOpen && <NonsigningCapture key={settings.signLanguage} signLanguage={settings.signLanguage} store={{ ...library, add: saveNonsigning }} disabled={busy} />}</details>
     <div className="training-toolbar"><div className="field"><label htmlFor="training-filter">View sign language</label><select id="training-filter" value={filter} disabled={busy} onChange={(event) => { setFilter(event.target.value); setNotice(""); }}><option value="both">ISL + ASL</option><option value="isl">ISL only</option><option value="asl">ASL only</option></select></div><p className="training-filter-note">{library.loading ? "Loading saved examples…" : `${visible.length} of ${library.samples.length} saved samples in this view`}</p></div>
     <dl className="training-metrics" aria-label="Sample inventory">

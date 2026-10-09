@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { predictTrainedCameraSign } from "../src/lib/cameraWordRecognition.js";
 import { predictTrainedSign } from "../src/lib/trainedSignModel.js";
+import { cameraFramesForModel } from "../src/lib/cameraCoordinateContract.js";
 import { legacyCameraFrame, legacyCameraFrames, legacyCameraModel } from "./helpers/legacyCamera.js";
 
 const recapture = (result, reason) => {
@@ -99,4 +100,57 @@ test("camera diagnostics retain only scalar observations and never raw poses", (
   frames[0].keypoints[33][0] = .99;
   assert.equal(JSON.stringify(result.diagnostics), original);
   assert.doesNotMatch(original, /keypoints|confidences|atMs/);
+});
+
+const scaledModel = () => ({ ...legacyCameraModel(), format: "signbridge-gru-v2", cameraInput: {
+  format: "signbridge-camera-coordinates-v1", space: "axis-scaled-image", scaleX: 1080, scaleY: 1920,
+} });
+
+test("a declared camera adapter supplies exactly the transformed features to unchanged learned inference", () => {
+  const model = scaledModel(), frames = legacyCameraFrames();
+  for (const frame of frames) frame.keypoints[0][1] = .7;
+  // Nonzero Y weights expose whether the adapter actually reaches inference.
+  model.weights.weight_ih_l0[2][1] = 2;
+  model.weights.head_weight = [[1], [-1]]; model.weights.head_bias = [0, 0];
+  const snapshot = JSON.stringify({ model, frames });
+  const expected = predictTrainedSign(model, cameraFramesForModel(model, frames));
+  const camera = predictTrainedCameraSign(model, frames, { durationMs: 500 });
+  assert.deepEqual(camera.diagnostics.posterior, expected.diagnostics.posterior);
+  assert.equal(camera.score, expected.score); assert.equal(camera.meaning, expected.meaning);
+  assert.notEqual(camera.score, predictTrainedSign(model, frames).score);
+  assert.equal(JSON.stringify({ model, frames }), snapshot);
+  assert.deepEqual(camera.diagnostics.cameraGate, { passed: true, code: "" });
+});
+
+test("raw camera quality rejects overflow-prone malformed poses before model-domain conversion", () => {
+  const frames = legacyCameraFrames(); frames[0].keypoints[0][0] = Number.MAX_VALUE;
+  recapture(predictTrainedCameraSign(scaledModel(), frames, { durationMs: 500 }), "invalid-pose");
+});
+
+test("the camera coordinate bound is measured before axis scaling rather than reapplied in model units", () => {
+  const frames = legacyCameraFrames(); frames[0].keypoints[0][0] = 500000;
+  const result = predictTrainedCameraSign(scaledModel(), frames, { durationMs: 500 });
+  assert.deepEqual(result.diagnostics.cameraGate, { passed: true, code: "" });
+  assert.equal(result.diagnostics.inferenceRan, true);
+});
+
+test("diagnostic model-space frames skip the adapter without changing weights, thresholds or timing gates", () => {
+  const model = scaledModel(), raw = legacyCameraFrames();
+  for (const frame of raw) frame.keypoints[0][1] = .7;
+  model.weights.weight_ih_l0[2][1] = 2;
+  model.weights.head_weight = [[1], [-1]]; model.weights.head_bias = [0, 0];
+  const frames = cameraFramesForModel(model, raw);
+  const expected = predictTrainedSign(model, frames);
+  const camera = predictTrainedCameraSign(model, frames, { durationMs: 500, framesAlreadyInModelSpace: true });
+  assert.deepEqual(camera.diagnostics.posterior, expected.diagnostics.posterior);
+  assert.equal(camera.score, expected.score); assert.equal(camera.meaning, expected.meaning);
+  assert.notEqual(camera.score, predictTrainedCameraSign(model, frames, { durationMs: 500 }).score);
+  recapture(predictTrainedCameraSign(model, frames, { durationMs: 3000, framesAlreadyInModelSpace: true }), "tracking-gap");
+});
+
+test("invalid camera metadata and nonboolean diagnostic options are rejected even when no transform would run", () => {
+  const model = scaledModel(), frames = legacyCameraFrames();
+  model.cameraInput.scaleY = 0;
+  assert.throws(() => predictTrainedCameraSign(model, frames, { durationMs: 500, framesAlreadyInModelSpace: true }), /camera-coordinate/);
+  for (const value of [null, 0, "false"]) assert.throws(() => predictTrainedCameraSign(legacyCameraModel(), frames, { durationMs: 500, framesAlreadyInModelSpace: value }), /boolean/);
 });

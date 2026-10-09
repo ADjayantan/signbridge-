@@ -1,6 +1,7 @@
 // Browser inference for the small, exported, single-layer PyTorch GRU sign model.
 // No gesture shortcuts, mirroring or network calls: only the artifact's learned vocabulary.
 import { HAND_JOINT_COUNT, isCompleteHandLandmarks } from "./handJoints.js";
+import { validateCameraInputContract } from "./cameraCoordinateContract.js";
 export const POSE_JOINTS = Object.freeze([0, 2, 5, 11, 12, 13, 14, 33, 37, 38, 41, 42, 45, 46, 49, 50, 53, 54, 58, 59, 62, 63, 66, 67, 70, 71, 74]);
 export const POSE_FRAMES = 32;
 export const POSE_INPUT_SIZE = POSE_JOINTS.length * 3;
@@ -91,7 +92,8 @@ function checkMatrix(value, rows, columns, name) {
 
 /** Reject incompatible, oversized or nonfinite artifacts before running any learned weights. */
 export function validateTrainedModel(model, expectedLanguage) {
-  if (!model || model.format !== "signbridge-gru-v1") throw new Error("This is not a supported SignBridge trained model.");
+  if (!model || !["signbridge-gru-v1", "signbridge-gru-v2"].includes(model.format)) throw new Error("This is not a supported SignBridge trained model.");
+  validateCameraInputContract(model);
   if (!["isl", "asl"].includes(model.signLanguage)) throw new Error("The trained model must specify ISL or ASL.");
   if (expectedLanguage != null && expectedLanguage !== model.signLanguage) throw new Error(`This model belongs to ${model.signLanguage.toUpperCase()}. Choose that sign language before using it.`);
   if (model.frames !== POSE_FRAMES || model.inputSize !== POSE_INPUT_SIZE ||

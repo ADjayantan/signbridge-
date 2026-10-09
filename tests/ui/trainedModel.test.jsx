@@ -1,4 +1,5 @@
 import { act, cleanup, renderHook, waitFor } from "@testing-library/react";
+import { createHash, webcrypto } from "node:crypto";
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
 import { useTrainedModel } from "../../src/hooks/useTrainedModel.js";
 import { POSE_FRAMES, POSE_INPUT_SIZE, POSE_JOINTS } from "../../src/lib/trainedSignModel.js";
@@ -37,6 +38,50 @@ const renderModel = (language = "isl", observe) => renderHook(({ language: selec
 let fetchModel;
 beforeEach(() => { fetchModel = vi.fn(); vi.stubGlobal("fetch", fetchModel); });
 afterEach(() => { cleanup(); vi.unstubAllGlobals(); });
+
+test("diagnostic fingerprint binds the exact fetched model bytes rather than reserialized weights", async () => {
+  vi.stubGlobal("crypto", webcrypto);
+  const body = ` \n${JSON.stringify(artifact())}\n`;
+  fetchModel.mockResolvedValue(response(body));
+  const { result } = renderModel();
+  await waitFor(() => expect(result.current.sourceSha256).toBe(createHash("sha256").update(body).digest("hex")));
+  expect(result.current.sourceSha256).not.toBe(createHash("sha256").update(JSON.stringify(artifact())).digest("hex"));
+});
+
+test("fingerprint failure disables comparison without making valid recognition weights unavailable", async () => {
+  vi.stubGlobal("crypto", { subtle: { digest: vi.fn().mockRejectedValue(new Error("Hash unavailable")) } });
+  fetchModel.mockResolvedValue(response(artifact()));
+  const { result } = renderModel();
+  await waitFor(() => expect(result.current.status).toBe("ready"));
+  expect(result.current.sourceSha256).toBeNull();
+  expect(result.current.model).toEqual(artifact());
+});
+
+test("a UTF-8 BOM is retained in the raw model fingerprint while decoded JSON remains valid", async () => {
+  vi.stubGlobal("crypto", webcrypto);
+  const json = new TextEncoder().encode(JSON.stringify(artifact()));
+  const bytes = new Uint8Array(json.length + 3);
+  bytes.set([0xef, 0xbb, 0xbf]); bytes.set(json, 3);
+  const fetched = response(artifact()); fetched.arrayBuffer = vi.fn().mockResolvedValue(bytes.buffer);
+  fetchModel.mockResolvedValue(fetched);
+  const { result } = renderModel();
+  await waitFor(() => expect(result.current.sourceSha256).toBe(createHash("sha256").update(bytes).digest("hex")));
+  expect(result.current.model).toEqual(artifact());
+  expect(fetched.text).not.toHaveBeenCalled();
+});
+
+test("a late fingerprint from the previous language cannot restore the old model", async () => {
+  const old = deferred();
+  const selected = artifact("asl");
+  vi.stubGlobal("crypto", { subtle: { digest: vi.fn().mockReturnValueOnce(old.promise).mockResolvedValue(new Uint8Array(32).fill(2).buffer) } });
+  fetchModel.mockResolvedValueOnce(response(artifact())).mockResolvedValueOnce(response(selected));
+  const { result, rerender } = renderModel();
+  await waitFor(() => expect(result.current.status).toBe("ready"));
+  rerender({ language: "asl" });
+  await waitFor(() => expect(result.current.sourceSha256).toBe("02".repeat(32)));
+  await act(async () => old.resolve(new Uint8Array(32).fill(1).buffer));
+  expect(result.current).toMatchObject({ status: "ready", model: selected, sourceSha256: "02".repeat(32) });
+});
 
 test("loads valid ISL then ASL artifacts and clears the previous language while loading", async () => {
   const isl = artifact("isl"), asl = artifact("asl", ["HELLO", "THANK YOU"]);

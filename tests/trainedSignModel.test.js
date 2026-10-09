@@ -29,6 +29,15 @@ function model() {
   };
 }
 
+test("versioned camera metadata validates without changing raw archive inference", () => {
+  const original = model(), migrated = { ...original, format: "signbridge-gru-v2", cameraInput: { format: "signbridge-camera-coordinates-v1", space: "axis-scaled-image", scaleX: 1080, scaleY: 1920 } };
+  assert.equal(validateTrainedModel(migrated), migrated);
+  const frames = Array.from({ length: 4 }, () => pose());
+  assert.deepEqual(predictTrainedSign(migrated, frames), predictTrainedSign(original, frames));
+  assert.throws(() => validateTrainedModel({ ...original, format: "signbridge-gru-v2" }), /camera-coordinate metadata/);
+  assert.throws(() => validateTrainedModel({ ...original, cameraInput: migrated.cameraInput }), /requires a signbridge-gru-v2/);
+});
+
 const near = (actual, expected, tolerance = 1e-10) => assert.ok(Math.abs(actual - expected) < tolerance, `${actual} != ${expected}`);
 
 describe("pose preprocessing", () => {
