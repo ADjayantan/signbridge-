@@ -160,6 +160,52 @@ test("negative type metadata requires an explicit unknown sample and supported v
   assert.deepEqual(await listTrainingSamples(), []);
 });
 
+test("measured capture duration survives save and export separately from the pose span", async () => {
+  const input = data({ kind: "unknown", negativeType: "nonsigning", frames: [125, 250, 375, 500].map(frame), captureDurationMs: 900.5 });
+  const saving = saveTrainingSample(input);
+  input.captureDurationMs = 12000;
+  const saved = await saving;
+  assert.equal(saved.captureDurationMs, 900.5);
+  assert.equal(saved.durationMs, 375);
+  assert.equal(saved.byteSize, bytes(saved));
+  const exported = exportTrainingDataset(await listTrainingSamples());
+  const roundTrip = validateTrainingSample(JSON.parse(JSON.stringify(exported.samples[0])), { stored: true });
+  assert.equal(roundTrip.captureDurationMs, 900.5);
+  assert.equal(roundTrip.durationMs, 375);
+  assert.equal(roundTrip.negativeType, "nonsigning");
+  assert.deepEqual(roundTrip.frames, saved.frames);
+});
+
+test("capture duration accepts inclusive measured boundaries and is never guessed for old samples", async () => {
+  for (const [times, captureDurationMs] of [[[0, 100, 200, 350], 350], [[11625, 11750, 11875, 12000], 12000]]) {
+    const saved = await saveTrainingSample(data({ frames: times.map(frame), captureDurationMs }));
+    assert.equal(saved.captureDurationMs, captureDurationMs);
+    assert.equal(saved.durationMs, times.at(-1) - times[0]);
+  }
+  const legacy = await saveTrainingSample(data({ frames: [125, 250, 375, 500].map(frame) }));
+  assert.equal("captureDurationMs" in legacy, false);
+  const exported = exportTrainingDataset(await listTrainingSamples());
+  assert.equal("captureDurationMs" in exported.samples.find((row) => row.id === legacy.id), false);
+});
+
+test("capture duration rejects nonnumeric values and windows ending before the last pose", async () => {
+  for (const captureDurationMs of [NaN, Infinity, -Infinity, null, undefined, "900", true, false, [], {}, new Number(900), 349.99, -1, 12000.01, 499.99]) {
+    await assert.rejects(saveTrainingSample(data({ frames: [125, 250, 375, 500].map(frame), captureDurationMs })), /Capture duration/);
+  }
+  assert.deepEqual(await listTrainingSamples(), []);
+  const row = await saveTrainingSample(data({ captureDurationMs: 500 }));
+  assert.throws(() => exportTrainingDataset([{ ...row, captureDurationMs: 374 }]), /Capture duration/);
+  assert.deepEqual(await listTrainingSamples(), [row]);
+});
+
+test("capture duration metadata does not weaken simultaneous visibility or negative-type gates", () => {
+  const input = data({ captureDurationMs: 1000 });
+  input.frames.forEach((pose) => pose.confidences.fill(0));
+  assert.throws(() => validateTrainingSample(input), /Recapture.*together/);
+  assert.throws(() => validateTrainingSample(data({ captureDurationMs: 1000, negativeType: "nonsigning" })), /Only unknown/);
+  assert.equal(validateTrainingSample({ ...input, kind: "unknown", negativeType: "nonsigning" }).captureDurationMs, 1000);
+});
+
 test("metadata validation preserves explicit language, label and signer codes", async () => {
   for (const patch of [{ signLanguage: "both" }, { kind: "fake" }, { signerId: "" }, { sessionId: "person name" }, { signerId: "x".repeat(81) }, { label: " " }, { label: "x".repeat(81) }, { label: "__unknown__" }, { prediction: { status: "success", meaning: "WATER" } }]) {
     await assert.rejects(saveTrainingSample(data(patch)));

@@ -6,7 +6,7 @@ import { useHandTracking } from "../hooks/useHandTracking.js";
 import { useSignVideos } from "../hooks/useSignVideos.js";
 import SignVideoPlayer, { useBlobURL } from "../components/SignVideoPlayer.jsx";
 import { SIGN_LANGUAGES } from "../lib/signVideos.js";
-import { askSign } from "../lib/api.js";
+import { askSign, checkSignAI } from "../lib/api.js";
 import { drawHands } from "../lib/drawHands.js";
 import { handsFromResult, toFeatures } from "../lib/features.js";
 import { decideSign, gestureMap } from "../lib/gestures.js";
@@ -51,6 +51,8 @@ export default function SignMode({ settings, update, onBack, initialTab = "talk"
   const [partnerText, setPartnerText] = useState("");
   const [bridgeError, setBridgeError] = useState("");
   const [sourceError, setSourceError] = useState("");
+  const [ai, setAI] = useState("checking");
+  const [checkAttempt, setCheckAttempt] = useState(0);
   const [cameraEnabled, setCameraEnabled] = useState(initialTab !== "videos");
   const [cameraDevice, setCameraDevice] = useState("");
   const [uploaded, setUploaded] = useState(null);
@@ -79,9 +81,9 @@ export default function SignMode({ settings, update, onBack, initialTab = "talk"
   const voiceRef = useRef(null);
   const sendRef = useRef(null);
   // Latest values for the per-frame loop and async callbacks.
-  const latest = useRef({ tab, gestures, settings, bridge });
+  const latest = useRef({ tab, gestures, settings, bridge, ai });
   useLayoutEffect(() => {
-    latest.current = { tab, gestures, settings, bridge };
+    latest.current = { tab, gestures, settings, bridge, ai };
     classifierRef.current = classifier;
   });
   useLayoutEffect(() => {
@@ -95,6 +97,15 @@ export default function SignMode({ settings, update, onBack, initialTab = "talk"
     document.title = "Sign mode · SignBridge";
     document.getElementById("sign-title")?.focus();
   }, []);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    setAI("checking");
+    checkSignAI({ signal: controller.signal }).then((data) => {
+      if (!controller.signal.aborted) setAI(!data.configured ? "missing" : data.roomAuthRequired ? "room-only" : "configured");
+    }).catch(() => { if (!controller.signal.aborted) setAI("unavailable"); });
+    return () => controller.abort();
+  }, [checkAttempt]);
 
   useEffect(() => {
     let alive = true;
@@ -122,6 +133,7 @@ export default function SignMode({ settings, update, onBack, initialTab = "talk"
   }, []);
 
   const ask = useCallback(async ({ text, said, glosses = null }) => {
+    if (latest.current.ai !== "configured") return;
     abortRef.current?.abort();
     const controller = new AbortController();
     abortRef.current = controller;
@@ -161,7 +173,7 @@ export default function SignMode({ settings, update, onBack, initialTab = "talk"
 
   const send = useCallback(() => {
     const said = wordsRef.current;
-    if (!said.length || busyRef.current) return;
+    if (!said.length || busyRef.current || (!latest.current.bridge && latest.current.ai !== "configured")) return;
     armedRef.current = false;
     setWordList([]);
     if (latest.current.bridge) {
@@ -210,7 +222,7 @@ export default function SignMode({ settings, update, onBack, initialTab = "talk"
       }
 
       let auto = 0;
-      if (currentTab === "talk" && s.autoSendMs > 0 && armedRef.current && wordsRef.current.length && !busyRef.current && !editingRef.current && !hands.length) {
+      if (currentTab === "talk" && (latest.current.bridge || latest.current.ai === "configured") && s.autoSendMs > 0 && armedRef.current && wordsRef.current.length && !busyRef.current && !editingRef.current && !hands.length) {
         const idle = now - lastHandsAtRef.current;
         auto = Math.min(1, idle / s.autoSendMs);
         if (idle >= s.autoSendMs) sendRef.current();
@@ -287,7 +299,7 @@ export default function SignMode({ settings, update, onBack, initialTab = "talk"
   const submitTyped = (e) => {
     e.preventDefault();
     const value = typed.trim();
-    if (!value || busy) return;
+    if (!value || busy || (!bridge && ai !== "configured")) return;
     setTyped("");
     if (bridge) {
       setLog((all) => [...all, { id: `${Date.now()}`, said: value, reply: value, partner: true, local: true, lang: settings.lang }]);
@@ -439,6 +451,12 @@ export default function SignMode({ settings, update, onBack, initialTab = "talk"
             <Switch checked={bridge} onChange={(value) => { micRef.current?.abort(); setListening(false); setPartnerText(""); setBridgeError(""); setBridge(value); }} description="Speak your reviewed signs to a nearby person. Their speech becomes captions and matching sign videos. No Gemini key needed; browser speech recognition may use its online service.">Face-to-face bridge</Switch>
             {bridge && <div className="panel"><div className="actions"><button type="button" className="btn btn-primary" onClick={listenToPartner} disabled={!canListen}>{listening ? "Finish listening" : "Listen to partner"}</button><button type="button" className="btn" onClick={() => { micRef.current?.abort(); micRef.current = null; setListening(false); setPartnerText(""); }}>Cancel listening</button></div><p className="reply" role="status">{listening ? partnerText || "Listening…" : "Partner can speak or type below."}</p></div>}
             {bridgeError && <p className="notice error" role="alert">{bridgeError}</p>}
+            {!bridge && ai !== "configured" && <aside className="notice" aria-label="AI setup">
+              <strong>{ai === "checking" ? "Checking AI setup…" : ai === "missing" ? "AI replies need setup" : ai === "room-only" ? "AI help is available inside rooms" : "AI server unavailable"}</strong>
+              <p>{ai === "checking" ? "Your words stay here while AI availability is checked." : ai === "missing" ? "AI replies are not enabled on this server. Set GEMINI_API_KEY in the server environment and restart the service." : ai === "room-only" ? "This server accepts AI requests inside authenticated conversation rooms. Open Connect from Home for optional AI draft help." : "The AI server could not be checked. Check your connection, then try again."}</p>
+              <p>Recognition adds words for you to review. Use Speak words for local voice output, or turn on Face-to-face bridge to communicate with someone nearby. These work without an AI key.</p>
+              <button type="button" className="btn btn-small" disabled={ai === "checking"} onClick={() => setCheckAttempt((n) => n + 1)}>Check AI setup again</button>
+            </aside>}
             <div className="sentence-box">
               <h2 className="panel-title" id="sentence-title">
                 Your signs
@@ -458,7 +476,7 @@ export default function SignMode({ settings, update, onBack, initialTab = "talk"
               <div className="actions">
                 <button type="button" className="btn" onClick={() => speakText(words.join(" "), true)} disabled={!words.length || !canSpeak}>Speak words</button>
                 <button type="button" className="btn btn-ghost" onClick={() => speaker.cancel()} disabled={!canSpeak}>Stop speech</button>
-                <button type="button" className="btn btn-primary" onClick={send} disabled={!words.length || busy}>
+                <button type="button" className="btn btn-primary" onClick={send} disabled={!words.length || busy || (!bridge && ai !== "configured")}>
                   Send <kbd>Enter</kbd>
                 </button>
                 <button type="button" className="btn" onClick={removeLast} disabled={!words.length}>
@@ -482,7 +500,7 @@ export default function SignMode({ settings, update, onBack, initialTab = "talk"
                 autoComplete="off"
                 maxLength={2000}
               />
-              <button type="submit" className="btn btn-primary" disabled={!typed.trim() || busy}>
+              <button type="submit" className="btn btn-primary" disabled={!typed.trim() || busy || (!bridge && ai !== "configured")}>
                 Send
               </button>
             </form>

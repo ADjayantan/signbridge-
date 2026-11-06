@@ -183,3 +183,82 @@ test("microphone permission error survives peer-connected, reconnecting and part
   rerender({ current: room }); await act(async () => {}); expect(result.current.error).toMatch(/Microphone access is blocked/);
   rerender({ current: { ...room, participants: [{ id: "host", online: true }, { id: "guest", online: false }] } }); expect(result.current.error).toMatch(/Microphone access is blocked/); expect(result.current.micStatus).toBe("error");
 });
+
+test("blocked autoplay has a synchronous explicit retry without losing the relay notice, stream or camera", async () => {
+  const getUserMedia = vi.fn(); Object.defineProperty(navigator, "mediaDevices", { configurable: true, value: { getUserMedia } });
+  const { room } = roomState(); const { result } = renderHook(() => useRoomMedia(room)); await act(async () => {});
+  const notice = result.current.notice;
+  const video = { play: vi.fn().mockRejectedValueOnce(new Error("Autoplay blocked")).mockResolvedValue(), pause: vi.fn(), srcObject: null };
+  result.current.remoteVideoRef.current = video;
+  const receiver = track("video", "remote"); receiver.muted = false; receiver.readyState = "live";
+  await act(async () => FakePeer.all[0].ontrack({ track: receiver }));
+  const stream = result.current.remoteStream;
+  expect(result.current.playbackBlocked).toBe(true); expect(result.current.playbackError).toMatch(/Choose Play partner/); expect(result.current.notice).toBe(notice);
+  await act(async () => { result.current.retryRemotePlayback(); expect(video.play).toHaveBeenCalledTimes(2); });
+  expect(result.current.playbackBlocked).toBe(false); expect(result.current.playbackError).toBe(""); expect(result.current.remoteStream).toBe(stream); expect(video.srcObject).toBe(stream);
+  expect(result.current.notice).toBe(notice); expect(result.current.cameraOn).toBe(false); expect(getUserMedia).not.toHaveBeenCalled(); expect(room.sendSignal).not.toHaveBeenCalled();
+});
+
+test("late playback failure after reconnect cannot restore a stale playback alert", async () => {
+  let reject;
+  const { room } = roomState(); const { result, rerender } = renderHook(({ current }) => useRoomMedia(current), { initialProps: { current: room } }); await act(async () => {});
+  const video = { play: vi.fn(() => new Promise((_resolve, no) => { reject = no; })), pause: vi.fn(), srcObject: null };
+  result.current.remoteVideoRef.current = video;
+  const receiver = track("video", "remote"); receiver.muted = false; receiver.readyState = "live";
+  await act(async () => FakePeer.all[0].ontrack({ track: receiver }));
+  rerender({ current: { ...room, status: "reconnecting" } });
+  await act(async () => reject(new Error("Old autoplay failure")));
+  expect(result.current.remoteStream).toBe(null); expect(result.current.playbackBlocked).toBe(false); expect(result.current.playbackError).toBe(""); expect(result.current.mediaStatus).toBe("reconnecting");
+});
+
+test("late successful playback of a replaced stream cannot clear its newer playback failure", async () => {
+  let resolve;
+  const { room } = roomState(); const { result } = renderHook(() => useRoomMedia(room)); await act(async () => {});
+  const video = { play: vi.fn().mockImplementationOnce(() => new Promise((yes) => { resolve = yes; })).mockRejectedValue(new Error("New playback blocked")), pause: vi.fn(), srcObject: null };
+  result.current.remoteVideoRef.current = video;
+  const receiver = track("video", "remote"); receiver.muted = false; receiver.readyState = "live";
+  await act(async () => FakePeer.all[0].ontrack({ track: receiver }));
+  const firstStream = result.current.remoteStream;
+  await act(async () => { receiver.muted = true; receiver.dispatchEvent(new Event("mute")); });
+  expect(result.current.remoteStream).not.toBe(firstStream); expect(result.current.playbackBlocked).toBe(true);
+  await act(async () => resolve()); expect(result.current.playbackBlocked).toBe(true); expect(result.current.playbackError).toMatch(/Choose Play partner/);
+});
+
+function selectedRouteStats(localType, remoteType = "host") {
+  return new Map([
+    ["transport", { id: "transport", type: "transport", dtlsState: "connected", selectedCandidatePairId: "pair" }],
+    ["pair", { id: "pair", type: "candidate-pair", state: "succeeded", localCandidateId: "local", remoteCandidateId: "remote" }],
+    ["local", { id: "local", type: "local-candidate", candidateType: localType, address: "private diagnostic address" }],
+    ["remote", { id: "remote", type: "remote-candidate", candidateType: remoteType }],
+  ]);
+}
+
+test("route check runs only for a connected peer and reports selected routes without retaining stats", async () => {
+  const { room } = roomState(); const { result } = renderHook(() => useRoomMedia(room)); await act(async () => {});
+  const peer = FakePeer.all[0]; peer.getStats = vi.fn().mockResolvedValueOnce(selectedRouteStats("relay")).mockResolvedValueOnce(selectedRouteStats("host", "srflx"));
+  await act(async () => result.current.checkVideoRoute()); expect(peer.getStats).not.toHaveBeenCalled(); expect(result.current.routeStatus).toBe("unknown");
+  act(() => { peer.connectionState = "connected"; peer.onconnectionstatechange(); });
+  await act(async () => result.current.checkVideoRoute()); expect(result.current.routeStatus).toBe("relay");
+  await act(async () => result.current.checkVideoRoute()); expect(result.current.routeStatus).toBe("direct"); expect(peer.getStats).toHaveBeenCalledTimes(2);
+  expect(JSON.stringify(result.current)).not.toContain("private diagnostic address"); expect(room.sendSignal).not.toHaveBeenCalled();
+  act(() => { peer.connectionState = "disconnected"; peer.onconnectionstatechange(); }); expect(result.current.routeStatus).toBe("unknown");
+});
+
+test("failed or unsupported stats leave the route unknown and preserve the text room and relay notice", async () => {
+  const { room } = roomState(); const { result } = renderHook(() => useRoomMedia(room)); await act(async () => {}); const peer = FakePeer.all[0];
+  act(() => { peer.connectionState = "connected"; peer.onconnectionstatechange(); }); const notice = result.current.notice;
+  await act(async () => result.current.checkVideoRoute()); expect(result.current.routeStatus).toBe("unknown");
+  peer.getStats = vi.fn().mockRejectedValue(new Error("Stats unavailable"));
+  await act(async () => result.current.checkVideoRoute()); expect(result.current.routeStatus).toBe("unknown"); expect(result.current.mediaStatus).toBe("connected"); expect(result.current.notice).toBe(notice); expect(result.current.error).toBe(""); expect(room.status).toBe("connected");
+});
+
+test("old-peer stats after video retry cannot overwrite the newer selected route", async () => {
+  let resolve; const { room } = roomState(); const { result } = renderHook(() => useRoomMedia(room)); await act(async () => {}); const first = FakePeer.all[0];
+  first.getStats = vi.fn(() => new Promise((yes) => { resolve = yes; }));
+  act(() => { first.connectionState = "connected"; first.onconnectionstatechange(); }); let checking;
+  act(() => { checking = result.current.checkVideoRoute(); }); expect(result.current.routeStatus).toBe("checking");
+  await act(async () => result.current.retry()); expect(result.current.routeStatus).toBe("unknown");
+  const second = FakePeer.all[1]; second.getStats = vi.fn().mockResolvedValue(selectedRouteStats("host"));
+  act(() => { second.connectionState = "connected"; second.onconnectionstatechange(); }); await act(async () => result.current.checkVideoRoute()); expect(result.current.routeStatus).toBe("direct");
+  await act(async () => { resolve(selectedRouteStats("relay")); await checking; }); expect(result.current.routeStatus).toBe("direct");
+});

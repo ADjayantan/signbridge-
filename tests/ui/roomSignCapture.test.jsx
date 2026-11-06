@@ -4,8 +4,9 @@ import { afterEach, beforeEach, expect, test, vi } from "vitest";
 import RoomSignCapture from "../../src/components/RoomSignCapture.jsx";
 import { legacyCameraModel } from "../helpers/legacyCamera.js";
 
-const mock = vi.hoisted(() => ({ model: null, frame: null, tracking: "ready", predict: vi.fn(), retry: vi.fn(), append: vi.fn(), activity: vi.fn(), borrowed: null }));
+const mock = vi.hoisted(() => ({ model: null, frame: null, tracking: "ready", predict: vi.fn(), graphPredict: vi.fn(), graphCancel: vi.fn(), retry: vi.fn(), append: vi.fn(), activity: vi.fn(), borrowed: null }));
 vi.mock("../../src/hooks/useTrainedModel.js", () => ({ useTrainedModel: () => mock.model }));
+vi.mock("../../src/hooks/useGraphSignModel.js", () => ({ useGraphSignModel: () => ({ status: "ready", model: { labels: ["WATER"] }, predict: mock.graphPredict, cancel: mock.graphCancel, retry: mock.retry }) }));
 vi.mock("../../src/hooks/usePoseTracking.js", () => ({ usePoseTracking: ({ videoRef, active, onFrame }) => {
   mock.borrowed = videoRef; mock.frame = onFrame;
   return { status: active ? mock.tracking : "idle", error: "Tracking unavailable", retry: mock.retry };
@@ -20,7 +21,8 @@ vi.mock("../../src/lib/trainedSignModel.js", async (original) => {
 const videoRef = { current: null };
 const view = (props = {}) => <RoomSignCapture videoRef={videoRef} cameraStatus="on" signLanguage="isl" onAppend={mock.append} onActivityChange={mock.activity} {...props} />;
 const click = (name) => fireEvent.click(screen.getByRole("button", { name }));
-let now;
+let now, scrollIntoView;
+const originalScrollIntoView = Object.getOwnPropertyDescriptor(HTMLElement.prototype, "scrollIntoView");
 const emit = (count = 5) => act(() => {
   for (let i = 0; i < count; i++) { now += 125; mock.frame({ keypoints: Array.from({ length: 75 }, () => [.5, .5, 0]), confidences: Array(75).fill(1) }); }
 });
@@ -30,9 +32,68 @@ beforeEach(() => {
   mock.append.mockReset();
   mock.model = { status: "ready", model: legacyCameraModel(), retry: mock.retry };
   mock.predict.mockReturnValue({ status: "recognized", meaning: "WATER", feedback: "Review this meaning", candidates: [] });
+  scrollIntoView = vi.fn(); Object.defineProperty(HTMLElement.prototype, "scrollIntoView", { configurable: true, value: scrollIntoView });
   now = 1000; vi.spyOn(performance, "now").mockImplementation(() => now);
 });
-afterEach(() => { cleanup(); vi.useRealTimers(); });
+afterEach(() => {
+  cleanup(); vi.useRealTimers();
+  if (originalScrollIntoView) Object.defineProperty(HTMLElement.prototype, "scrollIntoView", originalScrollIntoView);
+  else delete HTMLElement.prototype.scrollIntoView;
+});
+
+test("the first and repeated completed word each focus its visible review, without speaking or adding", () => {
+  const read = vi.fn(), app = render(view({ onRead: read, canRead: true }));
+  emit(); expect(screen.queryByRole("heading", { name: /check the meaning/ })).toBeNull(); expect(scrollIntoView).not.toHaveBeenCalled();
+  const headings = [];
+  for (let turn = 0; turn < 2; turn++) {
+    start(); emit(); click(/^Finish sign/);
+    const heading = screen.getByRole("heading", { name: "Tentative word — check the meaning" }); headings.push(heading);
+    expect(document.activeElement).toBe(heading); expect(heading.tabIndex).toBe(-1);
+    expect(screen.getByLabelText("Review or correct the word").value).toBe("WATER");
+    expect(scrollIntoView).toHaveBeenCalledTimes(turn + 1); expect(scrollIntoView).toHaveBeenLastCalledWith({ block: "nearest" });
+  }
+  expect(headings[1]).not.toBe(headings[0]);
+  const review = screen.getByLabelText("Review or correct the word"); review.focus();
+  fireEvent.change(review, { target: { value: "WATER PLEASE" } }); app.rerender(view({ onRead: read, canRead: true, speaking: true }));
+  expect(document.activeElement).toBe(review); expect(scrollIntoView).toHaveBeenCalledTimes(2);
+  expect(mock.predict).toHaveBeenCalledTimes(2); expect(read).not.toHaveBeenCalled(); expect(mock.append).not.toHaveBeenCalled();
+});
+
+test("a rejected completed capture focuses its explanation and leaves manual review available", () => {
+  render(view()); start(); emit(4); now += 1500; click(/^Finish sign/);
+  expect(document.activeElement).toBe(screen.getByRole("heading", { name: "No reliable word match" }));
+  expect(screen.getByLabelText("Review or correct the word").value).toBe("");
+  expect(scrollIntoView).toHaveBeenCalledOnce(); expect(mock.predict).not.toHaveBeenCalled(); expect(mock.append).not.toHaveBeenCalled();
+});
+
+test("a fresh asynchronous result moves focus only after recognition finishes", async () => {
+  let resolve; mock.graphPredict.mockReturnValue(new Promise((yes) => { resolve = yes; }));
+  const read = vi.fn(); render(<><button>Keep focus here</button>{view({ onRead: read, canRead: true })}</>);
+  fireEvent.change(screen.getByLabelText("Word recognition model", { exact: false }), { target: { value: "graph" } });
+  start(); emit(); click(/^Finish sign/);
+  const guard = screen.getByRole("button", { name: "Keep focus here" }); guard.focus();
+  expect(document.activeElement).toBe(guard); expect(scrollIntoView).not.toHaveBeenCalled();
+  await act(async () => { resolve({ status: "recognized", meaning: "WATER", feedback: "Review this meaning", candidates: [] }); });
+  expect(document.activeElement).toBe(screen.getByRole("heading", { name: "Tentative word — check the meaning" }));
+  expect(scrollIntoView).toHaveBeenCalledOnce(); expect(read).not.toHaveBeenCalled(); expect(mock.append).not.toHaveBeenCalled();
+});
+
+test.each(["cancel", "camera loss", "model change", "language change", "unmount"])("late asynchronous results do not move focus after %s", async (action) => {
+  let resolve; mock.graphPredict.mockReturnValue(new Promise((yes) => { resolve = yes; }));
+  const focusedView = (props = {}) => <><button>Keep focus here</button>{view(props)}</>;
+  const app = render(focusedView());
+  fireEvent.change(screen.getByLabelText("Word recognition model", { exact: false }), { target: { value: "graph" } });
+  start(); emit(); click(/^Finish sign/);
+  if (action === "cancel") click("Cancel recognition");
+  if (action === "camera loss") app.rerender(focusedView({ cameraStatus: "off" }));
+  if (action === "model change") fireEvent.change(screen.getByLabelText("Word recognition model", { exact: false }), { target: { value: "legacy" } });
+  if (action === "language change") app.rerender(focusedView({ signLanguage: "asl" }));
+  if (action === "unmount") app.unmount();
+  const guard = action === "unmount" ? document.body : screen.getByRole("button", { name: "Keep focus here" }); guard.focus();
+  await act(async () => { resolve({ status: "recognized", meaning: "WATER", feedback: "Review this meaning", candidates: [] }); });
+  expect(document.activeElement).toBe(guard); expect(scrollIntoView).not.toHaveBeenCalled();
+  expect(screen.queryByRole("heading", { name: "Tentative word — check the meaning" })).toBeNull(); expect(mock.append).not.toHaveBeenCalled();
+});
 
 test("borrows the call video and infers only a finished turn; review is required before adding", () => {
   render(view()); expect(mock.borrowed).toBe(videoRef);
@@ -44,6 +105,35 @@ test("borrows the call video and infers only a finished turn; review is required
   expect(screen.getByLabelText("Review or correct the word").value).toBe("");
 });
 
+test("recognized-word guidance explains local voice and partner draft actions without speaking or adding", () => {
+  const read = vi.fn(); render(view({ onRead: read, canRead: true })); start(); emit(); click(/^Finish sign/);
+  expect(screen.getByText(/Choose Speak reviewed word to hear it on this device/)).toBeTruthy();
+  expect(screen.getByText(/Capture alone does not send a message or request an AI reply/)).toBeTruthy();
+  expect(mock.append).not.toHaveBeenCalled(); expect(read).not.toHaveBeenCalled();
+});
+
+test("added-word feedback clears when editing, selecting another candidate, or starting another capture", () => {
+  mock.predict.mockReturnValue({ status: "recognized", meaning: "HELLO", feedback: "Review this meaning", candidates: [{ label: "THANK YOU", score: .5 }] });
+  const reviewed = vi.fn(); render(view({ onReviewChange: reviewed })); start(); emit(); click(/^Finish sign/);
+  const added = () => screen.queryByText(/Added to your partner message draft/);
+  click("Add reviewed word to message"); expect(added()).toBeTruthy();
+  fireEvent.change(screen.getByLabelText("Review or correct the word"), { target: { value: "HELLO THERE" } });
+  expect(added()).toBeNull(); expect(reviewed).toHaveBeenCalledOnce();
+  click("Add reviewed word to message"); expect(added()).toBeTruthy();
+  click("THANK YOU"); expect(added()).toBeNull(); expect(reviewed).toHaveBeenCalledTimes(2);
+  click("Add reviewed word to message"); expect(added()).toBeTruthy();
+  start(); expect(added()).toBeNull(); expect(screen.queryByLabelText("Review or correct the word")).toBeNull();
+});
+
+test("the room can clear added-word feedback after its draft changes or is sent", () => {
+  const app = render(view({ addedToDraft: false })); start(); emit(); click(/^Finish sign/);
+  click("Add reviewed word to message"); app.rerender(view({ addedToDraft: true }));
+  expect(screen.getByText(/Added to your partner message draft/)).toBeTruthy();
+  app.rerender(view({ addedToDraft: false }));
+  expect(screen.queryByText(/Added to your partner message draft/)).toBeNull();
+  expect(mock.append).toHaveBeenCalledOnce();
+});
+
 test("a rejected message addition preserves the reviewed word for editing and retry", () => {
   mock.append.mockReturnValueOnce(false).mockReturnValueOnce(true);
   render(view()); start(); emit(); click(/^Finish sign/);
@@ -52,6 +142,7 @@ test("a rejected message addition preserves the reviewed word for editing and re
   click("Add reviewed word to message");
   expect(mock.append).toHaveBeenCalledOnce();
   expect(review.value).toBe("WATER PLEASE");
+  expect(screen.queryByText(/Added to your partner message draft/)).toBeNull();
   expect(screen.getByRole("alert").textContent).toMatch(/Shorten it/);
   expect(screen.getByRole("button", { name: "Add reviewed word to message" }).disabled).toBe(false);
   expect(mock.predict).toHaveBeenCalledOnce();
@@ -59,6 +150,7 @@ test("a rejected message addition preserves the reviewed word for editing and re
   expect(mock.append).toHaveBeenCalledTimes(2);
   expect(mock.append.mock.calls[1][0]).toMatchObject({ text: "WATER PLEASE", inputMethod: "sign", signLanguage: "isl" });
   expect(review.value).toBe("");
+  expect(screen.getByText(/Added to your partner message draft/)).toBeTruthy();
   expect(screen.queryByRole("alert")).toBeNull();
 });
 

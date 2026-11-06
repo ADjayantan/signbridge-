@@ -1,6 +1,6 @@
 # Conversation pilot: deployment and physical-device acceptance
 
-**Status, 3 October 2026:** software implemented locally; not deployed by this implementation. The Render account is ready, but the user confirmed that no SignBridge Render service has been created. Private Metered setup and physical Windows Chrome ↔ Android Chrome tests remain pending. Automated sockets and simulated media checks do not establish cross-network video success, fluent sign translation or assistive-device usability. The new clarification, meeting and reference workflows have [separate local verification](conversation-quality-verification-2026-10-03.md).
+**Status, 8 October 2026:** public pilot source pushed to [`codex/render-pilot`](https://github.com/ADjayantan/signbridge-/tree/codex/render-pilot) and deployed as `signbridge-conversations` on Render Free. [Open the live app](https://signbridge-conversations.onrender.com/#connect). Thirteen remote synthetic HTTPS/WSS checks passed, including twenty alternating messages, receipts, duplicate prevention and reconnect history; the browser also created, sent and ended a disposable room. See [deployment verification](render-pilot-verification-2026-10-08.md). The relay endpoint reports unavailable. Private Metered setup and physical Windows Chrome ↔ Android Chrome tests remain pending. Automated sockets and simulated media checks do not establish cross-network video success, fluent sign translation or assistive-device usability. The clarification, meeting and reference workflows have [separate local verification](conversation-quality-verification-2026-10-03.md).
 
 ## Local start and public-build check
 
@@ -19,13 +19,17 @@ Run `npm run check`, then `npm run build:public`. Keep/start `npm run rooms` and
 
 ## Free Render deployment
 
-`render.yaml` is the deployment blueprint. No public service or paid resource has been created by this implementation. When the reviewed code is ready in a connected Git repository:
+`render.yaml` is the deployment blueprint. The public service is running on Free compute; no database, disk or paid resource was created. The following settings reproduce the pilot:
+
+The [Deploy to Render shortcut](https://render.com/deploy?repo=https%3A%2F%2Fgithub.com%2FADjayantan%2Fsignbridge-%2Ftree%2Fcodex%2Frender-pilot) selects the published pilot branch. The existing account already has the deployed service; do not create a duplicate for routine updates. The shortcut follows Render's [official button/branch documentation](https://render.com/docs/deploy-to-render). If reproducing the service in another account, explicitly select branch `codex/render-pilot` and Free compute.
 
 1. In the existing Render account, create a **Node Web Service** from the repository, or use its Blueprint. Confirm **Free** compute before creating it. This pilot needs no database or persistent disk.
-2. Set build command `npm ci && npm run build:public`, start command `npm start`, and health check `/api/health`. The blueprint sets `NODE_ENV=production`. The server binds `0.0.0.0` and uses Render's supplied `PORT`.
+2. Set build command `npm ci --include=dev && npm run build:public`, start command `npm start`, and health check `/api/health`. The blueprint sets `NODE_ENV=production`; explicitly including development dependencies makes Vite available during the build. The server binds `0.0.0.0` and uses Render's supplied `PORT`.
 3. Set private Metered values through the dashboard when available. Leave `GEMINI_API_KEY` unset unless room AI help is wanted. Metered is optional for deployment: text can run before relay configuration. Never commit/screenshot secrets.
 4. Leave `VITE_ROOM_SERVER_URL` unset for same-origin hosting. Use `ROOM_ALLOWED_ORIGINS` only for additional frontends. If setting optional Gemini `ALLOWED_ORIGINS`, include the frontend making the AI request.
 5. Open the deployed HTTPS `/#connect` page and check `/api/health`, then complete physical-device acceptance below.
+
+The blueprint sets `autoDeployTrigger: off`, as recommended for a Deploy to Render button. Ordinary source updates need a deliberate deploy of the selected branch from the dashboard. Blueprint configuration syncs can still trigger deployment when configuration changes; expect existing in-memory rooms to end during either kind of deployment.
 
 Render supports public WebSockets on the HTTP service; deployed clients use HTTPS/WSS. Free services can sleep after 15 minutes without inbound traffic, take approximately a minute to wake, and restart. Room state is in memory, so sleep/restart ends old rooms. The UI retains drafts and explains wake-up/reconnection; create a fresh room after “Room ended.” Free usage caps apply: check dashboard usage and retain the Free plan. [Render deployment](https://render.com/docs/deploy-node-express-app), [WebSockets](https://render.com/docs/websocket), [Free limits](https://render.com/docs/free).
 
@@ -33,9 +37,9 @@ Use one server instance. Durable transcripts and shared state across instances a
 
 ### Private Metered configuration
 
-1. Use a **free Open Relay** account and obtain its application domain and **TURN REST API key**. The application uses its own signaling server; a Metered publishable signaling/SDK key is not used.
-2. Privately set server environment variables `METERED_DOMAIN=your-app.metered.live` and `METERED_TURN_API_KEY`. Locally put them in `.env.local` and restart `npm run rooms`. Neither secret belongs in `VITE_*`.
-3. Authenticated room members fetch ICE configuration from the room server. It caches successful upstream results for five minutes and failures for 30 seconds. Temporary ICE credentials reach the browser peer; the master API key and raw upstream errors do not.
+1. Use a **free Open Relay** account and obtain its application domain and **credential-scoped API key**. In Metered, use TURN Server → Credentials → Get credential → Show API Key (classic dashboard: Show API Key beside the credential). The account Developers → Secret key and publishable signaling/SDK keys are not used by this endpoint. [Metered authentication](https://www.metered.ca/docs/turn-rest-api/#authentication), [Get TURN Credential](https://www.metered.ca/docs/turn-rest-api/get-credential/).
+2. Privately set server environment variables `METERED_DOMAIN=your-app.metered.live` and `METERED_TURN_API_KEY`. Locally put them in `.env.local` and restart `npm run rooms`. On Render, restart/deploy the existing service after saving values; its backend reads them at startup. Existing rooms end, so create a fresh invite. Neither secret belongs in `VITE_*`.
+3. Authenticated room members fetch ICE configuration from the room server. It caches successful upstream results for five minutes and failures for 30 seconds. The configured credential's ICE username/password reach the browser peer; its API key and raw upstream errors do not. This endpoint retrieves an existing credential; it does not generate temporary credentials. Expiry depends on how that credential was created. Rotation/expiry automation is later work. Allow up to two minutes after creating a credential for propagation, then reconnect before declaring relay failure. [Creating TURN credentials](https://www.metered.ca/docs/turn-server-service/creating-turn-credentials/).
 4. Confirm allowance/usage in the account dashboard. Open Relay currently advertises 20 GB/month free TURN traffic. This app does not inspect remaining allowance or purchase capacity. Failed/missing relay configuration leaves text available and explains video availability. [Open Relay setup and allowance](https://www.metered.ca/tools/openrelay/).
 
 ### Existing Vercel tools
@@ -54,7 +58,8 @@ Use **two actual devices**: Windows Chrome on Wi-Fi and Android Chrome on mobile
 | Invites/two slots | Try a changed invite and join the valid invite from a third independent browser. | Both attempts are rejected; no transcript is exposed. |
 | Media defaults | Join a fresh room before allowing camera/mic. | Media remains off; typing works; device preferences are independent. |
 | Different-network media | Enable both cameras. For audio, enable microphones, choose Text output and explicitly enable Listen to partner audio. | Live video/audio work both ways. Natural signing needs no model/AI; ISL and ASL are not automatically translated. |
-| Forced relay | On both devices enable Video connection options → Require video relay, then Reconnect video. | Video connects with configured TURN. A private Chrome `chrome://webrtc-internals` diagnostic shows the selected ICE candidate pair uses `relay`; do not publish its address/credential details. |
+| Forced relay | On both devices enable Video connection options → Require video relay, then Reconnect video. Once connected, choose Check video route. | Video/audio work and the selected route shows relay on both devices. Route status alone does not prove media quality; incomplete statistics stay unknown. A private Chrome `chrome://webrtc-internals` diagnostic can supplement the check; do not publish its address/credential details. |
+| Playback recovery | If browser autoplay blocks the partner stream, use Play partner video/audio with mouse or keyboard. | Playback retries the existing stream and keeps camera/text/relay status intact. Repeated failure remains actionable; an old attempt cannot overwrite the current stream state. |
 | Relay unavailable | Separately run a local server without Metered settings and require relay. | Relay unavailability is clear and text stays usable. Direct video on some networks is not proof of cross-network reliability. |
 | Media permission denial | Block camera/mic on one device, then retry. | Actionable error; reviewed typing/sending still works. |
 | Speech review | Dictate, finish, correct a word, then Send to partner. | Only reviewed text is sent; app speech stops and partner audio is muted during dictation. No automatic Gemini call. |

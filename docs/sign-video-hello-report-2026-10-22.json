@@ -1,0 +1,53 @@
+{
+  "format": "signbridge-recognition-report-v1",
+  "exportedAt": "2026-10-22T16:31:57.215Z",
+  "purpose": "Engineering diagnostics only; no reviewed ground truth or recognition accuracy is established.",
+  "result": {
+    "status": "recognized",
+    "inferenceRan": true,
+    "reasonCodes": [
+      "recognized"
+    ],
+    "model": {
+      "signLanguage": "isl",
+      "engine": "legacy",
+      "labelsCount": 49,
+      "threshold": 0.95,
+      "requiredMargin": 0.3,
+      "acceptanceEnabled": true
+    },
+    "capture": {
+      "inputFrames": 16,
+      "handFrames": 16,
+      "shoulderFrames": 16,
+      "qualifiedFrames": 16,
+      "trimmedFrames": 16,
+      "trimmedShoulderFrames": 16,
+      "modelFrames": 32,
+      "durationMs": 1960,
+      "largestGapMs": 125
+    },
+    "posterior": {
+      "topLabel": "HELLO",
+      "topScore": 0.9836577181667145,
+      "runnerUpLabel": "CELL PHONE",
+      "runnerUpScore": 0.005837693666860342,
+      "margin": 0.9778200244998542,
+      "scorePassed": true,
+      "marginPassed": true
+    },
+    "cameraGate": {
+      "passed": true,
+      "code": null
+    }
+  },
+  "captureQuality": {
+    "count": 16,
+    "handFrames": 16,
+    "shoulderFrames": 16,
+    "clippedFrames": 0,
+    "durationMs": 1960,
+    "samplesPerSecond": 8.16326530612245,
+    "largestGapMs": 125
+  }
+}

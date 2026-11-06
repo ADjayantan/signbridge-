@@ -1,0 +1,1602 @@
+SIGNBRIDGE: COMPLETE GEMINI ARGON HANDOFF PACKAGE
+Prepared 26 October 2026 (Asia/Calcutta).
+Read all three parts below. This is a detailed reconstruction, not a verbatim chat export.
+The fresh audit is documentation-only; pending integration is not claimed complete.
+
+PART 1: MASTER CONTINUATION PROMPT
+
+# SignBridge — Gemini Argon master continuation prompt
+
+Prepared on **26 October 2026, Asia/Calcutta**. This is a detailed handoff, grounded in the supplied conversation history, local source files, saved reports and a fresh read-only audit. It is **not a verbatim export of every conversation turn**. Historical results are labelled with their dates; they are not fresh validation of the current working tree.
+
+**How to use:** Give this entire document to Gemini Argon. If Argon has laptop filesystem access, ask it to read this file and the two companion files before editing. If it cannot read local files, attach all three files. The short startup instruction is at the end.
+
+---
+
+## 1. Your assignment
+
+You are continuing **SignBridge**, an existing accessibility and human-communication project. Work on the existing implementation; do not start another application or replace it with a mockup.
+
+The user's central requirement is:
+
+> A person signs into the laptop camera, or supplies a video of a sign. The system recognizes the meaning and shows readable text, with voice output when enabled. A partner who does not understand signing can understand that message. The partner can reply using speech or typing; the signer receives readable text and an appropriate sign video when a verified matching clip is available.
+
+The user also wants a Gemini Live / voice-assistant-like experience in which signing can be used to communicate with an AI. Keep **human conversation** and **AI conversation** clear: the same recognized/reviewed meaning may be routed to the selected destination, but a partner message must never silently become an AI request.
+
+The user says: “macha, this model has to work; I need a visible result.” They have repeatedly experienced a camera preview with hand joints and no recognized text or speech. A polished interface, a large test count, or another plan does not satisfy the main goal.
+
+The immediate task after reading this handoff is to diagnose and complete the existing recognition paths, demonstrate actual video-to-text/voice behavior, and explicitly identify remaining webcam limitations. The current requested handoff did not itself finish the pending WLASL integration.
+
+## 2. Essential user context
+
+- The user communicates in Tamil/Tanglish and English. Explain progress simply and briefly; keep technical details in documents and diagnostics.
+- The user does not know sign language and does not currently know a fluent signer who can validate their demonstrations. Their imitation cannot automatically be treated as verified training ground truth.
+- The user wants ISL and ASL. They explicitly answered “both” earlier, and selected ISL during the failed HELLO webcam attempts. **ISL and ASL are different languages.** Never silently mix their labels, models or reply clips.
+- Their expected everyday interaction is camera on → make a complete sign → text/optional voice. They do not want to hunt for Capture/Finish buttons for every turn. Manual recording remains useful for diagnosis.
+- They specifically wanted an open palm/HELLO demonstration. Do not solve this by pretending that every open palm means ISL HELLO. A separately labelled gesture shortcut is a different feature and cannot prove sign-language understanding.
+- They want a professional app which connects people, **without categorizing users by disability**. Offer Type / Speak / Sign and Text / Read aloud / Sign video / Screen reader preferences.
+- Low reading fluency matters to the intended usability scenario. It is not a consequence of deafness or inability to speak. Avoid dense technical screens in the normal flow.
+- Earlier there was submission/advisor-demo urgency. A “tomorrow” request in older history is not a current calendar deadline. Confirm a current deadline only if necessary; do not repeat a stale date.
+- Hardware/Braille was discussed, including a ₹1,500 budget, but software comes first. A Braille prototype and compatibility evaluation are later work.
+- Use free infrastructure unless the user explicitly changes that constraint. Do not purchase GPU/cloud resources or upgrade Render.
+- The user authorized implementation, fixing, testing, and previously GitHub/Render work. Preserve their project and secrets. Do not request passwords/API keys in chat or ask the same preference questions again.
+
+## 3. Exact locations — start here
+
+| Purpose | Actual path / address |
+|---|---|
+| Active SignBridge app | `F:\Downloads\signbridge` |
+| This master prompt | `F:\Downloads\signbridge\docs\ARGON_MASTER_PROMPT_2026-10-26.md` |
+| Detailed conversation/decision history | `F:\Downloads\signbridge\docs\ARGON_CONVERSATION_HISTORY_2026-10-26.md` |
+| Machine-readable audit/inventory | `F:\Downloads\signbridge\docs\ARGON_VERIFIED_STATE_2026-10-26.json` |
+| Local sign workspace | `http://127.0.0.1:5174/#trained-sign` |
+| Local conversations | `http://127.0.0.1:5174/#connect` |
+| Local Training Studio | `http://127.0.0.1:5174/#training-studio` |
+| Local room server | `http://127.0.0.1:3001` |
+| Public conversation pilot, historically deployed | `https://signbridge-conversations.onrender.com/#connect` |
+| Git remote | `https://github.com/ADjayantan/signbridge-` |
+| WLASL research project | `C:\Users\adjay\Projects\WLASL` |
+| WLASL videos | `C:\Users\adjay\Projects\WLASL\start_kit\videos` |
+| WLASL source metadata | `C:\Users\adjay\Projects\WLASL\start_kit\WLASL_v0.3.json` |
+| WLASL missing list | `C:\Users\adjay\Projects\WLASL\start_kit\missing.txt` |
+| WLASL I3D code | `C:\Users\adjay\Projects\WLASL\code\I3D` |
+| WLASL Python | `C:\Users\adjay\Projects\WLASL\.venv\Scripts\python.exe` |
+| WLASL source | `https://github.com/dxli94/WLASL` |
+
+Important path corrections:
+
+- Old SignBridge reports use `C:\Users\adjay\Downloads\signbridge`. That checkout moved to **F:\Downloads\signbridge**. Resolve old report/artifact links relative to the current root.
+- `F:\Downloads\signbridge-fixed\signbridge` is an old starter, not the current application.
+- The chat's default terminal directory may be `C:\Users\adjay\OneDrive\Documents\ChatGPT\clg`. That is **not** the app root. Supply the correct working directory explicitly.
+- Port 5173 was used earlier and may belong to another application. The owned launcher uses **5174**, strict port, and **3001**.
+- Fresh audit on 26 October found **neither 5174 nor 3001 listening**. A screenshot/old tab does not establish that the server is running now.
+- No Python training process was running after the audit. GPU was an RTX 4060 Laptop GPU, 8,188 MiB, idle at that snapshot.
+
+## 4. Repository state and preservation
+
+Fresh inspection found branch **`codex/sign-speech-video`**, HEAD **`5451d08`**, subject `feat: add sign-speech video rooms, graph sign model and training pipeline`.
+
+There are many modified and untracked files, including substantial work from multiple earlier sessions. This is a live working tree, not a clean release. The current disk contents are newer than the last commit.
+
+Before editing:
+
+1. Read applicable repository instructions, `git status --short`, relevant source and the companion audit.
+2. Do not reset, clean, overwrite the checkout, run a wholesale checkout, or stage every file.
+3. Do not assume all dirty changes belong to your task. Make small scoped changes and inspect their diff.
+4. Do not read or print `.env.local`. `.env.example` documents names without credentials.
+5. Do not put raw research videos, recordings, model weights, training data or secrets in Git/public assets.
+6. `.training-data/`, `.training-venv/`, `training/artifacts/`, `public/models/**`, `dist`, `node_modules`, logs and env files are ignored for good reasons.
+7. Do not delete old experiments/checkpoints to make results look cleaner. Preserve provenance and failed runs.
+
+The public Render deployment uses a different historically deployed branch, `codex/render-pilot`. Do not assume the current local branch or latest dirty files are deployed.
+
+## 5. Honest current capability summary
+
+| Area | Current state | What remains unproved / missing |
+|---|---|---|
+| Rooms/text | Two-person room creation/join, credential-based reconnect, reviewed messages, order/IDs/receipts and workflow controls exist. | Physical two-device acceptance should still be performed. |
+| Live video/audio | WebRTC controls, local/partner video, reconnect and ICE/TURN support exist. | Actual cross-network and forced-relay trials remain separate from synthetic tests. |
+| Speech input | Browser speech recognition creates editable drafts. | Browser/runtime availability and real microphone behavior require checking. |
+| Text to voice | Browser speech synthesis, retry/stop controls exist. | A speech `end` event is not proof a human heard a speaker. |
+| Hand/body tracking | MediaPipe tracking and visible joints exist. | Joints do not prove word recognition. |
+| Legacy sign recognition | Local ISL 49-word and ASL 100-word research JSON models exist. | User webcam recognition is unreliable; no universal/continuous translation. |
+| ISL uploaded-video demo | One known HELLO reference was recognized and browser speech completed on 22 October. | Not an unseen-video, new-signer or webcam accuracy result. |
+| Automatic capture | Moving-sign segmentation and held-pose capture exist. | Capture success does not imply a correct word; framing gates can block capture. |
+| WLASL I3D integration | Python, middleware, UI and test files exist as partial new work. | **Not routed or registered in the app; real integration bugs and failed tests remain.** |
+| Training Studio | Consented local pose collection, no-sign recording, inventory/export exist. | Saving examples does not train or deploy a model. |
+| Sign replies | Device-local saved phrase videos can be matched/played; uncovered words remain visible. | No general text-to-sign translator, broad verified library, or fluent signing avatar. |
+| AI | Optional reviewed-text assistance and experimental tools exist. | AI must not invent recognition results; human conversation must work without Gemini. |
+| UI | Three.js decoration and redesigned workspace were added. | Prioritize recognition and clarity over more decoration. |
+| Braille | Discussed as a later phase. | No completed Braille hardware/compatibility validation established here. |
+
+## 6. App architecture and source map
+
+Stack from current `package.json`: React 19.3, Vite 8.3, Three.js 0.186, MediaPipe Tasks Vision 1.0.1, ONNX Runtime Web 1.30, ws 8.22, Vitest 5, Testing Library. Node requirement is **>=22.12**. Follow the lockfile; do not casually upgrade the stack while debugging.
+
+All app paths below are relative to `F:\Downloads\signbridge`.
+
+### Navigation and settings
+
+- `src/App.jsx`: mode routing and transfer of reviewed text to conversation draft.
+- `src/hooks/useHashMode.js`: whitelist of modes. Current routes: home, connect, voice, sign, live-sign, trained-sign, sign-workspace, training-studio, sign-videos. **No wlasl route yet.**
+- `src/modes/Home.jsx`: entry points and tools.
+- `src/hooks/useSettings.js`: app settings, default ISL, English, gesture shortcuts off, optional video replies.
+- `src/hooks/useCommunicationPreferences.js`: per-device room defaults Type/Text/ISL/English; saved sign videos off in room preferences.
+- Defaults vary by screen. Do not assume app-level `videoReplies` means the room has every reply clip available.
+
+### Existing sign recognition and capture
+
+- `src/modes/TrainedSignMode.jsx`: main sign workspace; input source, camera/video, review, local voice, draft, optional AI, training save.
+- `src/hooks/useWordRecognitionModel.js`: explicit legacy vs graph model selection; no silent fallback.
+- `src/hooks/useTrainedModel.js`, `src/lib/trainedSignModel.js`: legacy JSON load/inference.
+- `src/hooks/useGraphSignModel.js`, `src/lib/graphSignModel.js`: graph/ONNX research path.
+- `src/lib/cameraWordRecognition.js`: camera turn quality/acceptance and diagnostics.
+- `src/lib/automaticSignCapture.js`: motion/held-pose segmentation, no semantic recognition.
+- `src/hooks/usePoseTracking.js`, `src/lib/poseTracker.js`, `src/lib/legacyPoseTracker.js`: tracker lifecycle/adapters.
+- `src/hooks/useCamera.js`, `src/lib/cameraFrameHealth.js`: camera lifecycle and health.
+- `src/lib/poseCaptureContext.js`, `src/lib/cameraCoordinateContract.js`: capture dimensions/provenance and coordinate contract.
+- `src/components/SignVideoInput.jsx`, `src/hooks/useVideoPoseReplay.js`: file input through the same actual pose recognizer.
+- `src/components/GuidedSignPractice.jsx`: example/practice guidance.
+- `src/components/RecognitionReplay.jsx`, `src/lib/recognitionReplay.js`, `src/lib/signRecognitionReport.js`: reproducible diagnostics.
+- `src/lib/speech.js`: local browser text-to-speech; use this existing service.
+
+### Rooms, reply media, AI
+
+- `src/modes/ConnectMode.jsx`, `src/components/RoomSignCapture.jsx`: partner conversation and reviewed sign words.
+- `src/hooks/useRoom.js`, `src/lib/roomClient.js`, `src/lib/roomWorkflow.js`: messages, reconnect and workflow.
+- `src/hooks/useRoomMedia.js`, `src/lib/mediaRoute.js`: WebRTC/media lifecycle.
+- `server/roomServer.js`, `server/rooms.js`, `server/iceServers.js`: room HTTP/WebSocket server, message state and relay settings.
+- `src/lib/signVideos.js`, `src/hooks/useSignVideos.js`, sign-video player components: saved clips/planning/storage.
+- `server/chat.js`, `server/nodeChatMiddleware.js`, `api/chat.js`: optional Gemini API path.
+- Existing assistant hooks are not the room's speech-draft state; keep them separate.
+
+### Training
+
+- `src/modes/TrainingStudio.jsx`, `src/components/NonsigningCapture.jsx`, `src/lib/trainingSamples.js`: explicit consent and local collection.
+- `training/import_samples.py`: data validation/provenance, not automatic training.
+- `training/graph_models.py`, `train_graph_models.py`, `evaluate_graph_models.py`, `export_graph_model.py`: GRU75/ST-GCN and related experiments.
+- `training/train_temporal_baseline.py`: separate GRU/LSTM comparison with coordinate prerequisites.
+- `training/camera_aligned_study.py`, `train_tasks_video_study.py`, `train_tasks_video_stage2.py`: frozen research studies; do not overwrite their outputs or tune on their already examined test sets.
+
+## 7. Existing HELLO behavior: exact facts and gaps
+
+### Verified known-reference result, 22 October
+
+Reference file:
+
+`F:\Downloads\signbridge\.training-data\replay\isl-hello-validation-MVI_9917.MOV`
+
+- Previously examined INCLUDE ISL validation reference, not a new unseen test.
+- Video SHA-256: `61a50323776fe04f732aba8668a1ea8fac09c17d387af26c78a94412f003e7ff`.
+- Active `public/models/isl.json` SHA-256: `55c23fffe387944a102c804676ae91aa7276781d598b7adaf03f0115234acdd9`.
+- Source duration 1,960 ms; 16 source samples; hands and shoulders detected in all 16.
+- Result HELLO; model score `0.9836577181667145`; runner-up CELL PHONE `0.005837693666860342`; margin `0.9778200244998542`.
+- Text appeared in result/review; browser speech reported completion. Physical audibility was not confirmed.
+- Evidence: `docs/sign-video-to-text-voice-2026-10-22.md`, `docs/sign-video-hello-report-2026-10-22.json`, `docs/sign-video-hello-2026-10-22.jpg`.
+
+Do not describe that score as “98.36% accurate.” It is one model output score on one known reference.
+
+### Current output behavior
+
+- `recognizeTurn()` clears stale review/speech before processing the next turn. Preserve this fix.
+- An accepted result populates the **result and editable meaning field**.
+- The separate Step 3 message textarea (`#trained-message`) is still composed explicitly with `append()` / Add word to message. It does **not** automatically append every recognized word. This remains a gap relative to the user's requested convenience.
+- `speakResults` initially false; the **Start camera + read aloud** action enables it. Rejected/uncertain results remain silent.
+- Automatic speech is currently limited to accepted legacy results when voice was requested. Graph/uncalibrated WLASL suggestions must not be silently spoken as verified meanings.
+- Review before remote Send/AI remains intentional. If adding opt-in auto-append for accepted local words, use turn IDs, preserve edits/drafts, support deliberate repeats and prevent duplicate speech/appends.
+
+### Why the user's webcam can fail
+
+The user/Gemini supplied the wrist-clipping and shoulder diagnosis. Source confirms the relevant gates, but each failed turn still needs measured evidence rather than assuming one universal cause.
+
+- Automatic capture treats a tracked joint at `x/y <= .02` or `>= .98` as clipped. A wrist at the bottom edge can reset framing.
+- Both shoulder confidences must be >= .2 and shoulder separation >= .05 for this segmentation framing check.
+- Moving capture defaults: framing 300 ms, pre-roll 300 ms, onset 180 ms, quiet finish 700 ms, missing-hands finish 600 ms, max 8 seconds/100 frames, cooldown 700 ms.
+- Still pose capture **already exists**: held pose 1,200 ms with bounded movement/rearm. Old claims that still capture is wholly absent are stale.
+- Tracker sampling is capped around eight samples/second in the pose pipeline; configured intervals are not proof of achieved frame rate.
+- A proposed onset/pre-roll improvement was **not implemented**: buffer filtering follows `nowMs` while waiting for onset confirmation, potentially losing pre-onset context. Investigate with a regression fixture before changing it.
+- Camera dimensions can fall back to 640×480 despite requesting widescreen. Capture metadata records actual decoded size.
+- A standing/full-body training source and a seated laptop webcam can differ substantially in pose geometry, scale, visibility, framing and movement. A dataset-domain mismatch is plausible; it is not solved by lowering the score threshold.
+- Historical ISL coordinate contract uses explicit axis conversions (x 1080, y 1920). Inspect manifest and source before changing it; aspect ratio and coordinate convention must match training.
+- Existing legacy acceptance is ISL score >= .95 and ASL score >= .98, with margin >= .30 for both current local models. Do not lower gates merely to force HELLO/FATHER/CANDY output.
+
+## 8. WLASL: what the user supplied and what was actually found
+
+The user supplied a Claude handoff claiming 11,301 videos, 24 fixes to the 2020 code, WLASL100 I3D training on RTX 4060 and roughly three minutes/epoch. The local audit verified the video inventory and available code/checkpoint; **the complete list of 24 claimed fixes and the three-minute estimate were not independently reproduced**.
+
+Referenced Claude artifact: `https://claude.ai/artifact/4CbNkWb4kGkSkNqTnGZ6oB`. Its complete contents were not retrieved; do not claim to have read it.
+
+### Data and environment, fresh audit
+
+- Total downloaded `.mp4` files: **11,301**. The user's original full-release count was 21,083 (about 53.6% downloaded); available subsets must be audited separately.
+- WLASL is **ASL isolated-word** data, not ISL and not continuous sentence translation.
+- Official 100-class split file: `code/I3D/preprocess/nslt_100.json`.
+- Ordered labels: `code/I3D/preprocess/wlasl_class_list.txt`, first 100 numeric IDs.
+- Official train/val/test counts: **1,442 / 338 / 258**.
+- Available train/val/test clips: **769 / 193 / 169**, total 1,131.
+- Classes represented: **100 / 98 / 92**. All 100 classes have training examples; not all have available validation/test examples.
+- Missing validation classes: LAST, TELL. Missing test classes: BOOK, THANKSGIVING, LATER, SHIRT, DOCTOR, SHORT, CHEAT, RIGHT.
+- BOOK and DRINK are in the vocabulary. **HELLO and THANKS are not in WLASL100.** This new model cannot satisfy the requested HELLO demonstration merely by being integrated.
+- Separate Python environment: `.venv\Scripts\python.exe`; previously inspected torch 2.14.1+cu130, OpenCV 5.0.0, CUDA available. Recheck versions when running.
+- GPU: NVIDIA GeForce RTX 4060 Laptop GPU, 8,188 MiB. Do not assume free cloud hosting has this GPU.
+
+### Original local training did not yield a usable model
+
+- Existing checkpoint: `code/I3D/checkpoints/nslt_100_000160_0.023669.pt`.
+- Existing log: `code/I3D/logs/train_wlasl100_20261025_2046.log`.
+- Logged first-epoch result was **4/169 = 2.3669% top-one**. It was evaluation on the original code's test path, not a properly untouched final test after clean selection.
+- Log stopped in epoch 2; there is no evidence it is training now. No Python process/new checkpoint was present at this handoff.
+- Original `train_i3d.py` combines train+validation and repeatedly evaluates test; audit also found incorrect backward behavior in evaluation, selection/resume issues. Do not present this run as a sound benchmark or simply continue it to “fix accuracy.”
+- `weights/rgb_imagenet.pt` is action/backbone initialization, not an already capable 100-word sign translator.
+
+### Official pretrained WLASL100 checkpoint downloaded locally
+
+Using the pretrained-weights link in the official repository, the previous implementation session downloaded:
+
+- `code/I3D/weights/wlasl-official-archived.zip` — 197,120,381 bytes.
+- Extracted model: `code/I3D/archived/asl100/FINAL_nslt_100_iters=896_top1=65.89_top5=84.11_top10=89.92.pt` — 49,677,763 bytes.
+- SHA-256: `a61d7dda5f875ce5ebd9d407c56874f77d1cd2aeb4bc7cd0d98a6e1ca4669a0c`.
+- The 65.89/84.11/89.92 figures are in the upstream filename, **not measurements reproduced by this project**.
+- Archive source linked by upstream: `https://drive.google.com/file/d/1jALimVOB69ifYkeT0Pe297S1z4U3jC48/view`.
+
+Use the local files; do not redownload/recollect the entire dataset unnecessarily. The WLASL repository and local `start_kit/C-UDA-1.0.pdf` restrict use to the applicable research terms. Code licensing does not give universal redistribution/commercial rights to recordings. Keep videos/weights local and inspect the exact applicable terms before any distribution.
+
+## 9. Partial WLASL implementation — blockers to finish first
+
+### Files already created
+
+Under SignBridge:
+
+- `scripts/wlasl_infer.py`
+- `server/localWlaslMiddleware.js`
+- `tests/localWlaslMiddleware.test.js`
+- `src/modes/WlaslVideoMode.jsx`
+- `src/styles/wlaslVideo.css`
+- `tests/ui/wlaslVideo.test.jsx`
+
+Under WLASL `code/I3D`:
+
+- `signbridge_i3d.py`
+- `train_signbridge.py`
+- `test_signbridge_training.py`
+
+These files' presence is not end-to-end completion.
+
+### Blocker A — not wired
+
+- `src/App.jsx` has no WlaslVideoMode import/route.
+- `src/hooks/useHashMode.js` has no `wlasl` mode.
+- Home and Sign Workspace have no completed entry point to that new screen.
+- `vite.config.js` has not imported/registered `localWlaslPlugin(mode)`.
+- Consequently `/#wlasl` is **a proposed route, not a working current link**.
+
+### Blocker B — real Python/Node contract mismatch
+
+`scripts/wlasl_infer.py` returns model name `Official WLASL100 I3D · local research`. Middleware's model-name regular expression permits ASCII characters but not the middle dot `·`. Real status/prediction payloads are therefore rejected by the middleware validator. A successful Python `--status` alone does not establish working HTTP integration.
+
+Fix the contract deliberately and add a test that uses the real response shape. Do not broadly remove validation to get a green test.
+
+### Blocker C — preprocessing mismatch and failed real prediction
+
+Current bridge contract string is `wlasl-official-bgr-square256-center224-uniform64-v1`:
+
+1. Decode OpenCV BGR, bounded duration/size.
+2. Force every frame to 256×256, center crop 224×224.
+3. Uniformly sample 64 frames.
+4. Scale to [-1,1], tensor `[1,3,64,224,224]`.
+5. I3D, temporal max logits, softmax, top five suggestions.
+
+A previous actual GPU run on available BOOK validation video `start_kit/videos/70212.mp4` gave **FAMILY .296646**, FINISH .145558, WANT .075777, **BOOK .043946**, MANY .025220. Source was 100 frames/4 seconds; recorded inference phase about 411 ms. This is a **failure**, not a working BOOK demo. Preserve it in the diagnosis.
+
+Reference-code inspection found that official evaluation (`datasets/nslt_dataset_all.py` and default `test_i3d.py run()`) uses BGR, conditionally upscales small frames, takes a center crop, feeds the full clip, and uses temporal-max logits. It does not universally square-resize and uniformly resample to 64 in that default path. The training loader has different resizing/window behavior. Therefore the current bridge's claim to match official inference is not yet established.
+
+Next action: reproduce the official checkpoint's exact evaluation preprocessing on a fixed, declared small development set, compare tensors/contracts, and record results. Avoid choosing a pipeline merely because it happens to guess BOOK on one example. Follow source/model provenance, establish memory/duration bounds, then define any new webcam adaptation explicitly. Do not confuse old **BGR** weights with the separate new **RGB** trainer.
+
+### Blocker D — fresh focused tests include failures
+
+Read-only handoff audit on 26 October:
+
+- WLASL training unittest: **10 passed**.
+- Node middleware test: **13 passed, 1 failed**. Test `video content type, declared size, streamed size and empty bodies are bounded` hit `ECONNRESET / socket hang up` around `tests/localWlaslMiddleware.test.js:101`. Determine whether response/abort lifecycle or the test client is responsible; do not merely delete the check.
+- Four focused UI files: **76 passed, 1 failed** (77 total). WLASL test `camera auto-finishes at 12 seconds and End session releases capture resources` at about line 129 expected timer count 0, got 1. Track stop and URL revocation assertions before that point passed. Investigate timer ownership/cleanup and test timing.
+- Other focused files `automaticTrainedSign`, `videoSignWorkspace`, `signVideoInput` passed in that run.
+- The full current `npm run check` was **not** run for this documentation handoff. Old all-pass counts do not override today's failures.
+
+### Intended local bridge behavior to preserve
+
+- Local-only, same-origin/loopback checks, fixed Python executable and arguments, no arbitrary filesystem path accepted from browser.
+- `GET /api/local-wlasl/status` and `POST /api/local-wlasl/predict` after plugin wiring.
+- POST raw video, <=40 MiB, video Content-Type, `X-SignBridge-Local: 1` header.
+- One inference at a time, bounded output, 120-second timeout, cancellation kills only the owned subprocess.
+- Temporary uploads in ignored `.training-data/wlasl-requests`, deleted on completion/error.
+- Block direct static or `/@fs` access to request files. Watcher ignore is not an access-control rule.
+- Available status includes ASL, actual labels, model name, calibrated:false. Unavailable status should produce usable UI fallback (current middleware uses 503).
+- Prediction status is `review`, editable `suggestion`, top candidates and timing; **not a calibrated accepted translation**.
+- Existing new UI supports upload or explicit camera recording, automatic finish at 12 seconds, explicit Analyze, editable text and explicit Speak. It deliberately does not auto-speak uncalibrated guesses.
+- The pixel-based I3D path operates on actual video frames, independently of pose/shoulder capture gates; that alone does not establish better accuracy. The current checkpoint adapter is BGR, while the separate new trainer uses RGB.
+- Keep this private GPU path out of public-demo builds and Render unless a separate deployment/privacy/resource design is explicitly implemented.
+
+## 10. Corrected WLASL training path — prepared, not trained
+
+`code/I3D/train_signbridge.py` is a separate trainer; it does not overwrite `train_i3d.py` or the old checkpoint.
+
+- Official train/validation/test partitions retained separately.
+- Training gradients use train only; checkpoint selection uses validation; this script leaves test untouched.
+- Availability manifest records missing files/classes.
+- `signbridge_i3d.py` contract `signbridge-i3d-rgb-v1`: BGR decode → RGB, aspect-preserving short side 256, 224 crop, uniform 64 samples, [-1,1], **mean temporal logits**. Train uses crop/flip augmentation, validation deterministic center crop. These augmentations still need linguistic suitability review for the chosen dataset/task.
+- New checkpoint format `signbridge-i3d-checkpoint-v1` saves model/optimizer/scheduler/scaler/RNG, labels, preprocessing, data identity, provenance and metrics.
+- Resume rejects wrong formats/contracts; old bare state dictionaries are not interchangeable full resumes.
+- Defaults: 20 epochs, max four hours checked at epoch boundary, batch 2, accumulation 3, two workers, CUDA AMP when available. These are budget bounds, not guarantees of training time or accuracy.
+- Outputs `last.pt`, validation-selected `best.pt`, `manifest.json`, `config.json`, `metrics.jsonl` to the chosen output directory.
+- **No new trained checkpoint from this trainer exists at handoff. No new training was started during the documentation audit.**
+
+Do not run training until the preprocessing, availability, labels, budget and evaluation design are checked. More epochs on a wrong pipeline or wrong labels cannot provide a truthful demo. Report top-one, top-five, per-class coverage, rejected/unsupported behavior and latency separately. A 100-class softmax is forced to choose something unless rejection is designed and evaluated.
+
+## 11. Original skeleton/graph idea and prior research
+
+The user proposed training joint-connected graphs instead of thousands of full images. That is a legitimate representation direction, already explored in the repo. Hand/body trajectories can reduce data size, but missing fingers, occlusion, timing, face/body grammar, handedness and camera geometry still matter. Joint tracking alone does not contain a reliable word label.
+
+Do not discard the existing pose path simply because I3D exists. They are different experiments which need comparable evaluation, not interchangeable checkpoints.
+
+Historical findings:
+
+- A camera-aligned archived-pose candidate improved examined top-one accuracy from 75.00% to 93.23%, but falsely accepted 18% of unsupported recordings and failed the selected raw HELLO replay. It was not promoted.
+- The 13 October current-detector study used 60 INCLUDE videos, actual browser pose extraction and two frozen candidates. Candidate B accepted 1 of 2 HELLO test videos, only 2 of 8 known test videos overall, and falsely accepted 2 of 6 unsupported test videos. Candidate A also failed requirements. Neither replaced the app model.
+- Those tests have been examined; do not reuse them as a fresh blind test or tune repeatedly against them.
+- Signer identity is not established for every legacy sample. Do not claim signer-independent performance without a verified grouped split.
+- Training Studio exports include capture provenance. Mixed or partial context can block import intentionally. Do not delete metadata or invent dimensions to bypass that gate.
+
+Detailed frozen evidence is in `docs/camera-training-results-2026-10-11.md`, `docs/tasks-video-training-results-2026-10-13.md`, their protocol/JSON companions, and ignored `training/artifacts/`.
+
+## 12. Human communication and deployment contract
+
+The accepted software-first plan was: connect people → add live video/voice → connect chosen input/output → accessibility/reliability. Preserve its foundations:
+
+- Two participants maximum, opaque invitation, participant credentials for reconnect.
+- In-memory history of latest 200 messages; room expiry after 30 minutes empty.
+- Separate retained message IDs prevent duplicate retries; server assigns identity/order.
+- Room restart means old room ended; unsent drafts should remain usable.
+- Default camera/mic off; typed communication remains usable on media denial/failure.
+- Share/borrow camera ownership appropriately; leaving/end releases tracks; recognition stop must not break an unrelated active call.
+- Do not let dictation transcribe the app's read-aloud output.
+- Preferences are per device and changes preserve conversation history.
+- Optional read-aloud and screen-reader paths must not duplicate announcements.
+- Live signing video is useful for fluent signers but does not translate signs for a non-signer.
+- Saved reply clips are browser-local; an absent clip must be reported, not replaced by an invented sign or silently omitted negation.
+
+Public pilot was verified on 8 October with synthetic remote HTTPS/WSS clients: 20 alternating messages, IDs/order/receipts, reconnect and invalid/third-participant rejection. Browser text send also worked. This was not two real devices on different networks and did not prove video relay or sign recognition.
+
+Render configuration currently specifies Free, `npm ci --include=dev && npm run build:public`, `npm start`, `/api/health`, auto-deploy off. Old successful deployment was `361a131` after a missing-dev-dependency build correction. Current public health was not rechecked during this handoff.
+
+TURN was historically unavailable (`relayAvailable:false`). Private Metered free-account setup and physical forced-relay trial were pending. Verify current state before making a claim. Never put TURN or Gemini credentials in a `VITE_` variable.
+
+## 13. Commands and safe startup
+
+Run commands in the indicated working directory. Paths use the current F: location. Commands below are instructions, not claims that they have just run.
+
+### Start/stop local app
+
+```powershell
+Set-Location 'F:\Downloads\signbridge'
+git status --short
+node --version
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/start-local.ps1 -NoBrowser
+```
+
+Then open `http://127.0.0.1:5174/#trained-sign` or `/#connect`. Double-click `start-signbridge.cmd` is also supported. The launcher resolves its own directory, starts hidden owned processes, records ownership and logs under `logs/local`, and checks health. It does not need a globally installed Vite.
+
+```powershell
+Set-Location 'F:\Downloads\signbridge'
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/start-local.ps1 -Stop
+```
+
+This stops only processes recorded/validated as launcher-owned. Do not kill every Node/Python process on the laptop. If dependencies are genuinely absent, use the existing lockfile with `npm ci`; do not overwrite env files.
+
+### Local WLASL status and known failing development case
+
+```powershell
+Set-Location 'F:\Downloads\signbridge'
+& 'C:\Users\adjay\Projects\WLASL\.venv\Scripts\python.exe' scripts/wlasl_infer.py --root 'C:\Users\adjay\Projects\WLASL' --status
+& 'C:\Users\adjay\Projects\WLASL\.venv\Scripts\python.exe' scripts/wlasl_infer.py --root 'C:\Users\adjay\Projects\WLASL' --video 'C:\Users\adjay\Projects\WLASL\start_kit\videos\70212.mp4'
+```
+
+The second is BOOK development replay and has previously failed. Neither a filename nor an expected answer may enter the predictor. The first reports file/checkpoint availability, not prediction correctness or HTTP integration.
+
+### Focused and full app verification
+
+```powershell
+Set-Location 'F:\Downloads\signbridge'
+node --test tests/localWlaslMiddleware.test.js
+npx vitest run --config vitest.config.js tests/ui/wlaslVideo.test.jsx tests/ui/automaticTrainedSign.test.jsx tests/ui/videoSignWorkspace.test.jsx tests/ui/signVideoInput.test.jsx
+npm run check
+.training-venv/Scripts/python.exe -B -m unittest discover -s training -p 'test_*.py'
+npm run build:public
+```
+
+Run the public build **last** if producing distributable `dist`; confirm `dist/models` is absent. An ordinary local build can include ignored local research models. Do not deploy that directory accidentally.
+
+### WLASL trainer inspection/tests
+
+```powershell
+Set-Location 'C:\Users\adjay\Projects\WLASL\code\I3D'
+& '..\..\.venv\Scripts\python.exe' -B -m unittest test_signbridge_training.py
+& '..\..\.venv\Scripts\python.exe' train_signbridge.py --help
+& '..\..\.venv\Scripts\python.exe' train_signbridge.py --root 'C:\Users\adjay\Projects\WLASL\start_kit\videos' --audit-only
+```
+
+**Important CLI distinction:** `train_signbridge.py --root` means the **videos directory**; `scripts/wlasl_infer.py --root` means the **whole WLASL project directory**. The trainer defaults to `data/WLASL2000`; on this laptop that path is a junction to `start_kit/videos`. Supplying the actual videos path explicitly makes the command clear and portable if the junction changes.
+
+Read `--help` and confirm output/budget before a fitting run. Keep new outputs in a new experiment directory. Never label an old bare checkpoint as a valid full resume of this new trainer. A future bounded run could use the following command, but **it has not been launched**:
+
+```powershell
+Set-Location 'C:\Users\adjay\Projects\WLASL\code\I3D'
+& '..\..\.venv\Scripts\python.exe' train_signbridge.py --root 'C:\Users\adjay\Projects\WLASL\start_kit\videos' --output 'C:\Users\adjay\Projects\WLASL\code\I3D\checkpoints\signbridge_rgb_v1' --device cuda --epochs 20 --max-hours 4
+```
+
+Reinspect that output directory before running; select a fresh experiment path if it becomes nonempty. The training duration is unknown until measured and the time budget is checked between epochs.
+
+### Environment variable names only
+
+See `.env.example`: `PORT`, `ROOM_ALLOWED_ORIGINS`, `METERED_DOMAIN`, `METERED_TURN_API_KEY`, optional public `VITE_ROOM_SERVER_URL`, `GEMINI_API_KEY`, optional Gemini model/thinking settings, `ALLOWED_ORIGINS`. Local WLASL middleware also supports `SIGNBRIDGE_WLASL_ROOT`.
+
+Do not ask the user to paste key values. Local speech and human-room text do not need Gemini. Model IDs in old comments/examples are not guarantees of current provider availability.
+
+## 14. Recommended next execution order
+
+1. **Reproduce the current state.** Read the companion history/inventory, inspect dirty files, run focused failing tests and verify exact checkpoint hashes. Keep a report of the baseline failures.
+2. **Keep the known ISL demonstration available.** Start local services; verify the existing HELLO reference through the actual browser path. Distinguish known-reference output from webcam success. Do not retrain or replace it just to add WLASL.
+3. **Repair WLASL preprocessing before claiming results.** Match official evaluation, test actual video decoding/tensor dimensions/channel order/temporal aggregation, use a declared development set and record wrong guesses too. Fix Python/Node model-name compatibility and response tests.
+4. **Finish the local UI/backend route.** Add the route/import/entry point and dev-only middleware registration. Public build must not expose the local GPU model or private upload directory. Handle unavailable model, denied camera, abort, timeout and malformed files.
+5. **Fix the two known regression failures.** Diagnose socket reset and leftover timer; assert cancellation cleans up owned resources and old callbacks cannot overwrite a new result.
+6. **Show an actual result.** Record an actual supported ASL clip outcome through the browser → local Python → editable text → explicit speech flow. Do not auto-speak uncalibrated top-one guesses. If the checkpoint still fails, report it and continue diagnosis rather than inventing a passing demo.
+7. **Improve the exact desired camera interaction.** Use consistent framing/complete signs, measured capture diagnostics and a supported vocabulary. Evaluate optional accepted-word auto-append with duplicate protection. Distinguish a sign and an explicitly labelled simple hand gesture.
+8. **Only then train a declared candidate if needed.** Use the separate corrected trainer, clean splits, fixed budgets, real negative/unknown examples where available and a new evaluation design. A short smoke run validates engineering only; it is not an accuracy result.
+9. **Validate the conversation end to end.** Sender sign → reviewed message → receiver text and voice; receiver speech/type → text and available verified sign reply. Preserve missing-clip gaps. Then physical two-device and cross-network tests.
+10. **Finish with evidence.** State files changed, tests passed/failed, actual clip/word outcomes, model/data versions, local URL, what the user should click and what still does not work. Do not stop at a plan when an implementation task is active.
+
+## 15. Acceptance checks and non-negotiable reporting
+
+For a candidate release, separate these categories:
+
+- **Engineering tests:** route, data contracts, validation, cancellation, media cleanup, message deduplication, speech invocation and public-build exclusions.
+- **Known-reference demonstration:** a named already examined recording produces the intended text; browser speech status measured.
+- **Recognition evaluation:** declared held-out data with verified labels, no training leakage, per-class counts, correct acceptance/coverage, wrong acceptance, unknown rejection and runtime.
+- **Live user trial:** real laptop camera, actual signing, meaning review and a user confirms whether voice was audible.
+- **Communication trial:** two people/devices understand the exchanged meanings, including reverse sign-video coverage and error recovery.
+
+Do not conflate these. A mocked HELLO fixture, a top-one score, a classifier output from a file named HELLO, or a screenshot of joints is not recognition accuracy.
+
+Specific regressions to cover: held hand vs movement, missing shoulders, clipped wrist, camera denial/busy/dark, language/model changes, blank/unsupported/incomplete signs, deliberate repeated signs, stale result after failure, no duplicate append/voice, no AI requests during human communication, draft preservation, absent reply clips, aborted requests and temporary-file cleanup.
+
+The honest aim is a useful, clearly bounded working prototype. Do not promise all signs, fluent sentence translation, universal text-to-sign output, guaranteed novelty, a 10/10 product, or a trained replacement until measured evidence supports it.
+
+## 16. Key reports to read selectively
+
+Relative to `F:\Downloads\signbridge\docs`:
+
+- `current-capabilities-2026-10-13.md` — broad capability/limitation snapshot, older than this handoff.
+- `sign-video-to-text-voice-2026-10-22.md` and JSON/JPG evidence — actual HELLO video result.
+- `capture-context-2026-10-22.md` — path move, metadata and training-input contract.
+- `camera-training-results-2026-10-11.md` — archived-pose improvement which failed other checks.
+- `tasks-video-training-results-2026-10-13.md` and protocol/metrics files — both failed candidate studies.
+- `automatic-sign-capture-2026-10-11.md` — capture design; compare with current source.
+- `external-lstm-full-analysis-2026-10-08.md` — AvishakeAdhikary repository review.
+- `isl-reference-improvements-2026-10-09.md` — farihaNaqvi reference review and implemented workflow changes.
+- `temporal-lstm-control-2026-10-08.md` — LSTM comparison and coordinate prerequisites.
+- `communication-usability-review-2026-10-08.md` — low-reading-fluency barriers.
+- `deep-implementation-plan-2026-10-10.md`, `two-way-communication-2026-10-09.md` — intended architecture and missing reverse direction.
+- `render-pilot-verification-2026-10-08.md`, `conversations-deployment.md`, `local-demo-startup.md` — deployment/startup and physical-device gates.
+
+Older documents may describe unfinished proposals or older source, so verify current code. Do not rewrite frozen scientific reports just to repair old absolute paths or improve their results.
+
+## 17. First reply and action expected from Argon
+
+Tell the user briefly, in simple Tanglish, what is actually working and what you will fix first. Then inspect/run the project. Do not ask for the folder again: it is `F:\Downloads\signbridge`, with WLASL at `C:\Users\adjay\Projects\WLASL`.
+
+Suggested initial statement:
+
+> “Macha, context purinjiduchu. Known HELLO video flow already irukku; live webcam recognition innum reliable illa. WLASL files ready, aana integration/preprocessing bugs irukku. First adhai reproduce panni, correct supported sign video → text → voice result browser-la kaatturen. Pass aagadhadhai pass-nu solla maatten.”
+
+If you do not have filesystem/terminal/browser access, say precisely which access is missing. Do not pretend that this document's historical observations are actions you just performed. If operating in the laptop environment, continue the actual work within the user's requested scope.
+
+---
+
+**Short instruction to paste alongside this file:**
+
+“Read this entire SignBridge master prompt, its detailed history and verified-state companion. Continue the existing local app at F:\Downloads\signbridge using C:\Users\adjay\Projects\WLASL where appropriate. Preserve dirty work and secrets. Fix the documented incomplete integration and reproduce real sign-video → text/voice behavior. Keep ISL/ASL and measured results separate. I want working, visible results, not another generic plan or hardcoded HELLO.”
+
+
+PART 2: DETAILED CONVERSATION AND DECISION HISTORY
+
+# SignBridge — detailed conversation and decision history for Argon
+
+Prepared 26 October 2026, Asia/Calcutta. Read with `ARGON_MASTER_PROMPT_2026-10-26.md` and `ARGON_VERIFIED_STATE_2026-10-26.json` in this directory.
+
+This is a detailed reconstruction of the conversation supplied to this chat and the project's saved reports. It preserves requests, corrections, frustrations, decisions and unfinished work. It is **not a word-for-word full chat export**, and it does not imply that every older assistant statement was verified. Exact technical current state is in the master prompt; source files take precedence over stale explanations.
+
+## A. How the project goal developed
+
+### 1. Bring an existing laptop project into this conversation
+
+The user first shared `https://claude.ai/share/fc8dec45-6175-4603-895d-b0a3e635579c`, asked to assess the file, and said the project was already on the laptop and could be continued here. The current handoff has not retrieved that shared conversation's complete contents.
+
+The main desired features were sign-to-speech, sign replies, strong video recognition, laptop camera access and an advanced implementation. The user wanted both ISL and ASL rather than only one sign language.
+
+### 2. Live assistant expectation
+
+The user clarified that they did not merely want a camera form. They wanted a **ChatGPT voice mode / Gemini Live-like sign mode**: interact through signs, receive meaningful output, and hold a conversation. They asked for real-time tests and the best technical implementation.
+
+Early behavior reportedly produced only HELLO in all screens. The user repeatedly asked for other signs, training and actual recognition. Later failures included BOOK and DRINK. One earlier answer said DRINK worked, but the user subsequently corrected it: DRINK did not detect, while HELLO/STOP sometimes appeared. Do not count the earlier answer as a validated DRINK success.
+
+### 3. Debugging and reliability complaints
+
+The conversation contains a Vite `aborted` HTTP stack screenshot, repeated `ERR_CONNECTION_REFUSED` screenshots, camera permission/busy problems and confusion about why the site was not opening. The user repeatedly asked to open/restart the site and continue.
+
+Consequences for the next agent:
+
+- Verify listeners and health, not merely a remembered URL.
+- Distinguish dev server failure, camera failure, capture failure, model rejection and speech failure.
+- Do not repeat “camera busy” unless the current target browser actually reports it. Earlier, Chrome could use the camera while the Codex preview could not.
+- A visible preview is only the first stage.
+
+### 4. Hardware and software priorities
+
+The user had roughly one month in an earlier planning discussion and wanted a distinctive, advanced project. They asked whether hardware could help, gave a budget of ₹1,500, then explicitly prioritized advanced software. Braille compatibility and a self-built single-cell Braille prototype were discussed as a future phase.
+
+Do not introduce hardware procurement into the immediate recognition/debugging task. Do not claim a Braille test or device has already been built.
+
+## B. Human communication became the central requirement
+
+### 5. Preferences instead of disability categories
+
+The user listed scenarios involving people who cannot hear, see and/or speak, then specifically said **do not categorize people**. The project should connect people professionally, letting each choose suitable inputs and outputs.
+
+Accepted direction:
+
+- Inputs: Type, Speak, Sign.
+- Outputs: Text, Read aloud, Sign video, Screen reader.
+- People choose their own preferences independently.
+- Someone unable to see/hear/speak needs an appropriate tactile interface and accessible input; ordinary speech/video cannot magically address every combination. That hardware work remains later.
+
+### 6. Explicit software-first 30-day plan
+
+The user pasted and explicitly asked to implement this sequence:
+
+| Phase | Intended period | Deliverable |
+|---|---|---|
+| Connect people | Days 1–7 | Home Start/Join/preferences, invitation, two-person room, shared text, connection state; history survives preference changes. |
+| Live sign and voice | Days 8–14 | WebRTC local/partner video, camera/mic controls, reconnect and relay; no AI key needed for calls. |
+| Connect chosen input/output | Days 15–21 | Editable dictated transcript; local sign recognition → review → Send; received text → read aloud/screen reader/saved phrase video. |
+| Accessibility and reliability | Days 22–30 | Mobile layout, keyboard/captions, accessible flow, device errors, reconnect and repeatable demo. |
+
+Technical decisions included standalone Node + ws serving the React build; a `/#connect` screen; opaque invites; two members; reconnect credentials; expiry after 30 minutes empty; latest 200 messages in server memory; stable IDs for deduplication; server-assigned sender/order; drafts survive disconnects; room restart visibly ends the old room.
+
+Separate human-message and assistant states were required because the older assistant hooks can call AI automatically. Camera stream ownership should be shared correctly between recognition and a call; leaving ends owned tracks. Speech input must not capture the app's read-aloud output.
+
+Public demo excludes laptop research models. Missing models/videos must have truthful availability states. Continuous sentence translation remains later work.
+
+The proposed free infrastructure was Render Free plus a free Metered Open Relay allowance. Account setup was needed; the user said Render was ready, later clarified the service was not yet created. No paid upgrade was authorized.
+
+Acceptance list: 20 alternating messages on two real devices, cross-network video/audio including forced relay, invalid/expired/third-user rejection, typing after camera denial, draft-preserving reconnect, no duplicate voice/announcements, human communication without Gemini, automated checks with actual-device results reported separately.
+
+### 7. Novelty and “10/10” requests
+
+The user asked for idea/feature ratings, originality and a plan to make it “10/10.” A later pasted document described a working differentiation hypothesis around an integrated conversation flow. Do not claim world-first novelty or a guaranteed score; focus on the practical interaction, correction/clarification, message context and accessible delivery.
+
+Historical pasted attachment:
+
+`C:\Users\adjay\.codex\attachments\c8bc67a8-b117-4d37-bad3-3f8912cf9be7\Pasted text.txt`
+
+That attachment's complete content was not re-read during this handoff; use current project documentation for implemented behavior rather than inventing its details.
+
+## C. Repeated mismatch between user expectation and the existing UI
+
+### 8. Camera-on was mistaken for recognition-on
+
+A screenshot showed a live local preview and the separate **Enable local word recognition** switch off. The user complained their hand was not recognized. The UI required too many separate choices to make the next action obvious.
+
+Later the user said the site was hard to use and they did not know where features were. Do not add another technically labelled screen without an obvious path from the normal home/conversation flow.
+
+### 9. Review/add/send versus immediate visible text
+
+The old flow was roughly camera capture → tentative word → review/correct → Add word → draft → Send. The user expected text and voice as soon as they signed. This distinction caused repeated “detect aagudhu, response illa” complaints.
+
+Current state still distinguishes:
+
+- recognized result/review field;
+- composed message textarea;
+- local speech;
+- actual partner send;
+- optional AI reply.
+
+The immediate pending convenience gap is automatic accepted-word insertion into the composed message. Do not solve it by sending uncertain words to another person or presenting an AI-generated sentence as direct sign translation.
+
+### 10. User's joint-graph idea
+
+The user asked for an honest assessment of training connected hand/body joints rather than thousands of images. They wanted a model which watches camera input and converts signs to text/voice.
+
+The project developed pose/graph features, research training scripts, evaluation controls and Training Studio collection. The user then said they did not know sign language or any signer, and asked what the assistant could do versus what they needed to do.
+
+Practical implication: use attributable, permitted, labelled sources and verified demonstrations; collect explicit no-sign ordinary motion separately; do not tell this user to invent sign labels. Actual fluent-signer validation remains missing.
+
+### 11. Examples and testing confusion
+
+The user asked for a symbol/image to test, rejected an example, and reported BOOK did not work. Later they specifically asked to search sign-language images/videos and train properly. Dynamic signs need temporal evidence; a single still picture cannot validate an entire movement.
+
+Any visual example must identify the sign language/variant/source. Artificially generated hands or a shortcut pose are not verified language training examples.
+
+## D. Voice-session clarifications that must not be lost
+
+### 12. One signer and one person who does not sign
+
+In voice sessions the user restated the core scenario several times:
+
+> One person knows sign language. Another does not. We must make their communication easy.
+
+They were confused because the app seemed to capture but not produce meaning. The assistant explained that the flow existed but model reliability did not. This distinction remains true.
+
+### 13. Assistant and translator are both desired
+
+The user said the system should behave as an AI agent and as a translator. The agreed conceptual split was who receives the message:
+
+- Partner destination: preserve and deliver the user's meaning.
+- AI destination: send reviewed text for an assistant reply.
+
+Example discussed: “I want water” signed to a partner should reach that partner as the request; to an AI, it can receive an assistant response. AI generation is not a substitute for understanding the sign correctly.
+
+### 14. They explicitly approved continuing implementation
+
+The user asked for a short plan, said think broadly while implementing, then told the assistant to continue. The priority agreed was limited supported signs with evidence, then scale. Do not keep returning only plans when the next implementation turn asks for execution.
+
+### 15. Reverse direction and limited reading fluency
+
+The user asked the assistant to test from the perspective of someone who can see but cannot hear/speak and has limited education. They clarified they had been testing both people themselves in tabs.
+
+Their expectation:
+
+- Signer → non-signer: sign meaning becomes text + voice.
+- Non-signer → signer: speech/text becomes a comprehensible sign reply.
+
+The source walkthrough found heavy English text, review complexity and incomplete sign-video coverage. It did not establish lived disability experience or a real participant success rate. Simply receiving text is not enough for someone who cannot comfortably read it.
+
+## E. Referenced projects and what was actually reused
+
+### 16. AvishakeAdhikary LSTM project
+
+User link:
+
+`https://github.com/AvishakeAdhikary/Realtime-Sign-Language-Detection-Using-LSTM-Model`
+
+The user asked for full analysis, not a quick dismissal as “only three words.” Saved analysis found useful collection/training/live-prediction ideas, but conflicting three-label notebooks (HELLO/THANKS/ILOVEYOU versus CAT/FOOD/HELP), missing reliable label manifests, small/random evaluation, inadequate unknown handling and dependency conflicts.
+
+It was a research reference, not a ready universal translator. Existing saved weights were not silently installed. A separate LSTM comparison path on the existing versioned joint contract was developed. Exact detail: `docs/external-lstm-full-analysis-2026-10-08.md` and `docs/temporal-lstm-control-2026-10-08.md`.
+
+### 17. farihaNaqvi MediaPipe ISL interpreter
+
+User link:
+
+`https://github.com/farihaNaqvi/MediaPipe-ISL-Virtual-Interpreter`
+
+The user asked to improve SignBridge using it and requested deep research. Saved review describes a five-label sign classifier, separate four-label desktop commands, and five GIFs. It found first-result UI issues and silent omission of unsupported reverse-lookup words.
+
+SignBridge changes informed by that review included focus/scroll to completed results, improved saved-phrase coverage planning, preservation of missing words/negation and coordinate-provenance checks. The external code/weights/GIFs were not simply copied into the app. See `docs/isl-reference-improvements-2026-10-09.md`.
+
+## F. Deployment history
+
+### 18. User authorized GitHub and Render work
+
+The user asked how another device could use a localhost app, asked about GitHub, and explicitly authorized pushing and full deployment. They repeatedly said “you do it,” because Render instructions were confusing. Screenshots eventually showed a logged-in Render dashboard in the Codex browser.
+
+Distinguish authorization from actual access/success: older assistant utterances sometimes promised deployment before tool verification. Use the saved deployment report and current service checks, not those promises.
+
+### 19. Public pilot eventually existed
+
+Historical report dated 8 October records Render Free deployed at `https://signbridge-conversations.onrender.com/#connect`, source branch `codex/render-pilot`, draft PR `https://github.com/ADjayantan/signbridge-/pull/1`.
+
+Build first failed because production npm install omitted Vite. It was corrected to include dev dependencies and run `build:public`. The public pilot passed synthetic remote room protocol checks and a browser text send. TURN was unavailable then; physical-device/forced-relay/media recognition trials were not proved.
+
+Current local code is not automatically deployed, and public builds omit research models. The GPU in this laptop is not available to a phone merely because Render hosts the room server.
+
+### 20. Parallel AI collaboration
+
+The user wanted Codex and another AI to work on the same project. Proposed split was recognition/evaluation versus app/conversation UI. Preserve shared data contracts, ownership and source state. Do not have both models edit the same files concurrently without coordinating.
+
+The user requested a full handoff to Gemini Argon, then returned asking to review Argon's work. Their later clarification said Argon had **analyzed the same folder**, not created a separate replacement project. Do not hunt for an imaginary second Gemini checkout.
+
+## G. Recognition investigation and evidence timeline
+
+### 21. HELLO speech tests were not all real recognition tests
+
+Some tests sent a synthetic recognized HELLO through the room/speech flow. Browser voice completion was observed. The user answered that they had not listened/tested it. These establish neither camera recognition nor physically audible sound.
+
+Keep that distinction in reports. Replaying a speaker button cannot fix a rejected sign.
+
+### 22. Dark camera resolved separately
+
+An integrated webcam preview was dark. The assistant suggested checking the physical shutter/privacy control; the user later confirmed the preview was visible. That resolved camera visibility, not model recognition.
+
+### 23. Three.js design request
+
+The user requested an aesthetic Three.js UI. Decoration and a redesigned workspace were implemented. Screenshots showed colorful hand joints and the text/voice sections, but no word. The user clarified they expected camera-on signing to produce text/voice without manually pressing Capture and Finish.
+
+Prioritize recognizing actual signs and reducing cognitive load; do not spend the next iteration solely redesigning an already attractive nonworking recognizer.
+
+### 24. Automatic capture did not fix recognition
+
+Automatic capture was added. Live trials still showed “No reliable word match.” The user noted movement triggered capture while a still hand did not. Held-pose support was later added; it now exists in current source. Capture boundaries and semantic recognition are separate.
+
+### 25. Wrong-language vocabulary confusion
+
+An ASL attempt yielded a weak CANDY guess. The user asked how to sign CANDY, then said they would look it up and the assistant should continue fixing the code. Inspection found the active ASL 100-word vocabulary lacked HELLO. The user explicitly selected ISL.
+
+Even ISL HELLO then failed, weakly suggesting FATHER below acceptance. HELLO existing in a label list does not make webcam recognition reliable. The camera delivered 640×480 during earlier testing; a possible aspect-ratio/coordinate mismatch was investigated but not established as the single proven cause.
+
+### 26. Usage-limit pause and resume
+
+The user paused when account usage was around 3%, later explicitly resumed after reset. There is no current request to remain paused. Historical “continue later” should not block continuation now.
+
+### 27. Research candidates did not pass promotion gates
+
+Several archived-pose and current-detector studies were run. Their results and failures were recorded. Improving top-one predictions did not necessarily improve safe accepted coverage or rejection of unknown movements. Candidates were retained as research artifacts rather than falsely promoted.
+
+See the master prompt for exact measured results. The frozen studies must not be overwritten or relabelled as successful live-user evaluations.
+
+### 28. Move to F: and provenance work
+
+By 22 October the active checkout was `F:\Downloads\signbridge`. A screenshot of Downloads also contained other folders; the old `signbridge-fixed` was explicitly excluded as the current project.
+
+Capture metadata was added so exports retain actual decoded dimensions, detector identity, coordinates, timing configuration and mirror assertions. The importer blocks incompatible partial/mixed capture domains rather than silently combining them. No new word model was trained by that metadata change.
+
+### 29. First clear video → HELLO → browser speech demonstration
+
+On 22 October a real known INCLUDE HELLO video was processed by the browser pose pipeline. It produced HELLO with score .983657718, and browser speech completed. That is a useful visible demonstration but still a known reference, not proof of arbitrary webcam recognition.
+
+The Sign video input uses actual decoded frames, not filenames or supplied labels. Local example loading was subsequently added with bounded downloads and a separate Convert action. Latest focused UI tests for this input passed during the 26 October handoff audit.
+
+### 30. Gemini's exact analysis supplied by the user
+
+The user reported the following analysis for the same `F:\Downloads\signbridge`:
+
+1. Webcam wrist at `y >= .98` triggers clipped/reset in automatic capture; shoulder visibility also drops.
+2. Existing ISL model learned full-body/standing source videos; a close-up open palm on either hand gives low scores, often <.30.
+3. Recognized output stays in Step 2 review; Step 3 textarea is not automatically appended; speech depends on the toggle/action.
+
+Our fresh audit confirms relevant gate/output code, but the exact measured low-score/live-capture circumstances still require recorded replication. Preserve this as supplied analysis, not proof that a single shortcut fix is sufficient.
+
+## H. New WLASL setup and current incomplete work
+
+### 31. User supplied a large local ASL dataset
+
+The latest important addition is `C:\Users\adjay\Projects\WLASL`, with videos, source, action-pretrained weights, checkpoints and logs. User's handoff described 11,301 of 21,083 clips, 2,000 total release words, WLASL100 training and 24 old-code fixes.
+
+This provides real assets to inspect and use; it does not establish a trained reliable model. It is ASL, not a replacement for ISL HELLO. Complete Claude artifact contents were not retrieved.
+
+### 32. Actual training checkpoint was weak and stopped
+
+Audit found one old checkpoint with ~2.37% top-one on 169 available test examples; log stopped during epoch 2. Original trainer merged train+validation and used test repeatedly. No training process was running at the latest inspection.
+
+Do not keep telling the user it is training or nearly finished. Do not confuse action-pretrained backbone weights with a trained sign vocabulary.
+
+### 33. Official weights and separate new trainer
+
+Official pretrained WLASL100 weights were downloaded from the repository's own link into local research storage, with a pinned hash. Separately, a cleaner RGB trainer with real train/validation/test separation and resumable metadata was implemented and unit-tested.
+
+These are **different model/preprocessing families**. The new trainer has not run a new training job yet. Its checkpoints cannot silently replace the old official BGR checkpoint.
+
+### 34. Partial app integration is unfinished
+
+Python inference, local Node middleware, an ASL upload/camera screen and tests were created. App route/navigation/Vite plugin registration were not finished. An actual BOOK validation clip produced FAMILY under the current adapter; preprocessing does not match the official default evaluation path.
+
+A fresh handoff audit also found a model-name middle-dot validation mismatch, a middleware socket-reset test failure and a UI timer-cleanup test failure. These are documented explicitly in the master prompt. Do not label the WLASL feature working or the full check passing.
+
+### 35. Latest request is this handoff
+
+The user now asks for the conversion/conversation history, project location, project description and **small details in a master prompt so Gemini Argon can continue clearly**.
+
+This turn therefore produced documentation and fresh read-only verification, not a new training run, deployment, or finished recognition integration. Argon should continue from the documented state when instructed, with the exact unfinished steps and failures visible.
+
+## I. Communication habits to carry forward
+
+- Lead with what changed or what actually failed. “Checking” repeated without findings frustrated the user.
+- Avoid declaring success after unit tests while real recognition remains wrong.
+- Keep explanation short in conversation, detailed in the report. The user repeatedly said “puriyala” when jargon or too many steps obscured the next action.
+- Open a working page and show real output when implementation is ready. Do not just give a localhost link to an inactive server.
+- Keep human conversation as the central purpose. AI help, training screens and decorative 3D are supporting tools.
+- State which language/model/vocabulary is selected. Never let the user keep testing an unavailable word without explaining why.
+- Ask for a live trial only when the page and supported reference are actually ready. Do not repeatedly ask whether they heard sound when they already said they had not tested it.
+- A user correction overrides an earlier optimistic test answer. DRINK was later reported failing; note failures honestly.
+- Do not ask them for the project location again. It is known and verified.
+- Do not promise a general translator from one open palm demo. Build a bounded working result and state its limits.
+
+## J. Historical source references
+
+| Reference | Role / status |
+|---|---|
+| Initial Claude share `https://claude.ai/share/fc8dec45-6175-4603-895d-b0a3e635579c` | User's starting shared project conversation; full content not retrieved during this handoff. |
+| `https://github.com/AvishakeAdhikary/Realtime-Sign-Language-Detection-Using-LSTM-Model` | Reviewed LSTM reference; see saved full analysis. |
+| `https://github.com/farihaNaqvi/MediaPipe-ISL-Virtual-Interpreter` | Reviewed ISL workflow/model reference; no validated wholesale import. |
+| `https://github.com/dxli94/WLASL` | Current local ASL I3D/data source. |
+| `https://claude.ai/artifact/4CbNkWb4kGkSkNqTnGZ6oB` | User's WLASL setup document; supplied summary used, complete artifact not read. |
+| `https://github.com/ADjayantan/signbridge-` | SignBridge Git remote; working disk contains substantial newer uncommitted work. |
+| `https://signbridge-conversations.onrender.com/#connect` | Historically deployed conversation pilot; not current local GPU recognition. |
+
+The master prompt lists the current file map, hashes, evidence, startup commands, failures and next implementation order. Use that operational information before changing code.
+
+
+PART 3: VERIFIED LOCAL STATE AND FILE HASHES (JSON)
+
+{
+  "format": "signbridge-argon-handoff-v1",
+  "auditDate": "2026-10-26",
+  "timezone": "Asia/Calcutta",
+  "purpose": "Read-only handoff snapshot; no claim of completed WLASL integration or general recognition accuracy.",
+  "appRoot": "F:\\Downloads\\signbridge",
+  "wlaslRoot": "C:\\Users\\adjay\\Projects\\WLASL",
+  "branch": "codex/sign-speech-video",
+  "head": "5451d0889f0c4e98c7178973bef944c8210862bb",
+  "remote": "https://github.com/ADjayantan/signbridge-",
+  "gitStatus": [
+    " M .env.example",
+    " M README.md",
+    " M docs/conversations-deployment.md",
+    " M docs/nonsigning-collection-2026-10-05.md",
+    " M index.html",
+    " M package-lock.json",
+    " M package.json",
+    " M render.yaml",
+    " M src/components/NonsigningCapture.jsx",
+    " M src/components/RoomSignCapture.jsx",
+    " M src/hooks/useCamera.js",
+    " M src/hooks/usePoseTracking.js",
+    " M src/hooks/useRoomMedia.js",
+    " M src/hooks/useTrainedModel.js",
+    " M src/lib/cameraWordRecognition.js",
+    " M src/lib/nonsigningCapture.js",
+    " M src/lib/signVideos.js",
+    " M src/lib/trainedSignModel.js",
+    " M src/lib/trainingSamples.js",
+    " M src/main.jsx",
+    " M src/modes/ConnectMode.jsx",
+    " M src/modes/Home.jsx",
+    " M src/modes/LiveSignMode.jsx",
+    " M src/modes/SignMode.jsx",
+    " M src/modes/TrainedSignMode.jsx",
+    " M src/modes/TrainingStudio.jsx",
+    " M src/styles/connect.css",
+    " M src/styles/signWorkspace.css",
+    " M src/styles/trainingStudio.css",
+    " M start-signbridge.cmd",
+    " M tests/cameraWordRecognition.test.js",
+    " M tests/nonsigningCapture.test.js",
+    " M tests/signVideos.test.js",
+    " M tests/trainedSignModel.test.js",
+    " M tests/trainingSamples.test.js",
+    " M tests/ui/camera.test.jsx",
+    " M tests/ui/connect.test.jsx",
+    " M tests/ui/liveSign.test.jsx",
+    " M tests/ui/media.test.jsx",
+    " M tests/ui/nonsigningCapture.test.jsx",
+    " M tests/ui/poseTracking.test.jsx",
+    " M tests/ui/roomMedia.test.jsx",
+    " M tests/ui/roomSignCapture.test.jsx",
+    " M tests/ui/sign.test.jsx",
+    " M tests/ui/trainedModel.test.jsx",
+    " M tests/ui/trainedSign.test.jsx",
+    " M tests/ui/trainingStudio.test.jsx",
+    " M tests/ui/workspaceFreshness.test.jsx",
+    " M training/graph_models.py",
+    " M training/import_samples.py",
+    " M training/test_import_samples.py",
+    " M training/train_graph_models.py",
+    " M vite.config.js",
+    " M vitest.config.js",
+    "?? docs/ARGON_CONVERSATION_HISTORY_2026-10-26.md",
+    "?? docs/ARGON_MASTER_PROMPT_2026-10-26.md",
+    "?? docs/advisor-demo-2026-10-10.md",
+    "?? docs/automatic-sign-capture-2026-10-11.md",
+    "?? docs/camera-candidate-browser-replay-2026-10-11.json",
+    "?? docs/camera-training-browser-results-2026-10-11.jpg",
+    "?? docs/camera-training-protocol-2026-10-11.md",
+    "?? docs/camera-training-results-2026-10-11.md",
+    "?? docs/capture-context-2026-10-22.md",
+    "?? docs/capture-context-ready-2026-10-22.jpg",
+    "?? docs/communication-usability-review-2026-10-08.md",
+    "?? docs/current-capabilities-2026-10-13.md",
+    "?? docs/deep-implementation-plan-2026-10-10.md",
+    "?? docs/external-lstm-full-analysis-2026-10-08.md",
+    "?? docs/hello-geometry-audited-2026-10-11.json",
+    "?? docs/hello-geometry-replay-2026-10-11.json",
+    "?? docs/hello-reference-2026-10-10.jpg",
+    "?? docs/hello-reference-replay-2026-10-10.json",
+    "?? docs/isl-reference-improvements-2026-10-09.md",
+    "?? docs/local-demo-startup.md",
+    "?? docs/parallel-implementation-plan-2026-10-08.md",
+    "?? docs/project-research-2026-10-10.md",
+    "?? docs/recognition-replay-2026-10-09.md",
+    "?? docs/render-pilot-verification-2026-10-08.md",
+    "?? docs/sign-only-text-voice-test-2026-10-09.md",
+    "?? docs/sign-response-recovery-2026-10-09.md",
+    "?? docs/sign-video-hello-2026-10-22.jpg",
+    "?? docs/sign-video-hello-report-2026-10-22.json",
+    "?? docs/sign-video-to-text-voice-2026-10-22.md",
+    "?? docs/tasks-video-stage2-protocol-2026-10-13.md",
+    "?? docs/tasks-video-training-metrics-2026-10-13.json",
+    "?? docs/tasks-video-training-protocol-2026-10-11.md",
+    "?? docs/tasks-video-training-results-2026-10-13.jpg",
+    "?? docs/tasks-video-training-results-2026-10-13.md",
+    "?? docs/temporal-lstm-control-2026-10-08.md",
+    "?? docs/three-ui-2026-10-11.md",
+    "?? docs/two-way-communication-2026-10-09.md",
+    "?? docs/ui-automatic-sign-2026-10-11.jpg",
+    "?? docs/ui-hello-practice-2026-10-11.jpg",
+    "?? docs/ui-home-2026-10-11.jpg",
+    "?? docs/ui-workspace-2026-10-11.jpg",
+    "?? docs/video-recovery-and-route-2026-10-08.md",
+    "?? scripts/compare-camera-candidate.browser.js",
+    "?? scripts/declare-camera-coordinates.mjs",
+    "?? scripts/extract-tasks-training.browser.js",
+    "?? scripts/local-service.mjs",
+    "?? scripts/reference-geometry-replay.browser.js",
+    "?? scripts/start-local.ps1",
+    "?? scripts/wlasl_infer.py",
+    "?? server/localReferenceMiddleware.js",
+    "?? server/localWlaslMiddleware.js",
+    "?? src/components/BridgeScene.jsx",
+    "?? src/components/GuidedSignPractice.css",
+    "?? src/components/GuidedSignPractice.jsx",
+    "?? src/components/RecognitionReplay.jsx",
+    "?? src/components/SignVideoInput.jsx",
+    "?? src/components/bridgeScene.css",
+    "?? src/hooks/useVideoPoseReplay.js",
+    "?? src/lib/automaticSignCapture.js",
+    "?? src/lib/cameraCoordinateContract.js",
+    "?? src/lib/cameraFrameHealth.js",
+    "?? src/lib/cameraGeometryExperiment.js",
+    "?? src/lib/legacyPoseTracker.js",
+    "?? src/lib/mediaRoute.js",
+    "?? src/lib/poseCaptureContext.js",
+    "?? src/lib/poseTracker.js",
+    "?? src/lib/recognitionReplay.js",
+    "?? src/modes/WlaslVideoMode.jsx",
+    "?? src/styles/design.css",
+    "?? src/styles/wlaslVideo.css",
+    "?? stop-signbridge.cmd",
+    "?? tests/automaticSignCapture.test.js",
+    "?? tests/cameraCoordinateContract.test.js",
+    "?? tests/cameraFrameHealth.test.js",
+    "?? tests/cameraGeometryExperiment.test.js",
+    "?? tests/declareCameraCoordinates.test.js",
+    "?? tests/localReferenceMiddleware.test.js",
+    "?? tests/localWlaslMiddleware.test.js",
+    "?? tests/mediaRoute.test.js",
+    "?? tests/poseCaptureContext.test.js",
+    "?? tests/recognitionReplay.test.js",
+    "?? tests/tasksTrainingExtraction.test.js",
+    "?? tests/ui/automaticTrainedSign.test.jsx",
+    "?? tests/ui/bridgeScene.test.jsx",
+    "?? tests/ui/guidedSignPractice.test.jsx",
+    "?? tests/ui/legacyPoseTracker.test.jsx",
+    "?? tests/ui/poseCaptureContext.test.jsx",
+    "?? tests/ui/recognitionReplay.test.jsx",
+    "?? tests/ui/reviewedSignConversation.test.jsx",
+    "?? tests/ui/signVideoInput.test.jsx",
+    "?? tests/ui/tasksTrainingExtraction.test.jsx",
+    "?? tests/ui/videoPoseReplay.test.jsx",
+    "?? tests/ui/videoSignWorkspace.test.jsx",
+    "?? tests/ui/wlaslVideo.test.jsx",
+    "?? training/camera_aligned_study.py",
+    "?? training/check-camera-candidate-parity.mjs",
+    "?? training/download_tasks_parallel.py",
+    "?? training/fetch_include_reference.py",
+    "?? training/fetch_tasks_study.py",
+    "?? training/temporal_coordinates.py",
+    "?? training/test_camera_aligned_study.py",
+    "?? training/test_download_tasks_parallel.py",
+    "?? training/test_fetch_include_reference.py",
+    "?? training/test_fetch_tasks_study.py",
+    "?? training/test_temporal_baseline.py",
+    "?? training/test_train_tasks_video_stage2.py",
+    "?? training/test_train_tasks_video_study.py",
+    "?? training/train_tasks_video_stage2.py",
+    "?? training/train_tasks_video_study.py",
+    "?? training/train_temporal_baseline.py"
+  ],
+  "listeners": [],
+  "pythonProcesses": [],
+  "nodeVersion": "v26.8.1",
+  "gpuSnapshot": [
+    "name, memory.total [MiB], memory.used [MiB], utilization.gpu [%]",
+    "NVIDIA GeForce RTX 4060 Laptop GPU, 8188 MiB, 0 MiB, 0 %"
+  ],
+  "currentAppModels": [
+    {
+      "language": "isl",
+      "format": "signbridge-gru-v2",
+      "labels": [
+        "DOG",
+        "LOUD",
+        "CAR",
+        "ELECTION",
+        "TRAIN TICKET",
+        "HOUSE",
+        "DEATH",
+        "QUIET",
+        "COURT",
+        "STORE OR SHOP",
+        "WINDOW",
+        "HAPPY",
+        "PEN",
+        "BANK",
+        "HAT",
+        "BIRD",
+        "I",
+        "PAINT",
+        "T-SHIRT",
+        "SHOES",
+        "IT",
+        "YOU (PLURAL)",
+        "RED",
+        "HELLO",
+        "COW",
+        "GOOD MORNING",
+        "FAN",
+        "BLACK",
+        "CELL PHONE",
+        "THANK YOU",
+        "WHITE",
+        "FATHER",
+        "SUMMER",
+        "FALL",
+        "BROTHER",
+        "MONDAY",
+        "BOY",
+        "GIRL",
+        "YEAR",
+        "LONG",
+        "SHORT",
+        "BIG LARGE",
+        "TEACHER",
+        "SMALL LITTLE",
+        "TIME",
+        "HOT",
+        "PRIEST",
+        "NEW",
+        "GOOD"
+      ],
+      "labelCount": 49,
+      "frames": 32,
+      "inputSize": 81,
+      "hiddenSize": 64,
+      "joints": [
+        0,
+        2,
+        5,
+        11,
+        12,
+        13,
+        14,
+        33,
+        37,
+        38,
+        41,
+        42,
+        45,
+        46,
+        49,
+        50,
+        53,
+        54,
+        58,
+        59,
+        62,
+        63,
+        66,
+        67,
+        70,
+        71,
+        74
+      ],
+      "threshold": 0.95,
+      "margin": 0.3,
+      "acceptanceEnabled": true,
+      "cameraInput": {
+        "format": "signbridge-camera-coordinates-v1",
+        "space": "axis-scaled-image",
+        "scaleX": 1080,
+        "scaleY": 1920
+      }
+    },
+    {
+      "language": "asl",
+      "format": "signbridge-gru-v1",
+      "labels": [
+        "ACCIDENT",
+        "AFRICA",
+        "ALL",
+        "APPLE",
+        "BASKETBALL",
+        "BED",
+        "BEFORE",
+        "BIRD",
+        "BIRTHDAY",
+        "BLACK",
+        "BLUE",
+        "BOOK",
+        "BOWLING",
+        "BROWN",
+        "BUT",
+        "CAN",
+        "CANDY",
+        "CHAIR",
+        "CHANGE",
+        "CHEAT",
+        "CITY",
+        "CLOTHES",
+        "COLOR",
+        "COMPUTER",
+        "COOK",
+        "COOL",
+        "CORN",
+        "COUSIN",
+        "COW",
+        "DANCE",
+        "DARK",
+        "DEAF",
+        "DECIDE",
+        "DOCTOR",
+        "DOG",
+        "DRINK",
+        "EAT",
+        "ENJOY",
+        "FAMILY",
+        "FINE",
+        "FINISH",
+        "FISH",
+        "FORGET",
+        "FULL",
+        "GIVE",
+        "GO",
+        "GRADUATE",
+        "HAT",
+        "HEARING",
+        "HELP",
+        "HOT",
+        "HOW",
+        "JACKET",
+        "KISS",
+        "LANGUAGE",
+        "LAST",
+        "LATER",
+        "LETTER",
+        "LIKE",
+        "MAN",
+        "MANY",
+        "MEDICINE",
+        "MEET",
+        "MOTHER",
+        "NEED",
+        "NO",
+        "NOW",
+        "ORANGE",
+        "PAINT",
+        "PAPER",
+        "PINK",
+        "PIZZA",
+        "PLAY",
+        "PULL",
+        "PURPLE",
+        "RIGHT",
+        "SAME",
+        "SCHOOL",
+        "SECRETARY",
+        "SHIRT",
+        "SHORT",
+        "SON",
+        "STUDY",
+        "TABLE",
+        "TALL",
+        "TELL",
+        "THANKSGIVING",
+        "THIN",
+        "THURSDAY",
+        "TIME",
+        "WALK",
+        "WANT",
+        "WHAT",
+        "WHITE",
+        "WHO",
+        "WOMAN",
+        "WORK",
+        "WRONG",
+        "YEAR",
+        "YES"
+      ],
+      "labelCount": 100,
+      "frames": 32,
+      "inputSize": 81,
+      "hiddenSize": 64,
+      "joints": [
+        0,
+        2,
+        5,
+        11,
+        12,
+        13,
+        14,
+        33,
+        37,
+        38,
+        41,
+        42,
+        45,
+        46,
+        49,
+        50,
+        53,
+        54,
+        58,
+        59,
+        62,
+        63,
+        66,
+        67,
+        70,
+        71,
+        74
+      ],
+      "threshold": 0.98,
+      "margin": 0.3,
+      "acceptanceEnabled": true,
+      "cameraInput": null
+    }
+  ],
+  "wlasl": {
+    "mp4Count": 11301,
+    "labels": [
+      "BOOK",
+      "DRINK",
+      "COMPUTER",
+      "BEFORE",
+      "CHAIR",
+      "GO",
+      "CLOTHES",
+      "WHO",
+      "CANDY",
+      "COUSIN",
+      "DEAF",
+      "FINE",
+      "HELP",
+      "NO",
+      "THIN",
+      "WALK",
+      "YEAR",
+      "YES",
+      "ALL",
+      "BLACK",
+      "COOL",
+      "FINISH",
+      "HOT",
+      "LIKE",
+      "MANY",
+      "MOTHER",
+      "NOW",
+      "ORANGE",
+      "TABLE",
+      "THANKSGIVING",
+      "WHAT",
+      "WOMAN",
+      "BED",
+      "BLUE",
+      "BOWLING",
+      "CAN",
+      "DOG",
+      "FAMILY",
+      "FISH",
+      "GRADUATE",
+      "HAT",
+      "HEARING",
+      "KISS",
+      "LANGUAGE",
+      "LATER",
+      "MAN",
+      "SHIRT",
+      "STUDY",
+      "TALL",
+      "WHITE",
+      "WRONG",
+      "ACCIDENT",
+      "APPLE",
+      "BIRD",
+      "CHANGE",
+      "COLOR",
+      "CORN",
+      "COW",
+      "DANCE",
+      "DARK",
+      "DOCTOR",
+      "EAT",
+      "ENJOY",
+      "FORGET",
+      "GIVE",
+      "LAST",
+      "MEET",
+      "PINK",
+      "PIZZA",
+      "PLAY",
+      "SCHOOL",
+      "SECRETARY",
+      "SHORT",
+      "TIME",
+      "WANT",
+      "WORK",
+      "AFRICA",
+      "BASKETBALL",
+      "BIRTHDAY",
+      "BROWN",
+      "BUT",
+      "CHEAT",
+      "CITY",
+      "COOK",
+      "DECIDE",
+      "FULL",
+      "HOW",
+      "JACKET",
+      "LETTER",
+      "MEDICINE",
+      "NEED",
+      "PAINT",
+      "PAPER",
+      "PULL",
+      "PURPLE",
+      "RIGHT",
+      "SAME",
+      "SON",
+      "TELL",
+      "THURSDAY"
+    ],
+    "containsHello": false,
+    "containsThanks": false,
+    "officialSplitCounts": {
+      "train": 1442,
+      "test": 258,
+      "val": 338
+    },
+    "availableSplitCounts": {
+      "train": 769,
+      "test": 169,
+      "val": 193
+    },
+    "availableClassCounts": {
+      "train": 100,
+      "test": 92,
+      "val": 98
+    },
+    "missingValClasses": [
+      "LAST",
+      "TELL"
+    ],
+    "missingTestClasses": [
+      "BOOK",
+      "THANKSGIVING",
+      "LATER",
+      "SHIRT",
+      "DOCTOR",
+      "SHORT",
+      "CHEAT",
+      "RIGHT"
+    ],
+    "checkpoints": [
+      {
+        "Name": "nslt_100_000160_0.023669.pt",
+        "Length": 49739021
+      }
+    ],
+    "trainingLogs": [
+      {
+        "Name": "train_wlasl100_20261025_2046.log",
+        "Length": 12815
+      }
+    ],
+    "trainingActiveAtAudit": false,
+    "newRgbTrainerHasBeenRun": false,
+    "defaultTrainingDataJunction": {
+      "path": "C:\\Users\\adjay\\Projects\\WLASL\\data\\WLASL2000",
+      "target": "C:\\Users\\adjay\\Projects\\WLASL\\start_kit\\videos"
+    }
+  },
+  "freshChecks": [
+    {
+      "suite": "WLASL test_signbridge_training",
+      "pass": 10,
+      "fail": 0,
+      "evidence": "Read-only audit agent ran existing suite"
+    },
+    {
+      "suite": "localWlaslMiddleware Node",
+      "pass": 13,
+      "fail": 1,
+      "seconds": 6.57,
+      "failure": "content type/size/empty body test: ECONNRESET socket hang up"
+    },
+    {
+      "suite": "wlaslVideo + automaticTrainedSign + videoSignWorkspace + signVideoInput UI",
+      "pass": 76,
+      "fail": 1,
+      "seconds": 47.82,
+      "failure": "WLASL End session expected zero timers, received one"
+    }
+  ],
+  "fullCheckRunForHandoff": false,
+  "browserRunForHandoff": false,
+  "deploymentRunForHandoff": false,
+  "pending": [
+    "WLASL route/import/navigation missing",
+    "Vite localWlaslPlugin registration missing",
+    "Python modelName middle dot rejected by middleware regex",
+    "Current WLASL inference preprocessing differs from official evaluation",
+    "Known BOOK validation clip predicted FAMILY in prior real run",
+    "Middleware body-limit test ECONNRESET",
+    "WLASL UI End session timer-count test failure",
+    "No newly trained signbridge RGB checkpoint",
+    "Webcam sign recognition unreliable",
+    "Accepted result not automatically appended to Step3 draft",
+    "Physical two-device and forced-relay acceptance pending"
+  ],
+  "files": [
+    {
+      "path": "F:\\Downloads\\signbridge\\package.json",
+      "bytes": 1255,
+      "sha256": "657b0e72caa7ad645e7963107070c4e653cfa7e1ebce0f41b7f6a04f53b424d6"
+    },
+    {
+      "path": "F:\\Downloads\\signbridge\\package-lock.json",
+      "bytes": 260399,
+      "sha256": "28e7ff8b46209c6043dcdb2107406689b7f0da30e33d28b5634797ac204169c4"
+    },
+    {
+      "path": "F:\\Downloads\\signbridge\\src\\App.jsx",
+      "bytes": 3300,
+      "sha256": "034af92e2fdc6fb6b56b5acabd0b452a0b81043215d1586b0445442b8c82d4a5"
+    },
+    {
+      "path": "F:\\Downloads\\signbridge\\src\\hooks\\useHashMode.js",
+      "bytes": 1257,
+      "sha256": "335f9a7bccca046dc98462ca413683275a4022eb1cbf5e0505606fac8805fba0"
+    },
+    {
+      "path": "F:\\Downloads\\signbridge\\src\\modes\\TrainedSignMode.jsx",
+      "bytes": 50684,
+      "sha256": "2568cc11700f1a183685b7c8385e71381da990dcfbc8d84c597f82356f1674a9"
+    },
+    {
+      "path": "F:\\Downloads\\signbridge\\src\\modes\\WlaslVideoMode.jsx",
+      "bytes": 17305,
+      "sha256": "b6430a25cea51b89ca35537e6cb4360d5b407d34a0931b1044fbeac845c01170"
+    },
+    {
+      "path": "F:\\Downloads\\signbridge\\src\\components\\SignVideoInput.jsx",
+      "bytes": 13014,
+      "sha256": "c899222f82bdb46049af7b0f66a3dd75c50fe6e6278a32010b78171211becb12"
+    },
+    {
+      "path": "F:\\Downloads\\signbridge\\src\\lib\\automaticSignCapture.js",
+      "bytes": 14288,
+      "sha256": "a90942905c2e407363461b11a729910904e857bf81a2cb3767486f3ec2746e1e"
+    },
+    {
+      "path": "F:\\Downloads\\signbridge\\src\\lib\\cameraWordRecognition.js",
+      "bytes": 2035,
+      "sha256": "1e3fba18ae8ca330d0d556f4a12ac3ba2b0732ffac2218fe90dd92eb6656a3ec"
+    },
+    {
+      "path": "F:\\Downloads\\signbridge\\src\\hooks\\useVideoPoseReplay.js",
+      "bytes": 6345,
+      "sha256": "dd4c6eb60bf0e33e0a4fa1e2dd633234421721d40ef329bff9100a1528f81cf0"
+    },
+    {
+      "path": "F:\\Downloads\\signbridge\\src\\lib\\poseCaptureContext.js",
+      "bytes": 1810,
+      "sha256": "2d1e209df14616fe39498004ef91e7d60b6988265080ae35f708b86c2da189fe"
+    },
+    {
+      "path": "F:\\Downloads\\signbridge\\server\\localWlaslMiddleware.js",
+      "bytes": 12011,
+      "sha256": "d91016e8445291dc09c5ddafe31828ba53dcc0f1b247eb8d8e505bf98af83ef1"
+    },
+    {
+      "path": "F:\\Downloads\\signbridge\\scripts\\wlasl_infer.py",
+      "bytes": 6631,
+      "sha256": "4235653eccbe2b8aebcd2da503a18621c040617017e9965187e4c9adfa273ee3"
+    },
+    {
+      "path": "F:\\Downloads\\signbridge\\vite.config.js",
+      "bytes": 4819,
+      "sha256": "b5f1bc96a7ae56df39016e004ad60070a3d6e40b4d49cdfab8a7e793584023a6"
+    },
+    {
+      "path": "F:\\Downloads\\signbridge\\render.yaml",
+      "bytes": 464,
+      "sha256": "047def693628b0a0eea5e464fca937b0b89f44a916684f81a7d7b9911602a37e"
+    },
+    {
+      "path": "F:\\Downloads\\signbridge\\scripts\\start-local.ps1",
+      "bytes": 4383,
+      "sha256": "4c7687c105082e46078275b2feca45485559218e529d6fc555a48690169a042e"
+    },
+    {
+      "path": "F:\\Downloads\\signbridge\\tests\\localWlaslMiddleware.test.js",
+      "bytes": 13763,
+      "sha256": "3d6cbbfce5b14235beddd631eff87ac27f1b80e64d925f243a0d57a60c91ca14"
+    },
+    {
+      "path": "F:\\Downloads\\signbridge\\tests\\ui\\wlaslVideo.test.jsx",
+      "bytes": 11985,
+      "sha256": "bb17e3c41c0cadd25225a1467d99f0400a68c754834a400fb5605ee09f271e64"
+    },
+    {
+      "path": "F:\\Downloads\\signbridge\\public\\models\\isl.json",
+      "bytes": 339780,
+      "sha256": "55c23fffe387944a102c804676ae91aa7276781d598b7adaf03f0115234acdd9"
+    },
+    {
+      "path": "F:\\Downloads\\signbridge\\public\\models\\asl.json",
+      "bytes": 377964,
+      "sha256": "65c40faf3961418ced5b4baba9ece1d7eb0b3faa4f34960bf24e2ff50a8dfafa"
+    },
+    {
+      "path": "F:\\Downloads\\signbridge\\docs\\sign-video-hello-report-2026-10-22.json",
+      "bytes": 1318,
+      "sha256": "d85030282f419439fc932d503a897aaef34734d437b66d8a3e9ae77a3e21d9e8"
+    },
+    {
+      "path": "C:\\Users\\adjay\\Projects\\WLASL\\code\\I3D\\signbridge_i3d.py",
+      "bytes": 8185,
+      "sha256": "da5a97c06be9fe01c3faf4f6d821018302cbe79284593d4848d3c98375e599ba"
+    },
+    {
+      "path": "C:\\Users\\adjay\\Projects\\WLASL\\code\\I3D\\train_signbridge.py",
+      "bytes": 14384,
+      "sha256": "e89be97497984760def299d8fc1a15083db636c5f92072e66874296de262c39b"
+    },
+    {
+      "path": "C:\\Users\\adjay\\Projects\\WLASL\\code\\I3D\\test_signbridge_training.py",
+      "bytes": 7312,
+      "sha256": "f708b0d466d39f191dfbe00b4729f6f812e3016b17b1d60ced4b2c3a7791f7c9"
+    },
+    {
+      "path": "C:\\Users\\adjay\\Projects\\WLASL\\code\\I3D\\datasets\\nslt_dataset.py",
+      "bytes": 7603,
+      "sha256": "4f94bbf3b34cbdeaa161bd4b1a404debf505340e9bd513997a6b3564435cebbe"
+    },
+    {
+      "path": "C:\\Users\\adjay\\Projects\\WLASL\\code\\I3D\\datasets\\nslt_dataset_all.py",
+      "bytes": 5162,
+      "sha256": "85a28d763b0ccb0299fe78ddc5bea56eeb1682804587561b1fe9fac6aea80f58"
+    },
+    {
+      "path": "C:\\Users\\adjay\\Projects\\WLASL\\code\\I3D\\test_i3d.py",
+      "bytes": 9521,
+      "sha256": "b28337b7d47e74f5ce20d8018c13230167b8c4b52f52fbe51fa94fa0edbf3034"
+    },
+    {
+      "path": "C:\\Users\\adjay\\Projects\\WLASL\\code\\I3D\\preprocess\\nslt_100.json",
+      "bytes": 107142,
+      "sha256": "aaa4bb4300e4efd50e162d8b7aad00486ddf76cd0f74f1236a9cd774a3871a77"
+    },
+    {
+      "path": "C:\\Users\\adjay\\Projects\\WLASL\\code\\I3D\\preprocess\\wlasl_class_list.txt",
+      "bytes": 24907,
+      "sha256": "311359c5c168251e19541877e02ef976f80d520e3dce65988c785d8f1d9d49e8"
+    },
+    {
+      "path": "C:\\Users\\adjay\\Projects\\WLASL\\code\\I3D\\checkpoints\\nslt_100_000160_0.023669.pt",
+      "bytes": 49739021,
+      "sha256": "2dac192e10951301bbf888029aff1feb6905b6d9d6dfeb94fbd5dd4ee61f0a91"
+    },
+    {
+      "path": "C:\\Users\\adjay\\Projects\\WLASL\\code\\I3D\\archived\\asl100\\FINAL_nslt_100_iters=896_top1=65.89_top5=84.11_top10=89.92.pt",
+      "bytes": 49677763,
+      "sha256": "a61d7dda5f875ce5ebd9d407c56874f77d1cd2aeb4bc7cd0d98a6e1ca4669a0c"
+    }
+  ]
+}

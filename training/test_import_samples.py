@@ -2,6 +2,7 @@
 import copy
 import json
 from pathlib import Path
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -10,7 +11,9 @@ from unittest.mock import patch
 
 import numpy as np
 
-from import_samples import combine_datasets, import_dataset, load_bounded_json, prepare_language, validate_dataset, validate_splits
+from import_samples import (capture_context_summary, combine_datasets, import_dataset,
+                            load_bounded_json, prepare_language, validate_capture_context,
+                            validate_dataset, validate_splits)
 from prepare_data import preprocess_pose
 from train_model import validate_prepared
 
@@ -43,7 +46,184 @@ def fixture(languages=("isl",)):
     return dataset, splits
 
 
+def capture_context(width=1280, height=720):
+    return {"format": "signbridge-capture-context-v1", "tracker": "mediapipe-tasks-holistic",
+            "modelAsset": "holistic_landmarker/float16/1", "delegate": "CPU", "runningMode": "VIDEO",
+            "coordinateSpace": "normalized-image", "sampleIntervalMs": 125,
+            "mirrorApplied": False, "width": width, "height": height}
+
+
+def record_context(dataset, width=1280, height=720):
+    for row in dataset["samples"]:
+        for pose in row["frames"]:
+            pose["captureContext"] = capture_context(width, height)
+
+
 class ImporterTests(unittest.TestCase):
+    def test_capture_context_is_optional_and_legacy_features_remain_unchanged(self):
+        dataset, assignment = fixture()
+        baseline, _ = prepare_language(validate_dataset(dataset), assignment["signers"], "isl")
+        # Top-level guesses must not be promoted into per-frame provenance.
+        dataset["samples"][0]["captureContext"] = capture_context()
+        rows = validate_dataset(dataset)
+        self.assertNotIn("captureContext", rows[0])
+        self.assertTrue(all("captureContext" not in frame for row in rows for frame in row["frames"]))
+        arrays, metadata = prepare_language(rows, assignment["signers"], "isl")
+        self.assertTrue(metadata["training_ready"])
+        summary = metadata["capture_context"]
+        self.assertEqual((summary["fullyRecordedSamples"], summary["legacySamples"], summary["partialSamples"]), (0, 8, 0))
+        self.assertEqual(summary["contextIdentities"], [])
+        self.assertIn("not proof", summary["caveat"])
+        for key in baseline:
+            np.testing.assert_array_equal(arrays[key], baseline[key])
+
+    def test_homogeneous_context_roundtrip_preserves_frames_and_scalar_inventory(self):
+        dataset, assignment = fixture()
+        baseline, _ = prepare_language(validate_dataset(dataset), assignment["signers"], "isl")
+        record_context(dataset)
+        # JSON integer-valued floats have the same domain as JavaScript numbers.
+        dataset["samples"][0]["frames"][0]["captureContext"].update(width=1280.0, height=720.0, sampleIntervalMs=125.0)
+        validated = validate_dataset(dataset)
+        dataset["samples"][0]["frames"][0]["captureContext"]["width"] = 640
+        self.assertEqual(validated[0]["frames"][0]["captureContext"], capture_context())
+        with tempfile.TemporaryDirectory() as temporary:
+            output = Path(temporary) / "capture-context"
+            manifest = import_dataset({**dataset, "samples": validated}, assignment, output)
+            raw = json.loads((output / "poses.json").read_text(encoding="utf-8"))
+            summary = manifest["languages"]["isl"]["capture_context"]
+            self.assertEqual((summary["fullyRecordedSamples"], summary["legacySamples"], summary["partialSamples"]), (8, 0, 0))
+            self.assertEqual((summary["recordedFrames"], summary["totalFrames"], summary["identityCount"]), (32, 32, 1))
+            self.assertEqual(summary["contextIdentities"], [capture_context()])
+            self.assertTrue(manifest["languages"]["isl"]["training_ready"])
+            self.assertEqual(manifest["source_exports"][0]["capture_context"], summary)
+            for source, preserved, scalar in zip(validated, raw["samples"], manifest["samples"]):
+                self.assertEqual(source["frames"], preserved["frames"])
+                self.assertNotIn("frames", scalar)
+                self.assertEqual(scalar["capture_context"]["contextIdentities"], [capture_context()])
+                self.assertEqual(scalar["capture_context"]["fullyRecordedSamples"], 1)
+            with np.load(output / "isl.npz", allow_pickle=False) as arrays:
+                for key in baseline:
+                    np.testing.assert_array_equal(arrays[key], baseline[key])
+
+    def test_capture_context_rejects_unknown_fields_missing_fields_and_wrong_literals(self):
+        cases = [None, True, [], "context", {}, {**capture_context(), "unexpected": 1}]
+        for key in capture_context():
+            value = capture_context(); del value[key]; cases.append(value)
+        for key, value in (("format", "v2"), ("tracker", "solutions-holistic"),
+                           ("modelAsset", "other-model"), ("delegate", "GPU"),
+                           ("runningMode", "IMAGE"), ("coordinateSpace", "pixels"),
+                           ("sampleIntervalMs", 124), ("sampleIntervalMs", True),
+                           ("sampleIntervalMs", "125"), ("mirrorApplied", True),
+                           ("mirrorApplied", 0), ("mirrorApplied", None)):
+            cases.append({**capture_context(), key: value})
+        class NonPlainContext(dict):
+            pass
+        cases.append(NonPlainContext(capture_context()))
+        for value in cases:
+            with self.subTest(value=value), self.assertRaisesRegex(ValueError, "[Cc]apture context"):
+                validate_capture_context(value)
+        for dimension in ("width", "height"):
+            for value in (None, True, False, "1280", [], {}, float("nan"), float("inf"), 0, -1, 1280.5, 16385, 10**1000):
+                dataset, _ = fixture()
+                dataset["samples"][0]["frames"][0]["captureContext"] = {**capture_context(), dimension: value}
+                with self.subTest(dimension=dimension, value=value), self.assertRaisesRegex(ValueError, "Capture context"):
+                    validate_dataset(dataset)
+        for value in (1, 16384, 1280.0):
+            self.assertEqual(validate_capture_context(capture_context(value, value))["width"], int(value))
+
+    def test_partial_or_missing_context_blocks_arrays_and_preserves_inventory(self):
+        for mode in ("some-frames", "whole-sample"):
+            dataset, assignment = fixture()
+            record_context(dataset)
+            if mode == "some-frames":
+                del dataset["samples"][0]["frames"][0]["captureContext"]
+            else:
+                for pose in dataset["samples"][0]["frames"]:
+                    del pose["captureContext"]
+            with self.subTest(mode=mode), tempfile.TemporaryDirectory() as temporary:
+                output = Path(temporary) / "partial-context"
+                manifest = import_dataset(dataset, assignment, output)
+                metadata = manifest["languages"]["isl"]
+                self.assertFalse(metadata["training_ready"])
+                self.assertTrue(any("Capture context is missing" in reason for reason in metadata["blocking_reasons"]))
+                summary = metadata["capture_context"]
+                self.assertEqual(summary["fullyRecordedSamples"], 7)
+                self.assertEqual(summary["partialSamples"], int(mode == "some-frames"))
+                self.assertEqual(summary["legacySamples"], int(mode == "whole-sample"))
+                self.assertFalse((output / "isl.npz").exists())
+                self.assertTrue((output / "poses.json").exists())
+                first = json.loads((output / "poses.json").read_text())["samples"][0]
+                self.assertNotIn("captureContext", first["frames"][0])
+
+    def test_mixed_contexts_block_even_inside_one_sample_or_excluded_background(self):
+        for mode in ("frame", "sample", "background"):
+            dataset, assignment = fixture()
+            record_context(dataset)
+            if mode == "frame":
+                dataset["samples"][0]["frames"][0]["captureContext"] = capture_context(640, 480)
+            elif mode == "sample":
+                for pose in dataset["samples"][0]["frames"]:
+                    pose["captureContext"] = capture_context(640, 480)
+            else:
+                background = sample("mixed-context-idle", "signer-c", kind="unknown")
+                background["negativeType"] = "nonsigning"
+                for pose in background["frames"]:
+                    pose["confidences"] = [0] * 75
+                    pose["captureContext"] = capture_context(640, 480)
+                dataset["samples"].append(background)
+            with self.subTest(mode=mode):
+                arrays, metadata = prepare_language(validate_dataset(dataset), assignment["signers"], "isl")
+                self.assertIsNone(arrays)
+                self.assertTrue(any("Multiple capture context identities" in reason for reason in metadata["blocking_reasons"]))
+                self.assertEqual(metadata["capture_context"]["identityCount"], 2)
+                self.assertEqual(metadata["capture_context"]["partialSamples"], 0)
+
+    def test_context_compatibility_is_separate_per_language(self):
+        dataset, assignment = fixture(("isl", "asl"))
+        for row in dataset["samples"]:
+            for pose in row["frames"]:
+                pose["captureContext"] = capture_context(*((1280, 720) if row["signLanguage"] == "isl" else (640, 480)))
+        validated = validate_dataset(dataset)
+        self.assertEqual(capture_context_summary(validated)["identityCount"], 2)
+        for language in ("isl", "asl"):
+            arrays, metadata = prepare_language(validated, assignment["signers"], language)
+            self.assertIsNotNone(arrays)
+            self.assertTrue(metadata["training_ready"])
+            self.assertEqual(metadata["capture_context"]["identityCount"], 1)
+
+    @unittest.skipUnless(shutil.which("node"), "Node is required for JavaScript/Python capture-context parity")
+    def test_javascript_export_and_python_import_agree_on_context_domain(self):
+        valid = sample("parity-context")
+        for pose in valid["frames"]:
+            pose["captureContext"] = capture_context(1280.0, 720.0)
+        cases = [valid, sample("parity-legacy")]
+        for mutation in ({"width": True}, {"height": 720.25}, {"modelAsset": "other"},
+                         {"sampleIntervalMs": True}, {"mirrorApplied": 0}, {"extra": 1}):
+            row = copy.deepcopy(valid)
+            row["frames"][0]["captureContext"].update(mutation)
+            cases.append(row)
+        missing = copy.deepcopy(valid)
+        del missing["frames"][0]["captureContext"]["width"]
+        cases.append(missing)
+        module = (Path(__file__).resolve().parents[1] / "src/lib/trainingSamples.js").as_uri()
+        program = (f'import {{ validateTrainingSample }} from {json.dumps(module)};'
+                   'import fs from "node:fs";'
+                   'const rows=JSON.parse(fs.readFileSync(0,"utf8"));'
+                   'process.stdout.write(JSON.stringify(rows.map(row=>{try{return {ok:true,value:validateTrainingSample(row,{stored:true})};}'
+                   'catch{return {ok:false};}})));')
+        result = subprocess.run(["node", "--input-type=module", "-e", program],
+                                input=json.dumps(cases), capture_output=True, text=True, timeout=30, check=False)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        browser = json.loads(result.stdout)
+        for row, js in zip(cases, browser):
+            try:
+                python = validate_dataset({"format": "signbridge-pose-dataset-v1", "exportedAt": "2026-10-22T00:00:00Z", "samples": [row]})[0]
+            except ValueError:
+                self.assertFalse(js["ok"])
+            else:
+                self.assertTrue(js["ok"])
+                self.assertEqual(js["value"], python)
+
     def test_outputs_trainer_compatible_arrays_with_existing_preprocessing(self):
         dataset, assignment = fixture()
         samples = validate_dataset(dataset)
@@ -156,6 +336,75 @@ class ImporterTests(unittest.TestCase):
                 dataset["samples"].append(row)
                 with self.subTest(kind=kind, negative_type=negative_type), self.assertRaisesRegex(ValueError, "Only unknown"):
                     validate_dataset(dataset)
+
+    def test_capture_duration_is_optional_measured_window_with_inclusive_boundaries(self):
+        dataset, _ = fixture()
+        legacy = validate_dataset(dataset)
+        self.assertTrue(all("captureDurationMs" not in row for row in legacy))
+        row = dataset["samples"][0]
+        row["frames"] = [frame(at) for at in (125, 250, 375, 500)]
+        row["captureDurationMs"] = 900.5
+        validated = validate_dataset(dataset)[0]
+        self.assertEqual(validated["captureDurationMs"], 900.5)
+        self.assertEqual(validated["durationMs"], 375)
+        self.assertEqual(validated["frames"], row["frames"])
+        for times, duration in (((0, 100, 200, 350), 350), ((11625, 11750, 11875, 12000), 12000)):
+            row["frames"] = [frame(at) for at in times]
+            row["durationMs"] = times[-1] - times[0]
+            row["captureDurationMs"] = duration
+            self.assertEqual(validate_dataset(dataset)[0]["captureDurationMs"], duration)
+
+    def test_capture_duration_rejects_malicious_values_and_truncated_windows(self):
+        for duration in (None, True, False, "900", [], {}, float("nan"), float("inf"), float("-inf"), -1, 349.99, 12000.01, 499.99):
+            dataset, _ = fixture()
+            row = dataset["samples"][0]
+            row["frames"] = [frame(at) for at in (125, 250, 375, 500)]
+            row["captureDurationMs"] = duration
+            with self.subTest(duration=duration), self.assertRaisesRegex(ValueError, "Capture duration"):
+                validate_dataset(dataset)
+        dataset, _ = fixture()
+        row = dataset["samples"][0]
+        row["captureDurationMs"] = 1000
+        row["negativeType"] = "nonsigning"
+        with self.assertRaisesRegex(ValueError, "Only unknown"):
+            validate_dataset(dataset)
+        del row["negativeType"]
+        for pose in row["frames"]:
+            pose["confidences"] = [0] * 75
+        with self.assertRaisesRegex(ValueError, "Recapture.*together"):
+            validate_dataset(dataset)
+
+    def test_capture_window_roundtrip_retains_manifest_metadata_without_changing_arrays(self):
+        dataset, assignment = fixture()
+        baseline, _ = prepare_language(validate_dataset(dataset), assignment["signers"], "isl")
+        dataset["samples"][0]["captureDurationMs"] = 975.5
+        dataset["samples"][-1]["captureDurationMs"] = 375
+        nonsigning = sample("measured-idle", "signer-b", kind="unknown")
+        nonsigning["captureDurationMs"], nonsigning["negativeType"] = 1100, "nonsigning"
+        background = sample("measured-background", "signer-c", kind="unknown")
+        background["captureDurationMs"] = 1200
+        for pose in background["frames"]:
+            pose["confidences"] = [0] * 75
+        dataset["samples"].extend([nonsigning, background])
+        with tempfile.TemporaryDirectory() as temporary:
+            output = Path(temporary) / "timed-inventory"
+            manifest = import_dataset(json.loads(json.dumps(dataset)), assignment, output)
+            raw = json.loads((output / "poses.json").read_text(encoding="utf-8"))
+            saved_manifest = json.loads((output / "dataset-manifest.json").read_text(encoding="utf-8"))
+            for rows in (raw["samples"], manifest["samples"], saved_manifest["samples"]):
+                by_id = {row["id"]: row for row in rows}
+                self.assertEqual(by_id[dataset["samples"][0]["id"]]["captureDurationMs"], 975.5)
+                self.assertEqual(by_id[dataset["samples"][0]["id"]]["durationMs"], 375)
+                self.assertNotIn("captureDurationMs", by_id[dataset["samples"][1]["id"]])
+                self.assertEqual(by_id["measured-idle"]["captureDurationMs"], 1100)
+                self.assertEqual(by_id["measured-background"]["captureDurationMs"], 1200)
+            metadata = manifest["languages"]["isl"]
+            self.assertEqual(metadata["nonsigning_samples"][0]["captureDurationMs"], 1100)
+            self.assertEqual(metadata["background_samples"][0]["captureDurationMs"], 1200)
+            with np.load(output / "isl.npz", allow_pickle=False) as prepared:
+                self.assertEqual(set(prepared.files), set(baseline))
+                for key in baseline:
+                    np.testing.assert_array_equal(prepared[key], baseline[key])
 
     def test_nonfinite_boolean_out_of_bounds_and_duplicate_times_are_rejected(self):
         for field, value in (("atMs", -1), ("atMs", float("nan")), ("atMs", True), ("atMs", 12001)):

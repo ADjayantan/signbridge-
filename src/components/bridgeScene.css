@@ -1,0 +1,41 @@
+.bridge-scene {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 240px;
+  overflow: hidden;
+  isolation: isolate;
+  pointer-events: none;
+  color: #2d6656;
+  contain: layout paint;
+}
+
+.bridge-scene__canvas,
+.bridge-scene__fallback {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  z-index: 1;
+}
+
+.bridge-scene__fallback {
+  opacity: 0.88;
+}
+
+.bridge-scene--ready .bridge-scene__fallback {
+  visibility: hidden;
+}
+
+.bridge-scene__halo {
+  position: absolute;
+  z-index: 0;
+  width: 74%;
+  aspect-ratio: 1;
+  left: 13%;
+  top: 50%;
+  transform: translateY(-50%);
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center, #d9ddc766 0%, #e6dfcc30 48%, transparent 72%);
+}

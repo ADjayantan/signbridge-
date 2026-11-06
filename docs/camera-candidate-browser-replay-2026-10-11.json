@@ -1,0 +1,403 @@
+{
+  "format": "signbridge-camera-candidate-comparison-v1",
+  "results": [
+    {
+      "videoSha256": "d0dfd200a95b0094583a7e7eefbd2f228445b82d987f00ae35d85b51b0ec9e61",
+      "source": {
+        "width": 1920,
+        "height": 1088,
+        "durationMs": 2440
+      },
+      "condition": {
+        "name": "original-8",
+        "width": 1920,
+        "height": 1088
+      },
+      "frameCount": 20,
+      "predictions": [
+        {
+          "name": "baseline",
+          "sha256": "55c23fffe387944a102c804676ae91aa7276781d598b7adaf03f0115234acdd9",
+          "status": "unclear",
+          "meaning": "",
+          "topLabel": "GOOD MORNING",
+          "topScore": 0.8430878959076,
+          "margin": 0.779308494254083,
+          "reasons": [
+            "low-score"
+          ],
+          "cameraGate": {
+            "passed": true,
+            "code": ""
+          }
+        },
+        {
+          "name": "candidate",
+          "sha256": "a77f33b3f0d2ca7570b041e4cf93fa1ee3374efc6e974cb975ae80f587041004",
+          "status": "unclear",
+          "meaning": "",
+          "topLabel": "HELLO",
+          "topScore": 0.9368101396240597,
+          "margin": 0.9022556903201222,
+          "reasons": [
+            "low-score"
+          ],
+          "cameraGate": {
+            "passed": true,
+            "code": ""
+          }
+        }
+      ]
+    },
+    {
+      "videoSha256": "d0dfd200a95b0094583a7e7eefbd2f228445b82d987f00ae35d85b51b0ec9e61",
+      "source": {
+        "width": 1920,
+        "height": 1088,
+        "durationMs": 2440
+      },
+      "condition": {
+        "name": "aspect-preserved-640x480-8",
+        "width": 640,
+        "height": 480
+      },
+      "frameCount": 20,
+      "predictions": [
+        {
+          "name": "baseline",
+          "sha256": "55c23fffe387944a102c804676ae91aa7276781d598b7adaf03f0115234acdd9",
+          "status": "unclear",
+          "meaning": "",
+          "topLabel": "COURT",
+          "topScore": 0.3084603107121101,
+          "margin": 0.07558789263121848,
+          "reasons": [
+            "low-score",
+            "small-margin"
+          ],
+          "cameraGate": {
+            "passed": true,
+            "code": ""
+          }
+        },
+        {
+          "name": "candidate",
+          "sha256": "a77f33b3f0d2ca7570b041e4cf93fa1ee3374efc6e974cb975ae80f587041004",
+          "status": "unclear",
+          "meaning": "",
+          "topLabel": "HELLO",
+          "topScore": 0.8719093845481902,
+          "margin": 0.8061814605588437,
+          "reasons": [
+            "low-score"
+          ],
+          "cameraGate": {
+            "passed": true,
+            "code": ""
+          }
+        }
+      ]
+    },
+    {
+      "videoSha256": "4d7a45162aea94748f6e34f56a389ff90aa21702480a498f534dfaa63f07d61c",
+      "source": {
+        "width": 1920,
+        "height": 1088,
+        "durationMs": 1960
+      },
+      "condition": {
+        "name": "original-8",
+        "width": 1920,
+        "height": 1088
+      },
+      "frameCount": 16,
+      "predictions": [
+        {
+          "name": "baseline",
+          "sha256": "55c23fffe387944a102c804676ae91aa7276781d598b7adaf03f0115234acdd9",
+          "status": "recognized",
+          "meaning": "HELLO",
+          "topLabel": "HELLO",
+          "topScore": 0.9772475728104119,
+          "margin": 0.9682358095137387,
+          "reasons": [
+            "recognized"
+          ],
+          "cameraGate": {
+            "passed": true,
+            "code": ""
+          }
+        },
+        {
+          "name": "candidate",
+          "sha256": "a77f33b3f0d2ca7570b041e4cf93fa1ee3374efc6e974cb975ae80f587041004",
+          "status": "recognized",
+          "meaning": "HELLO",
+          "topLabel": "HELLO",
+          "topScore": 0.9916481489568281,
+          "margin": 0.9877230660660961,
+          "reasons": [
+            "recognized"
+          ],
+          "cameraGate": {
+            "passed": true,
+            "code": ""
+          }
+        }
+      ]
+    },
+    {
+      "videoSha256": "4d7a45162aea94748f6e34f56a389ff90aa21702480a498f534dfaa63f07d61c",
+      "source": {
+        "width": 1920,
+        "height": 1088,
+        "durationMs": 1960
+      },
+      "condition": {
+        "name": "aspect-preserved-640x480-8",
+        "width": 640,
+        "height": 480
+      },
+      "frameCount": 16,
+      "predictions": [
+        {
+          "name": "baseline",
+          "sha256": "55c23fffe387944a102c804676ae91aa7276781d598b7adaf03f0115234acdd9",
+          "status": "unclear",
+          "meaning": "",
+          "topLabel": "IT",
+          "topScore": 0.5106338786352406,
+          "margin": 0.39863715361466934,
+          "reasons": [
+            "low-score"
+          ],
+          "cameraGate": {
+            "passed": true,
+            "code": ""
+          }
+        },
+        {
+          "name": "candidate",
+          "sha256": "a77f33b3f0d2ca7570b041e4cf93fa1ee3374efc6e974cb975ae80f587041004",
+          "status": "recognized",
+          "meaning": "HELLO",
+          "topLabel": "HELLO",
+          "topScore": 0.9549142822166654,
+          "margin": 0.9194613368330652,
+          "reasons": [
+            "recognized"
+          ],
+          "cameraGate": {
+            "passed": true,
+            "code": ""
+          }
+        }
+      ]
+    },
+    {
+      "videoSha256": "ee17e5ad43c8d2b926c609949a67b236c05b4889d91367af4886c1aa9a88cb52",
+      "source": {
+        "width": 1920,
+        "height": 1088,
+        "durationMs": 2520
+      },
+      "condition": {
+        "name": "original-8",
+        "width": 1920,
+        "height": 1088
+      },
+      "frameCount": 21,
+      "predictions": [
+        {
+          "name": "baseline",
+          "sha256": "55c23fffe387944a102c804676ae91aa7276781d598b7adaf03f0115234acdd9",
+          "status": "unclear",
+          "meaning": "",
+          "topLabel": "GOOD MORNING",
+          "topScore": 0.694350212292652,
+          "margin": 0.48157808573896554,
+          "reasons": [
+            "low-score"
+          ],
+          "cameraGate": {
+            "passed": true,
+            "code": ""
+          }
+        },
+        {
+          "name": "candidate",
+          "sha256": "a77f33b3f0d2ca7570b041e4cf93fa1ee3374efc6e974cb975ae80f587041004",
+          "status": "unclear",
+          "meaning": "",
+          "topLabel": "HELLO",
+          "topScore": 0.8309310728941978,
+          "margin": 0.6908730186257412,
+          "reasons": [
+            "low-score"
+          ],
+          "cameraGate": {
+            "passed": true,
+            "code": ""
+          }
+        }
+      ]
+    },
+    {
+      "videoSha256": "ee17e5ad43c8d2b926c609949a67b236c05b4889d91367af4886c1aa9a88cb52",
+      "source": {
+        "width": 1920,
+        "height": 1088,
+        "durationMs": 2520
+      },
+      "condition": {
+        "name": "aspect-preserved-640x480-8",
+        "width": 640,
+        "height": 480
+      },
+      "frameCount": 21,
+      "predictions": [
+        {
+          "name": "baseline",
+          "sha256": "55c23fffe387944a102c804676ae91aa7276781d598b7adaf03f0115234acdd9",
+          "status": "unclear",
+          "meaning": "",
+          "topLabel": "COURT",
+          "topScore": 0.3083344077279411,
+          "margin": 0.13650026132786486,
+          "reasons": [
+            "low-score",
+            "small-margin"
+          ],
+          "cameraGate": {
+            "passed": true,
+            "code": ""
+          }
+        },
+        {
+          "name": "candidate",
+          "sha256": "a77f33b3f0d2ca7570b041e4cf93fa1ee3374efc6e974cb975ae80f587041004",
+          "status": "unclear",
+          "meaning": "",
+          "topLabel": "HELLO",
+          "topScore": 0.9045772846485334,
+          "margin": 0.8773193937005218,
+          "reasons": [
+            "low-score"
+          ],
+          "cameraGate": {
+            "passed": true,
+            "code": ""
+          }
+        }
+      ]
+    },
+    {
+      "videoSha256": "48cd9741b508b757fc0993430003ac4d5adc232ffb15ac9ed2683e301181491b",
+      "source": {
+        "width": 1920,
+        "height": 1088,
+        "durationMs": 2120
+      },
+      "condition": {
+        "name": "original-8",
+        "width": 1920,
+        "height": 1088
+      },
+      "frameCount": 17,
+      "predictions": [
+        {
+          "name": "baseline",
+          "sha256": "55c23fffe387944a102c804676ae91aa7276781d598b7adaf03f0115234acdd9",
+          "status": "unclear",
+          "meaning": "",
+          "topLabel": "THANK YOU",
+          "topScore": 0.7657005090437504,
+          "margin": 0.5841301239950255,
+          "reasons": [
+            "low-score"
+          ],
+          "cameraGate": {
+            "passed": true,
+            "code": ""
+          }
+        },
+        {
+          "name": "candidate",
+          "sha256": "a77f33b3f0d2ca7570b041e4cf93fa1ee3374efc6e974cb975ae80f587041004",
+          "status": "recognized",
+          "meaning": "THANK YOU",
+          "topLabel": "THANK YOU",
+          "topScore": 0.9864169626667372,
+          "margin": 0.9811455537611221,
+          "reasons": [
+            "recognized"
+          ],
+          "cameraGate": {
+            "passed": true,
+            "code": ""
+          }
+        }
+      ]
+    },
+    {
+      "videoSha256": "48cd9741b508b757fc0993430003ac4d5adc232ffb15ac9ed2683e301181491b",
+      "source": {
+        "width": 1920,
+        "height": 1088,
+        "durationMs": 2120
+      },
+      "condition": {
+        "name": "aspect-preserved-640x480-8",
+        "width": 640,
+        "height": 480
+      },
+      "frameCount": 17,
+      "predictions": [
+        {
+          "name": "baseline",
+          "sha256": "55c23fffe387944a102c804676ae91aa7276781d598b7adaf03f0115234acdd9",
+          "status": "unclear",
+          "meaning": "",
+          "topLabel": "TEACHER",
+          "topScore": 0.3103984805500359,
+          "margin": 0.12046648690089978,
+          "reasons": [
+            "low-score",
+            "small-margin"
+          ],
+          "cameraGate": {
+            "passed": true,
+            "code": ""
+          }
+        },
+        {
+          "name": "candidate",
+          "sha256": "a77f33b3f0d2ca7570b041e4cf93fa1ee3374efc6e974cb975ae80f587041004",
+          "status": "recognized",
+          "meaning": "THANK YOU",
+          "topLabel": "THANK YOU",
+          "topScore": 0.9935420676525261,
+          "margin": 0.9902980507293753,
+          "reasons": [
+            "recognized"
+          ],
+          "cameraGate": {
+            "passed": true,
+            "code": ""
+          }
+        }
+      ]
+    }
+  ],
+  "tracker": "Current app Tasks Holistic CPU VIDEO loader; fresh instance per video/geometry",
+  "sampling": "Sequential real decoded source frames at 125 ms; not real-time throughput",
+  "gates": {
+    "threshold": 0.95,
+    "margin": 0.3
+  },
+  "limitations": [
+    "Public reference videos, not webcam participants or signer-independent accuracy.",
+    "Two geometries of a clip are correlated stress conditions, not independent samples.",
+    "No expected label reaches inference; no speech, messages, fitted weights or persistent pose recordings."
+  ]
+}

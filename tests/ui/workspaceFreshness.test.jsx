@@ -4,13 +4,13 @@ import { afterEach, beforeEach, expect, test, vi } from "vitest";
 import TrainedSignMode from "../../src/modes/TrainedSignMode.jsx";
 import { DEFAULT_SETTINGS } from "../../src/hooks/useSettings.js";
 
-const mock = vi.hoisted(() => ({ frame: null, active: false, graphUnavailable: false, predict: vi.fn(), cancel: vi.fn(), retry: vi.fn(), speak: vi.fn(), stop: vi.fn(), check: vi.fn(), start: vi.fn() }));
+const mock = vi.hoisted(() => ({ frame: null, active: false, graphUnavailable: false, model: { labels: ["WATER", "HELP"] }, predict: vi.fn(), cancel: vi.fn(), retry: vi.fn(), speak: vi.fn(), stop: vi.fn(), check: vi.fn(), start: vi.fn() }));
 vi.mock("../../src/hooks/useCamera.js", async () => {
   const { useRef } = await import("react");
   return { useCamera: ({ active }) => { mock.active = active; return { videoRef: useRef(null), status: active ? "on" : "off", devices: [], error: "", retry: vi.fn() }; } };
 });
 vi.mock("../../src/hooks/usePoseTracking.js", () => ({ usePoseTracking: ({ active, onFrame }) => { mock.frame = onFrame; return { status: active ? "ready" : "idle", error: "", retry: mock.retry }; } }));
-vi.mock("../../src/hooks/useWordRecognitionModel.js", () => ({ useWordRecognitionModel: (_language, engine) => ({ engine, async: engine === "graph", status: engine === "graph" && mock.graphUnavailable ? "unavailable" : "ready", model: engine === "graph" && mock.graphUnavailable ? null : { labels: ["WATER", "HELP"] }, error: "No promoted graph model is installed", predict: mock.predict, cancel: mock.cancel, retry: vi.fn() }) }));
+vi.mock("../../src/hooks/useWordRecognitionModel.js", () => ({ useWordRecognitionModel: (_language, engine) => ({ engine, async: engine === "graph", status: engine === "graph" && mock.graphUnavailable ? "unavailable" : "ready", model: engine === "graph" && mock.graphUnavailable ? null : mock.model, error: "No promoted graph model is installed", predict: mock.predict, cancel: mock.cancel, retry: vi.fn() }) }));
 vi.mock("../../src/hooks/useSignSession.js", () => ({ useSignSession: () => ({ active: false, phase: "idle", log: [], error: "", start: mock.start, stopSpeech: mock.stop, end: vi.fn(), newConversation: vi.fn(), send: vi.fn(), interrupt: vi.fn(), speak: vi.fn(), speakReplies: false, setSpeakReplies: vi.fn() }) }));
 vi.mock("../../src/hooks/useSignVideos.js", () => ({ useSignVideos: () => ({ clips: [], error: "" }) }));
 vi.mock("../../src/lib/api.js", () => ({ checkSignAI: mock.check }));
@@ -21,7 +21,12 @@ vi.mock("../../src/components/TrainingSampleForm.jsx", () => ({ default: () => n
 vi.mock("../../src/components/SignVideoPlayer.jsx", () => ({ default: () => null }));
 
 let now;
-const setup = () => render(<TrainedSignMode settings={DEFAULT_SETTINGS} update={() => {}} onBack={() => {}} onLive={() => {}} />);
+const setup = () => {
+  const view = render(<TrainedSignMode settings={DEFAULT_SETTINGS} update={() => {}} onBack={() => {}} onLive={() => {}} />);
+  // These cases exercise the explicit manual workflow; automatic capture has its own suite.
+  fireEvent.click(screen.getByRole("switch", { name: /^Automatic sign capture/ }));
+  return view;
+};
 const button = (name) => screen.getByRole("button", { name });
 const click = (name) => fireEvent.click(button(name));
 const openAdvanced = () => {

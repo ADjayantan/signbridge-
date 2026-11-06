@@ -10,6 +10,9 @@ export default defineConfig({
       "virtual:pwa-register/react": fileURLToPath(new URL("./node_modules/vite-plugin-pwa/dist/client/build/react.js", import.meta.url)),
     },
     environment: "jsdom",
+    // Full app/room fixtures are expensive in jsdom. Bound concurrency so the
+    // local laptop can run them beside the dev server without worker starvation.
+    maxWorkers: 4,
     include: ["tests/ui/**/*.test.jsx"],
     restoreMocks: true,
   },

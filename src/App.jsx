@@ -10,6 +10,7 @@ import LiveSignMode from "./modes/LiveSignMode.jsx";
 import TrainedSignMode from "./modes/TrainedSignMode.jsx";
 import TrainingStudio from "./modes/TrainingStudio.jsx";
 import ConnectMode from "./modes/ConnectMode.jsx";
+import WlaslVideoMode from "./modes/WlaslVideoMode.jsx";
 
 export default function App() {
   const [settings, update] = useSettings();
@@ -38,7 +39,8 @@ export default function App() {
   if (mode === "connect") screen = <ConnectMode settings={settings} onBack={home} onTool={go} initialReviewedText={connectDraft} onReviewedTextConsumed={() => setConnectDraft(null)} />;
   else if (mode === "voice") screen = <VoiceMode settings={settings} update={update} onBack={home} />;
   else if (mode === "live-sign") screen = <LiveSignMode key={`${settings.signLanguage}:${settings.lang}`} settings={settings} update={update} onBack={home} onLibrary={() => go("sign-videos")} onLocal={() => go("sign")} onTrained={() => go("trained-sign")} />;
-  else if (mode === "trained-sign" || mode === "sign-workspace") screen = <TrainedSignMode key={`${settings.signLanguage}:${settings.lang}`} settings={settings} update={update} onBack={home} onLive={() => go("live-sign")} onLibrary={() => go("sign-videos")} onStudio={() => go("training-studio")} initialDestination={new URLSearchParams(window.location.hash.split("?")[1] || "").get("with") === "ai" ? "ai" : "local"} onConnect={connect} />;
+  else if (mode === "trained-sign" || mode === "sign-workspace") screen = <TrainedSignMode key={`${settings.signLanguage}:${settings.lang}`} settings={settings} update={update} onBack={home} onLive={() => go("live-sign")} onLibrary={() => go("sign-videos")} onStudio={() => go("training-studio")} onWlasl={() => go("wlasl")} initialDestination={new URLSearchParams(window.location.hash.split("?")[1] || "").get("with") === "ai" ? "ai" : "local"} onConnect={connect} />;
+  else if (mode === "wlasl") screen = <WlaslVideoMode settings={settings} onBack={home} onConnect={connect} />;
   else if (mode === "training-studio") screen = <TrainingStudio settings={settings} update={update} onBack={home} onCapture={() => go("trained-sign")} />;
   else if (mode === "sign" || mode === "sign-videos") screen = <SignMode key={`${settings.signLanguage}:${mode}`} settings={settings} update={update} onBack={home} initialTab={mode === "sign-videos" ? "videos" : "talk"} onLive={() => go("live-sign")} onTrained={() => go("trained-sign")} />;
   else screen = <Home settings={settings} update={update} onPick={go} shell={shell} />;

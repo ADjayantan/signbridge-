@@ -1,3 +1,5 @@
+import { copyFrameCaptureContext } from "./poseCaptureContext.js";
+
 // Consented whole-sign poses only. No camera video, audio or automatic training.
 export const TRAINING_DATASET_FORMAT = "signbridge-pose-dataset-v1";
 export const MAX_TRAINING_BYTES = 32 * 1024 * 1024;
@@ -38,7 +40,7 @@ export function validateTrainingSample(input, { stored = false } = {}) {
     });
     const confidences = Array.from(frame.confidences);
     if (!confidences.every((value) => finite(value) && value >= 0 && value <= 1)) throw new Error("Pose confidence values must be between 0 and 1.");
-    return { keypoints, confidences, atMs: frame.atMs };
+    return { keypoints, confidences, atMs: frame.atMs, ...copyFrameCaptureContext(frame) };
   });
   if (input.kind === "known") {
     const qualified = frames.filter((frame) => (frame.confidences[33] >= .5 || frame.confidences[54] >= .5) && frame.confidences[11] >= .2 && frame.confidences[12] >= .2);
@@ -49,6 +51,12 @@ export function validateTrainingSample(input, { stored = false } = {}) {
   if (Object.hasOwn(input, "negativeType")) {
     if (input.kind !== "unknown" || !TRAINING_NEGATIVE_TYPES.includes(input.negativeType)) throw new Error("Only unknown samples can declare nonsigning, unsupported-sign or unspecified negative type.");
     sample.negativeType = input.negativeType;
+  }
+  // Measured recording window, independent of the legacy last-minus-first span.
+  // Older exports omit it; pose timestamps alone cannot recover this window.
+  if (Object.hasOwn(input, "captureDurationMs")) {
+    if (!finite(input.captureDurationMs) || input.captureDurationMs < 350 || input.captureDurationMs > 12000 || input.captureDurationMs < frames.at(-1).atMs) throw new Error("Capture duration must be a measured 350–12,000 ms recording window covering every pose timestamp.");
+    sample.captureDurationMs = input.captureDurationMs;
   }
   if (input.prediction != null) {
     const prediction = input.prediction;

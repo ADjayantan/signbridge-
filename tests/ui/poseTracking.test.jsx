@@ -9,7 +9,7 @@ beforeEach(() => {
   vi.clearAllMocks(); queue = new Map(); identifier = 0; clock = 1000;
   vi.stubGlobal("requestAnimationFrame", (callback) => { queue.set(++identifier, callback); return identifier; });
   vi.stubGlobal("cancelAnimationFrame", (id) => queue.delete(id));
-  video = { currentTime: 0, readyState: 4, videoWidth: 640, paused: false, ended: false };
+  video = { currentTime: 0, readyState: 4, videoWidth: 640, videoHeight: 480, paused: false, ended: false };
   task = { detectForVideo: vi.fn().mockReturnValue({ poseLandmarks: [], leftHandLandmarks: [], rightHandLandmarks: [] }), close: vi.fn() };
   mocks.simd.mockResolvedValue(true); mocks.create.mockResolvedValue(task); onFrame = vi.fn();
 });
@@ -44,7 +44,7 @@ test("repeated runtime failures release the failed model and expose retry while 
 test("tracking skips paused and repeated video frames and forwards fresh results to the latest capture callback", async () => {
   const videoRef = { current: video }; const { rerender } = renderHook(({ callback }) => usePoseTracking({ videoRef, active: true, onFrame: callback }), { initialProps: { callback: onFrame } }); await act(async () => {});
   video.paused = true; tick(); expect(task.detectForVideo).not.toHaveBeenCalled();
-  video.paused = false; tick(); expect(task.detectForVideo).toHaveBeenCalledOnce(); expect(onFrame).toHaveBeenCalledWith(expect.any(Object), video);
+  video.paused = false; tick(); expect(task.detectForVideo).toHaveBeenCalledOnce(); expect(onFrame).toHaveBeenCalledWith(expect.any(Object), video, expect.objectContaining({ width: 640, height: 480, coordinateSpace: "normalized-image" }));
   tick(0); expect(task.detectForVideo).toHaveBeenCalledOnce();
   const next = vi.fn(); rerender({ callback: next }); tick(); expect(mocks.create).toHaveBeenCalledOnce(); expect(next).toHaveBeenCalledOnce(); expect(onFrame).toHaveBeenCalledOnce();
 });

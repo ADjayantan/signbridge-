@@ -1,0 +1,51 @@
+{
+  "format": "signbridge-recognition-replay-v1",
+  "purpose": "One local video replay for engineering comparison; no live-camera or sign-language accuracy is established.",
+  "samplingMode": "realtime-8hz",
+  "captureClock": "wall",
+  "trackerBackend": "tasks-holistic",
+  "coordinateContract": "normalized-image",
+  "modelCameraInput": {
+    "format": "signbridge-camera-coordinates-v1",
+    "space": "axis-scaled-image",
+    "scaleX": 1080,
+    "scaleY": 1920
+  },
+  "signLanguage": "isl",
+  "modelSha256": "55c23fffe387944a102c804676ae91aa7276781d598b7adaf03f0115234acdd9",
+  "videoSha256": "61a50323776fe04f732aba8668a1ea8fac09c17d387af26c78a94412f003e7ff",
+  "frameCount": 15,
+  "durationMs": 2081.899999999907,
+  "quality": {
+    "passed": true,
+    "code": "",
+    "handFrames": 15,
+    "shoulderFrames": 15,
+    "qualifiedFrames": 15,
+    "largestGapMs": 328.79999999981374
+  },
+  "prediction": {
+    "status": "recognized",
+    "inferenceRan": true,
+    "topLabel": "HELLO",
+    "topScore": 0.9789411793240745,
+    "meaning": "HELLO",
+    "reasonCodes": [
+      "recognized"
+    ],
+    "threshold": 0.95,
+    "requiredMargin": 0.3,
+    "scorePassed": true,
+    "marginPassed": true,
+    "modelFrames": 32
+  },
+  "comparison": {
+    "status": "matched-model",
+    "baselineExpectedLabel": "HELLO",
+    "baselineStatus": "recognized",
+    "baselineTopLabel": "HELLO",
+    "baselineTopScore": 0.9799333212609569,
+    "topLabelMatches": true,
+    "acceptedMeaningMatches": true
+  }
+}

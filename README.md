@@ -2,6 +2,12 @@
 
 **Connect your way.** SignBridge brings two people into one conversation. Each person chooses **Type / Speak / Sign** input and **Text / Read aloud / Screen reader** output, with optional saved sign-video playback. Camera and microphone sharing start only when chosen. AI help is optional; human messages and live signing do not need a Gemini key or a recognition model.
 
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https%3A%2F%2Fgithub.com%2FADjayantan%2Fsignbridge-%2Ftree%2Fcodex%2Frender-pilot)
+
+**[Open the live Free pilot](https://signbridge-conversations.onrender.com/#connect).** The public source is on [`codex/render-pilot`](https://github.com/ADjayantan/signbridge-/tree/codex/render-pilot). Render deployment and remote text-protocol checks passed on 8 October 2026. Service automatic deployments are off; Blueprint configuration syncs and deliberate deploys can still restart rooms. Private TURN setup and physical-device checks remain pending. See the [deployment guide](docs/conversations-deployment.md), [remote verification](docs/render-pilot-verification-2026-10-08.md) and [local/cloud implementation plan](docs/parallel-implementation-plan-2026-10-08.md).
+
+The [full external LSTM repository assessment](docs/external-lstm-full-analysis-2026-10-08.md) informs a newly implemented [training-only LSTM75 control](docs/temporal-lstm-control-2026-10-08.md). It has synthetic engineering verification, not trained sign-accuracy evidence. No application model was replaced or promoted.
+
 ## Start a conversation
 
 1. Open Home → **Start conversation**, or `/#connect`, and set **Communication preferences** on your device.
@@ -12,7 +18,9 @@
 
 The latest 200 messages stay temporarily in server memory. Transport interruption preserves participant slots and the tab's draft; same-ID retries do not duplicate messages. **Leave room**, **End for both**, and opening a separate Tool end the conversation when the server can be reached. An offline exit releases this device’s media but cannot notify the partner; they can leave/end on their device. Reconnect before using End for both. Empty rooms expire after 30 minutes; server restarts also end them. Preferences are browser-local; drafts and room credentials use tab-scoped session storage.
 
-Software is implemented locally. **The Render service has not been created; private Metered setup and physical laptop/mobile tests on different networks are pending.** Automated media tests simulate devices/WebRTC. See [hand recognition activation and tracking feedback](docs/hand-recognition-2026-10-03.md), [conversation retest and fixes](docs/retest-2026-10-03.md), [initial workflow verification](docs/conversation-quality-verification-2026-10-03.md), [earlier conversation verification](docs/conversations-verification-2026-10-02.md), and [deployment and physical-device acceptance](docs/conversations-deployment.md).
+If browser autoplay pauses your partner, **Play partner video/audio** retries the existing stream. **Video connection options → Check video route** reports selected relay/direct/mixed routes without exposing network addresses. Unknown statistics stay unknown; route status does not prove video quality or sign accuracy. See [playback recovery and route verification](docs/video-recovery-and-route-2026-10-08.md).
+
+Software and public pilot source have been pushed to GitHub and deployed on Render Free. **Remote synthetic HTTPS/WSS text checks passed; private Metered setup and physical laptop/mobile tests on different networks are pending.** Automated media tests simulate devices/WebRTC. See [hand recognition activation and tracking feedback](docs/hand-recognition-2026-10-03.md), [conversation retest and fixes](docs/retest-2026-10-03.md), [initial workflow verification](docs/conversation-quality-verification-2026-10-03.md), [earlier conversation verification](docs/conversations-verification-2026-10-02.md), and [deployment and physical-device acceptance](docs/conversations-deployment.md).
 
 ## Clarify messages and review plans together
 
@@ -66,7 +74,9 @@ Recognition and pose processing run locally. Initial tracker/model downloads nee
 
 ### Training Studio and webcam data
 
-After finishing a capture, expand **Save this turn for model training**, verify its label or mark it **Unknown / no sign**, enter a stable anonymous signer code and choose the consent checkbox. The current session code is recorded automatically. The saved sequence contains landmark coordinates, confidence values and frame timing, plus the label and original prediction; it contains no video or audio. A known-word sample needs sufficient visible hands and shoulders. Nothing is saved automatically.
+After finishing a capture, expand **Save this turn for model training**, verify its label with someone who knows the sign language or choose a rejection example, enter a stable anonymous signer code and choose the consent checkbox. Unknown examples distinguish **No intentional sign**, **Sign outside the supported vocabulary** and **Unsure / not reviewed**. A failed prediction does not verify a training label or automatically identify nonsigning. The current session code is recorded automatically. The saved sequence contains landmark coordinates, confidence values and frame timing, plus the label and original prediction; it contains no video or audio. A known-word sample needs at least four frames with a hand and both shoulders visible together. Nothing is saved automatically.
+
+For examples that need no sign-language knowledge or word model, open **Training Studio → Record no-sign examples · no sign-language knowledge needed**. Explicitly start the camera, record three seconds of idle/everyday movement, review tracking, then choose separate nonsigning attestation and local-storage consent before Save. Closing the tool releases the camera and discards unsaved recording. It stores an unknown sample with an explicit nonsigning subtype and actual recording window; the importer retains these separately from model calibration arrays. See [capture readiness, nonsigning collection and verification](docs/nonsigning-collection-2026-10-05.md).
 
 Open `/#training-studio` to inspect the inventory, filter ISL/ASL, delete an individual sample or export JSON. The browser inventory is capped at 250 samples and 32 MB. Export and verify backups before removing samples for the next batch; exports across batches must use disjoint sample IDs and consistent signer codes. The importer combines repeated `--dataset` inputs, requires explicit train/validation/test signer assignments and rejects overlap or malformed data. An incomplete collection produces an inventory explaining missing training requirements. It never retrains or replaces deployed weights. See [the software upgrade guide and verification](docs/software-upgrade-2026-10-02.md) for the import command and boundaries.
 
@@ -192,7 +202,7 @@ For hosting, `npm start` serves `dist`, APIs and WebSockets on `0.0.0.0:$PORT` (
 
 ## Deploy the conversation pilot
 
-Use a **Render Node Web Service on the Free compute plan**. `render.yaml` defines `npm ci && npm run build:public`, `npm start` and `/api/health`. The Render account is ready; this implementation has not been deployed. Same-origin hosting needs no `VITE_ROOM_SERVER_URL`. Private Metered setup remains necessary for relayed video. Open Relay advertises 20 GB/month free usage; account limits apply. See [the runbook](docs/conversations-deployment.md), [Render Free](https://render.com/docs/free) and [Metered Open Relay](https://www.metered.ca/tools/openrelay/).
+The [live pilot](https://signbridge-conversations.onrender.com/#connect) runs as a **Render Node Web Service on the Free compute plan**. `render.yaml` defines `npm ci --include=dev && npm run build:public`, `npm start` and `/api/health`. Including development dependencies supplies Vite during the production build. Same-origin hosting needs no `VITE_ROOM_SERVER_URL`. Private Metered setup remains necessary for relayed video. Open Relay advertises 20 GB/month free usage; account limits apply. See [the runbook](docs/conversations-deployment.md), [Render Free](https://render.com/docs/free) and [Metered Open Relay](https://www.metered.ca/tools/openrelay/).
 
 `build:public` excludes local research weights. The standalone server refuses `/models/isl.json` and `/models/asl.json` even if a local build copied them. Public rooms still support natural signing; optional isolated-word recognition explains missing weights. Saved videos/samples remain tied to their original browser and origin.
 
@@ -207,7 +217,7 @@ Room Optional AI help uses the room server. Older AI tools use the Vite/Vercel f
 | `PORT` | `3001` locally | Standalone listener; leave Render's provided port unchanged |
 | `ROOM_ALLOWED_ORIGINS` | same host and localhost | Additional comma-separated frontend origins for room HTTP/WS access |
 | `METERED_DOMAIN` | unset | Account application hostname, e.g. `your-app.metered.live` |
-| `METERED_TURN_API_KEY` | unset | Private TURN REST API key; server only |
+| `METERED_TURN_API_KEY` | unset | Credential-scoped API key from TURN Server → Credentials → Get credential → Show API Key; kept server-side. Account Secret Key is not used. |
 | `VITE_ROOM_SERVER_URL` | same origin | Public HTTPS room-server origin for a separate frontend; rebuild after changing |
 | `GEMINI_API_KEY` | unset; optional | Server-only key for explicit AI help / AI tools |
 | `GEMINI_MODEL` | `gemini-3.5-flash-lite` | AI text model override |
@@ -270,6 +280,16 @@ tests/ui/                React/media tests (Vitest + jsdom)
 ```
 
 ## Testing
+
+The [22 October video-to-text/voice update](docs/sign-video-to-text-voice-2026-10-22.md) adds **Sign video → Convert to text + voice** in Sign Workspace. The existing ISL HELLO development video produced actual recognized text and completed browser speech playback. This verifies one known-reference flow, not broad recognition accuracy or physical speaker audibility. Camera/video inputs share the unchanged recognizer; uncertain outputs stay silent.
+
+The [22 October capture-provenance update](docs/capture-context-2026-10-22.md) records actual decoded video dimensions and the current tracker contract in newly consented pose exports. The importer flags mixed or incomplete recorded contexts before creating training arrays. Legacy samples remain unchanged. This improves future data collection and diagnosis; it does not establish new recognition accuracy or replace the model. The working local checkout is now `F:\Downloads\signbridge`.
+
+The [13 October current-detector video study](docs/tasks-video-training-results-2026-10-13.md) acquired 60 official recordings, extracted real browser-detector joints and fitted two separate ISL candidates. The second candidate correctly accepted one of two HELLO test clips, but accepted only two of eight supported-word test clips and falsely accepted two of six unsupported-word clips. Both candidates failed the frozen reliability requirements; neither replaced the active app model. [Current capabilities](docs/current-capabilities-2026-10-13.md) distinguish implemented communication tools from unfinished sign recognition and pending physical-device tests.
+
+The [11 October camera-aligned ISL training study](docs/camera-training-results-2026-10-11.md) trained a separate 49-word candidate on 628 official video-derived pose sequences. Historical test top-one accuracy improved from 75.00% to 93.23%, but unsupported-word false acceptance worsened from 13.5% to 18%. A separate browser HELLO reference was still rejected. The candidate failed the frozen promotion requirements; the active model remains unchanged. The report separates archived-pose metrics, actual video replay and pending webcam validation.
+
+The [capture readiness and nonsigning collection update](docs/nonsigning-collection-2026-10-05.md), completed 8 October, passed **595 application checks (275 Node / 320 UI), 145 Python checks and both builds**. It adds one-hand-compatible readiness guidance, explicit local model-free recording, distinct negative types and measured recording-window metadata. Long tracking pauses and delayed timers reject without guessed timing. Save/export/import preserve old data compatibility, signer separation and unchanged model arrays. No new model was trained or promoted; actual camera collection and BOOK/DRINK accuracy remain unverified.
 
 The [destination and camera-quality update](docs/live-bridge-2026-10-05.md) passed **565 application checks (261 Node / 304 UI), 135 Python checks and both builds**. It adds explicit local/AI purpose, reviewed-text transfer into rooms, and camera timing/simultaneous-visibility gates without changing deployed weights or thresholds. The [fixed twelve-word ASL pilot](docs/recognition-pilot-2026-10-05/README.md) completed six validation runs; all failed the gates and no model was promoted. Mean correctly accepted coverage remained 1.71%; DRINK was correctly accepted on 0/5 validation clips in every run. Current browser rendering, webcam recognition and audible playback remain unverified. The [user-supplied LSTM repository assessment](docs/external-lstm-review-2026-10-05.md) records source findings and incompatibilities; no external artifacts were executed or integrated.
 

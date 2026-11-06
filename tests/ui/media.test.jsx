@@ -49,3 +49,22 @@ test("missing words remain visible and stop playback until explicitly advanced",
   await act(async () => {});
   expect(screen.getByRole("button", { name: "Play", exact: true }).disabled).toBe(false);
 });
+
+test("overlapping phrase videos maximize visible coverage while an unsupported negation still stops playback", async () => {
+  render(<SignVideoPlayer text="not hello how are you" clips={[clip("hello how", 1), clip("hello", 2), clip("how are you", 3)]} signLanguage="isl" textLanguage="en" autoPlay />);
+  await act(async () => {});
+  expect(screen.getByText("4/5 words covered")).toBeTruthy();
+  expect(screen.getByText("not · text only")).toBeTruthy();
+  expect(screen.getByText("Video missing — read this word as text.")).toBeTruthy();
+  expect(playCalls).toEqual([]);
+  fireEvent.click(screen.getByRole("button", { name: "Next", exact: true }));
+  await act(async () => {});
+  const hello = screen.getByLabelText("Sign video: hello");
+  fireEvent.click(screen.getByRole("button", { name: "Play", exact: true }));
+  await act(async () => {});
+  expect(playCalls).toContain(hello.getAttribute("src"));
+  fireEvent.ended(hello);
+  await act(async () => {});
+  expect(screen.getByLabelText("Sign video: how are you")).toBeTruthy();
+  expect(screen.getByText(/Vocabulary clips in text order/)).toBeTruthy();
+});

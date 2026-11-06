@@ -35,6 +35,62 @@ test("empty text and invalid empty labels cannot cause loops or false coverage",
   assert.equal(planSignVideos("Hello!", [clip("hello")], "isl", "en").exactPhrase, true);
 });
 
+test("overlapping saved phrases choose complete coverage instead of a greedy prefix", () => {
+  const plan = planSignVideos("Hello, how are you?", [clip("hello how"), clip("hello"), clip("how are you")], "isl", "en");
+  assert.deepEqual(plan.steps.map((s) => [s.kind, s.text]), [["video", "hello"], ["video", "how are you"]]);
+  assert.equal(plan.covered, 4); assert.equal(plan.total, 4);
+  assert.equal(plan.exactPhrase, false);
+});
+
+test("equal coverage prefers fewer recordings and retains exact whole-phrase semantics", () => {
+  const clips = [clip("I"), clip("need"), clip("help"), clip("I need"), clip("I need help")];
+  const plan = planSignVideos("I need help!", clips, "isl", "en");
+  assert.equal(plan.steps.length, 1);
+  assert.equal(plan.steps[0].clip, clips[4]);
+  assert.equal(plan.exactPhrase, true);
+});
+
+test("equal coverage and clip counts choose the longest current phrase, with stable duplicate labels", () => {
+  const first = clip("A B"), duplicate = { ...clip("a b"), id: "later duplicate" };
+  const clips = [clip("a"), clip("b c"), first, clip("c"), duplicate];
+  const plan = planSignVideos("A B C", clips, "isl", "en");
+  assert.deepEqual(plan.steps.map((s) => s.text), ["a b", "c"]);
+  assert.equal(plan.steps[0].clip, first);
+  assert.deepEqual(clips.map((c) => c.id), ["a", "b c", "A B", "c", "later duplicate"]);
+});
+
+test("best coverage retains missing negation and repeated unknown words in their original positions", () => {
+  const text = "I do not need help, no no";
+  const plan = planSignVideos(text, [clip("I do"), clip("I"), clip("do not need help"), clip("need help")], "isl", "en");
+  assert.deepEqual(plan.steps.map((s) => [s.kind, s.text]), [["video", "i"], ["video", "do not need help"], ["missing", "no"], ["missing", "no"]]);
+  const withoutNegationClip = planSignVideos(text, [clip("I do"), clip("need help")], "isl", "en");
+  assert.deepEqual(withoutNegationClip.steps.map((s) => [s.kind, s.text]), [["video", "i do"], ["missing", "not"], ["video", "need help"], ["missing", "no"], ["missing", "no"]]);
+  assert.deepEqual(withoutNegationClip.steps.flatMap((s) => wordsOf(s.text)), wordsOf(text));
+});
+
+test("repeated overlapping phrases start at the earliest equal-coverage match", () => {
+  const plan = planSignVideos("hello hello hello", [clip("hello hello")], "isl", "en");
+  assert.deepEqual(plan.steps.map((s) => [s.kind, s.text]), [["video", "hello hello"], ["missing", "hello"]]);
+  assert.equal(plan.covered, 2);
+});
+
+test("coverage optimisation cannot borrow a longer phrase from another sign or text language", () => {
+  const clips = [clip("hello how"), clip("hello"), clip("how are you", "asl"), clip("how are you", "isl", "ta")];
+  const plan = planSignVideos("hello how are you", clips, "isl", "en");
+  assert.equal(plan.covered, 2);
+  assert.deepEqual(plan.steps.map((s) => [s.kind, s.text]), [["video", "hello how"], ["missing", "are"], ["missing", "you"]]);
+});
+
+test("a maximum-length message with many repeated prefix clips preserves every word", () => {
+  const text = "a ".repeat(1000);
+  const clips = Array.from({ length: 60 }, (_, i) => clip(Array(i + 1).fill("a").join(" ")));
+  const plan = planSignVideos(text, clips, "isl", "en");
+  assert.equal(text.length, 2000);
+  assert.equal(plan.covered, 1000); assert.equal(plan.total, 1000);
+  assert.equal(plan.steps.length, 17);
+  assert.deepEqual(plan.steps.flatMap((s) => wordsOf(s.text)), wordsOf(text));
+});
+
 test("video storage round-trips blobs, isolates languages, and refuses silent overwrites", async () => {
   globalThis.indexedDB = indexedDB;
   const blob = new Blob(["synthetic storage test"], { type: "video/webm" });

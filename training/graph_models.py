@@ -11,6 +11,11 @@ import torch
 from torch import nn
 
 ARCHITECTURES = ("gru27", "gru75", "stgcn")
+# Keep the historical registry unchanged: frozen comparisons import it.
+EXPERIMENTAL_ARCHITECTURES = ("lstm75",)
+TEMPORAL_CONTROL_ARCHITECTURES = ("gru75", "lstm75")
+LSTM75_CONFIG = {"inputSize": 225, "hiddenSize": 64, "layers": 1,
+                 "bidirectional": False, "headDropout": .15}
 GRAPH_CONFIG = {"widths": [32, 64, 64], "temporalKernel": 5,
                 "temporalStrides": [1, 2, 2], "depthwiseTemporal": True,
                 "aggregation": "dense-masked-neighbor-average", "dropout": .15}
@@ -54,7 +59,7 @@ class MaskedGraphBlock(nn.Module):
 class SignGraphModel(nn.Module):
     def __init__(self, classes, architecture, mean, std, adjacency=None, graph_config=None):
         super().__init__()
-        if architecture not in ARCHITECTURES or not 2 <= classes <= 500:
+        if architecture not in ARCHITECTURES + EXPERIMENTAL_ARCHITECTURES or not 2 <= classes <= 500:
             raise ValueError("Unsupported architecture or invalid classes")
         self.architecture = architecture
         self.classes = classes
@@ -68,6 +73,13 @@ class SignGraphModel(nn.Module):
         if architecture in ("gru27", "gru75"):
             self.gru = nn.GRU(81 if architecture == "gru27" else 225, 64, batch_first=True)
             self.head = nn.Linear(64, classes)
+        elif architecture == "lstm75":
+            # Temporal control, not graph convolution. Same masked XY/confidence
+            # features and hidden width as GRU75; newly trained weights only.
+            self.lstm = nn.LSTM(LSTM75_CONFIG["inputSize"], LSTM75_CONFIG["hiddenSize"],
+                                num_layers=LSTM75_CONFIG["layers"], batch_first=True,
+                                bidirectional=LSTM75_CONFIG["bidirectional"])
+            self.head = nn.Linear(LSTM75_CONFIG["hiddenSize"], classes)
         else:
             if adjacency is None:
                 adjacency = make_adjacency()
@@ -92,10 +104,13 @@ class SignGraphModel(nn.Module):
 
     def forward(self, pose):
         x, mask = self.preprocess(pose)
-        if self.architecture in ("gru27", "gru75"):
-            if self.architecture == "gru75":
+        if self.architecture in ("gru27", "gru75", "lstm75"):
+            if self.architecture != "gru27":
                 x = x.reshape(x.shape[0], 32, 225)
-            _, hidden = self.gru(x)
+            if self.architecture == "lstm75":
+                _, (hidden, _cell) = self.lstm(x)
+            else:
+                _, hidden = self.gru(x)
             embedding = hidden[-1]
         else:
             for block in self.blocks:

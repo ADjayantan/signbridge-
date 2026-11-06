@@ -1,9 +1,12 @@
 import { describeGraphCapture, validateCameraTurn } from "./graphSignModel.js";
 import { predictTrainedSign, validateTrainedModel } from "./trainedSignModel.js";
+import { cameraFramesForModel, validateCameraInputContract } from "./cameraCoordinateContract.js";
 
 /** Camera-only quality checks leave the archive preprocessing and GRU API unchanged. */
-export function predictTrainedCameraSign(model, frames, { durationMs } = {}) {
+export function predictTrainedCameraSign(model, frames, { durationMs, framesAlreadyInModelSpace = false } = {}) {
   validateTrainedModel(model);
+  validateCameraInputContract(model);
+  if (typeof framesAlreadyInModelSpace !== "boolean") throw new Error("framesAlreadyInModelSpace must be a boolean diagnostic option.");
   const quality = Number.isFinite(durationMs)
     ? validateCameraTurn(frames, { durationMs })
     : { ok: false, code: "duration", feedback: "Capture timing is missing. Capture a new complete word.", metrics: {} };
@@ -23,7 +26,8 @@ export function predictTrainedCameraSign(model, frames, { durationMs } = {}) {
       capture: { ...measured, modelFrames: 0, ...timing }, posterior: null, cameraGate,
     },
   };
-  const result = predictTrainedSign(model, frames);
+  const inferenceFrames = cameraFramesForModel(model, frames, { framesAlreadyInModelSpace });
+  const result = predictTrainedSign(model, inferenceFrames);
   return { ...result, diagnostics: {
     ...result.diagnostics, capture: { ...result.diagnostics.capture, ...timing }, cameraGate,
   } };

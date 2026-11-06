@@ -1,0 +1,28 @@
+{
+  "format": "signbridge-geometry-experiment-v1",
+  "date": "2026-10-11",
+  "scope": "Local browser diagnostic; not a webcam recognition or new accuracy test",
+  "videoSha256": "61a50323776fe04f732aba8668a1ea8fac09c17d387af26c78a94412f003e7ff",
+  "modelSha256": "55c23fffe387944a102c804676ae91aa7276781d598b7adaf03f0115234acdd9",
+  "source": {"width": 1920, "height": 1088, "durationSeconds": 1.96, "dimensionObservation": "Initial loaded-data observation; baseline canvas dimensions pinned here. A normal guide playback later reported 1920x1080; this first run did not audit intrinsic dimensions at every seek."},
+  "tracker": "Existing Tasks Holistic CPU VIDEO loader, fresh instance per condition",
+  "sampling": "Sequential seeks to source timestamps at 8 or 25 fps; not realtime throughput",
+  "padding": "Centered black padding, aspect-preserving drawImage; original pixels retained for 1920-wide conditions",
+  "correction": "Diagnostic centered x offsets times sourceAspect/referenceAspect; y/z/confidences/timing unchanged; confidence-zero placeholders unchanged",
+  "threshold": 0.95,
+  "requiredMargin": 0.3,
+  "results": [
+    {"name": "original-25", "width": 1920, "height": 1088, "fps": 25, "frameCount": 49, "fixed": {"status": "recognized", "meaning": "HELLO", "score": 0.9784676876239585, "margin": 0.9716245263430285}, "adjusted": {"status": "recognized", "meaning": "HELLO", "score": 0.9784676876239585, "margin": 0.9716245263430285}},
+    {"name": "padded-4x3-25", "width": 1920, "height": 1440, "fps": 25, "frameCount": 49, "factor": 0.7555555555555555, "fixed": {"status": "unclear", "meaning": "", "score": 0.6318695372392902, "margin": 0.5526762262424763}, "adjusted": {"status": "recognized", "meaning": "HELLO", "score": 0.9744454554852888, "margin": 0.9658767371727375}},
+    {"name": "original-8", "width": 1920, "height": 1088, "fps": 8, "frameCount": 16, "fixed": {"status": "recognized", "meaning": "HELLO", "score": 0.9836577181667145, "margin": 0.9778200244998542}, "adjusted": {"status": "recognized", "meaning": "HELLO", "score": 0.9836577181667145, "margin": 0.9778200244998542}},
+    {"name": "padded-4x3-8", "width": 1920, "height": 1440, "fps": 8, "frameCount": 16, "factor": 0.7555555555555555, "fixed": {"status": "unclear", "meaning": "", "score": 0.6961938863626311, "margin": 0.6314970874018772}, "adjusted": {"status": "recognized", "meaning": "HELLO", "score": 0.9790056745057429, "margin": 0.9715251276049259}},
+    {"name": "resized-4x3-8", "width": 640, "height": 480, "fps": 8, "frameCount": 16, "factor": 0.7555555555555555, "fixed": {"status": "unclear", "meaning": "", "score": 0.7194760413431617, "margin": 0.6442594403685514}, "adjusted": {"status": "unclear", "meaning": "", "score": 0.9430021702380186, "margin": 0.9144866893764473}}
+  ],
+  "limits": [
+    "All conditions passed existing camera quality gates; model weights and acceptance gates unchanged.",
+    "These runs use one already-known validation reference; no claim of unseen-signer accuracy.",
+    "Diagnostic correction is not wired into live inference. Low-resolution corrected input still rejects.",
+    "No fabricated hold tail, duplicated pose frames, expected-label input or user camera recordings.",
+    "Separate actual webcam check verified decoded 1280x720 and live shoulders; no actual HELLO performance was demonstrated."
+  ]
+}

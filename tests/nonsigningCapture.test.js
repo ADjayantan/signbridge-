@@ -24,7 +24,7 @@ test("missing, duplicate, reversed or out-of-window timings cannot be saved", ()
   for (const frames of [sequence([0, 500, 500, 3000]), sequence([0, 1500, 1000, 3000]), [{ ...sequence()[0], atMs: undefined }, ...sequence().slice(1)], sequence([0, 500, 1000, 2500])]) {
     assert.equal(assessNonsigningCapture(frames, 2000).ok, false);
   }
-  for (const duration of [undefined, NaN, 0, 349, 3001]) assert.equal(assessNonsigningCapture(sequence(), duration).ok, false);
+  for (const duration of [undefined, NaN, 0, 349, 4001]) assert.equal(assessNonsigningCapture(sequence(), duration).ok, false);
   assert.equal(assessNonsigningCapture(sequence().slice(0, 3), 3000).ok, false);
   assert.equal(assessNonsigningCapture(Array.from({ length: 101 }, (_, i) => copyNonsigningFrame(pose(), i * 30)), 3000).ok, false);
 });
@@ -33,4 +33,21 @@ test("interframe, initial and trailing tracking gaps above one second reject bef
   for (const times of [[0, 500, 2001, 3000], [1001, 1500, 2000, 3000], [0, 500, 1000, 1999]]) {
     assert.match(assessNonsigningCapture(sequence(times), 3000).feedback, /Tracking paused/);
   }
+});
+
+test("malformed and sparse frame sequences reject without throwing or inventing tracking observations", () => {
+  for (const invalid of [null, undefined, {}, []]) {
+    const frames = sequence(); frames[1] = invalid;
+    assert.equal(assessNonsigningCapture(frames, 3000).ok, false);
+  }
+  const sparse = sequence(); delete sparse[1];
+  assert.equal(assessNonsigningCapture(sparse, 3000).ok, false);
+});
+
+test("actual timer delay is retained; a small delay is accepted but a long trailing pause rejects", () => {
+  const delayed = assessNonsigningCapture(sequence(), 3150);
+  assert.equal(delayed.ok, true); assert.equal(delayed.durationMs, 3150);
+  const shortLastFrame = sequence([125, 1000, 2000, 2500]);
+  assert.match(assessNonsigningCapture(shortLastFrame, 3800).feedback, /Tracking paused/);
+  assert.equal(assessNonsigningCapture(sequence(), 5000).ok, false);
 });

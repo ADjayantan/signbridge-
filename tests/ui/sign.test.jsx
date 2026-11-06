@@ -7,8 +7,8 @@ import { toFeatures } from "../../src/lib/features.js";
 import { SignClassifier } from "../../src/lib/knn.js";
 import { SHAPES, handPixels, makeHand } from "../helpers/hands.js";
 
-const mocks = vi.hoisted(() => ({ ask: vi.fn(), speak: vi.fn(), frame: null, mic: null }));
-vi.mock("../../src/lib/api.js", () => ({ askSign: mocks.ask }));
+const mocks = vi.hoisted(() => ({ ask: vi.fn(), check: vi.fn(), speak: vi.fn(), frame: null, mic: null }));
+vi.mock("../../src/lib/api.js", () => ({ askSign: mocks.ask, checkSignAI: mocks.check }));
 vi.mock("../../src/lib/drawHands.js", () => ({ drawHands() {} }));
 vi.mock("../../src/hooks/useCamera.js", async () => {
   const { useRef } = await import("react");
@@ -31,6 +31,7 @@ const review = () => screen.getByLabelText("Review / correct recognized words");
 beforeEach(() => {
   now = 1000; vi.spyOn(performance, "now").mockImplementation(() => now);
   vi.clearAllMocks(); localStorage.clear(); mocks.mic = null;
+  mocks.check.mockResolvedValue({ configured: true });
   URL.createObjectURL = vi.fn(() => "blob:test"); URL.revokeObjectURL = vi.fn();
 });
 afterEach(cleanup);
@@ -58,6 +59,7 @@ test("correcting a transcript disarms automatic sending", () => {
 
 test("automatic send waits for the configured hands-down interval and sends once", async () => {
   mocks.ask.mockResolvedValue({ reply: "Hello" }); setup({ autoSendMs: 1500, gestureShortcuts: true });
+  await act(async () => {});
   frame(1000); frame(1800); frame(2800, { landmarks: [] });
   expect(mocks.ask).not.toHaveBeenCalled();
   frame(3400, { landmarks: [] }); frame(6000, { landmarks: [] });
@@ -73,6 +75,7 @@ test("careful mode commits a fully framed confident sign only after its longer h
 
 test("failed AI sends restore reviewed words for retry", async () => {
   mocks.ask.mockRejectedValue(new Error("API key missing")); setup();
+  await act(async () => {});
   fireEvent.change(review(), { target: { value: "HELP ME" } });
   fireEvent.click(screen.getByRole("button", { name: /^Send Enter/ }));
   await act(async () => {});
@@ -93,6 +96,7 @@ test("face-to-face typed replies and sending reviewed signs work without calling
 test("replaying an older reply preserves its original spoken language", async () => {
   mocks.ask.mockResolvedValue({ meaning: "hello", reply: "Hello there" });
   const app = setup(); const typed = screen.getByLabelText("Type a message instead");
+  await act(async () => {});
   fireEvent.change(typed, { target: { value: "Hello" } }); fireEvent.submit(typed.closest("form"));
   await act(async () => {});
   app.rerender(<SignMode settings={{ ...DEFAULT_SETTINGS, lang: "ta" }} update={() => {}} onBack={() => {}} />);
@@ -151,4 +155,52 @@ test("turning shortcuts off clears a partly held word and disarms pending auto-s
   app.rerender(<SignMode settings={{ ...DEFAULT_SETTINGS, autoSendMs: 1500 }} update={() => {}} onBack={() => {}} />);
   frame(7000, { landmarks: [] });
   expect(mocks.ask).not.toHaveBeenCalled(); expect(review().value).toBe("HELLO");
+});
+
+test.each([
+  ["missing key in a room-auth server", { configured: false, roomAuthRequired: true }, "AI replies need setup"],
+  ["configured room-only server", { configured: true, roomAuthRequired: true }, "AI help is available inside rooms"],
+  ["unreachable AI server", null, "AI server unavailable"],
+])("%s keeps signed and typed drafts without attempting AI; local speech and bridge remain usable", async (_case, status, heading) => {
+  if (status) mocks.check.mockResolvedValue(status);
+  else mocks.check.mockRejectedValue(new Error("No connection"));
+  setup({ autoSendMs: 1500, gestureShortcuts: true });
+  await act(async () => {});
+  expect(screen.getByText(heading)).toBeTruthy();
+  frame(1000); frame(1800);
+  const typed = screen.getByLabelText("Type a message instead");
+  fireEvent.change(typed, { target: { value: "Keep this typed greeting" } });
+  expect(screen.getByRole("button", { name: /^Send Enter/ }).disabled).toBe(true);
+  frame(4000, { landmarks: [] });
+  fireEvent.keyDown(window, { key: "Enter" });
+  fireEvent.submit(typed.closest("form"));
+  expect(review().value).toBe("HELLO"); expect(typed.value).toBe("Keep this typed greeting");
+  expect(mocks.ask).not.toHaveBeenCalled();
+  fireEvent.click(screen.getByRole("button", { name: "Speak words" }));
+  expect(mocks.speak).toHaveBeenCalledWith("HELLO", expect.anything());
+  fireEvent.click(screen.getByRole("switch", { name: /^Face-to-face bridge/ }));
+  fireEvent.click(screen.getByRole("button", { name: /^Send Enter/ }));
+  expect(review().value).toBe(""); expect(mocks.speak).toHaveBeenCalledTimes(2);
+  expect(typed.value).toBe("Keep this typed greeting"); expect(mocks.ask).not.toHaveBeenCalled();
+});
+
+test("AI availability checking preserves both drafts and a successful recheck requires a fresh explicit send", async () => {
+  let resolve;
+  mocks.check.mockImplementationOnce(() => new Promise((done) => { resolve = done; }));
+  setup();
+  fireEvent.change(review(), { target: { value: "HELLO" } });
+  const typed = screen.getByLabelText("Type a message instead");
+  fireEvent.change(typed, { target: { value: "Typed greeting" } });
+  fireEvent.keyDown(window, { key: "Enter" }); fireEvent.submit(typed.closest("form"));
+  expect(screen.getByText("Checking AI setup…")).toBeTruthy();
+  expect(review().value).toBe("HELLO"); expect(typed.value).toBe("Typed greeting"); expect(mocks.ask).not.toHaveBeenCalled();
+  await act(async () => resolve({ configured: false }));
+  expect(screen.getByText("AI replies need setup")).toBeTruthy();
+  mocks.check.mockResolvedValue({ configured: true });
+  fireEvent.click(screen.getByRole("button", { name: "Check AI setup again" })); await act(async () => {});
+  expect(review().value).toBe("HELLO"); expect(typed.value).toBe("Typed greeting"); expect(mocks.ask).not.toHaveBeenCalled();
+  mocks.ask.mockResolvedValue({ reply: "Reviewed greeting received" });
+  fireEvent.click(screen.getByRole("button", { name: /^Send Enter/ })); await act(async () => {});
+  expect(mocks.ask).toHaveBeenCalledOnce(); expect(screen.getByText("Reviewed greeting received")).toBeTruthy();
+  expect(typed.value).toBe("Typed greeting");
 });

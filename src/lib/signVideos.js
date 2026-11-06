@@ -13,21 +13,52 @@ export function clipId({ signLanguage, textLanguage, label }) {
 
 export function planSignVideos(text, clips, signLanguage, textLanguage) {
   const words = wordsOf(text);
-  const entries = clips.filter((c) => c.signLanguage === signLanguage && c.textLanguage === textLanguage)
-    .map((clip) => ({ clip, words: wordsOf(clip.label) })).filter((e) => e.words.length)
-    .sort((a, b) => b.words.length - a.words.length);
+  const root = { children: new Map() };
+  for (const clip of clips) {
+    if (clip.signLanguage !== signLanguage || clip.textLanguage !== textLanguage) continue;
+    const phrase = wordsOf(clip.label);
+    if (!phrase.length || phrase.length > words.length) continue;
+    let node = root;
+    for (const word of phrase) {
+      if (!node.children.has(word)) node.children.set(word, { children: new Map() });
+      node = node.children.get(word);
+    }
+    // Duplicate labels retain the first supplied clip, as in the original lookup.
+    node.clip ??= clip;
+  }
+
+  // Plan from the end instead of committing to a greedy longest prefix. A
+  // shorter clip can leave a complete phrase available later in the message.
+  // One score/choice per word keeps memory linear; no suffix arrays are copied.
+  const best = new Array(words.length + 1);
+  best[words.length] = { covered: 0, videos: 0, length: 0, clip: null };
+  for (let i = words.length - 1; i >= 0; i--) {
+    best[i] = { covered: best[i + 1].covered, videos: best[i + 1].videos, length: 1, clip: null };
+    let node = root;
+    for (let j = i; j < words.length; j++) {
+      node = node.children.get(words[j]);
+      if (!node) break;
+      if (!node.clip) continue;
+      const length = j - i + 1;
+      const covered = length + best[j + 1].covered;
+      const videos = 1 + best[j + 1].videos;
+      if (covered > best[i].covered || (covered === best[i].covered &&
+        (videos < best[i].videos || (videos === best[i].videos && (!best[i].clip || length > best[i].length))))) {
+        best[i] = { covered, videos, length, clip: node.clip };
+      }
+    }
+  }
   const steps = [];
   for (let i = 0; i < words.length;) {
-    const found = entries.find((e) => e.words.every((w, n) => words[i + n] === w));
-    if (found) {
-      steps.push({ kind: "video", text: words.slice(i, i + found.words.length).join(" "), clip: found.clip });
-      i += found.words.length;
+    const choice = best[i];
+    if (choice.clip) {
+      steps.push({ kind: "video", text: words.slice(i, i + choice.length).join(" "), clip: choice.clip });
+      i += choice.length;
     } else {
       steps.push({ kind: "missing", text: words[i++] });
     }
   }
-  const covered = steps.filter((s) => s.kind === "video").reduce((n, s) => n + wordsOf(s.text).length, 0);
-  return { steps, covered, total: words.length, exactPhrase: steps.length === 1 && steps[0].kind === "video" };
+  return { steps, covered: best[0].covered, total: words.length, exactPhrase: steps.length === 1 && steps[0].kind === "video" };
 }
 
 function openDB() {

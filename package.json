@@ -23,6 +23,7 @@
     "onnxruntime-web": "1.30.0",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
+    "three": "0.186.1",
     "ws": "^8.22.0"
   },
   "devDependencies": {

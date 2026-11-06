@@ -4,6 +4,8 @@ import { pathToFileURL } from "node:url";
 import { defineConfig, loadEnv } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
 import { createChatMiddleware } from "./server/nodeChatMiddleware.js";
+import { localReferencePlugin } from "./server/localReferenceMiddleware.js";
+import { localWlaslPlugin } from "./server/localWlaslMiddleware.js";
 
 /**
  * Serves POST /api/chat during `npm run dev` and `npm run preview`, using the same
@@ -38,8 +40,8 @@ const pwa = (mode) => VitePWA({
     scope: "/",
     display: "standalone",
     orientation: "any",
-    background_color: "#05080f",
-    theme_color: "#05080f",
+    background_color: "#f5f2ea",
+    theme_color: "#f5f2ea",
     categories: ["accessibility", "productivity", "education"],
     icons: [
       { src: "/icons/icon-192.png", sizes: "192x192", type: "image/png", purpose: "any" },
@@ -97,5 +99,5 @@ export default defineConfig(({ mode }) => ({
   },
   // loadEnv with prefix "" returns every variable (process.env wins over .env files).
   // They are only used by the server middleware above, never sent to the browser.
-  plugins: [react(), apiPlugin(loadEnv(mode, process.cwd(), "")), pwa(mode)],
+  plugins: [react(), apiPlugin(loadEnv(mode, process.cwd(), "")), localReferencePlugin(mode), localWlaslPlugin(mode), pwa(mode)],
 }));

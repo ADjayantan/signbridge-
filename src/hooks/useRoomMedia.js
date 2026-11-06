@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { mediaRoute } from "../lib/mediaRoute.js";
 
 function preferredCamera(devices) {
   const virtual = (device) => /virtual|redmi|phone|droid|iriun|obs|snap camera|continuity/i.test(device.label);
@@ -24,6 +25,10 @@ export function useRoomMedia(room) {
   const desired = useRef({ video: false, audio: false }); const inputGeneration = useRef({ video: 0, audio: 0 });
   const mounted = useRef(true); const signalQueue = useRef([]); const acceptSignalRef = useRef(null); const receiverTracks = useRef(new Map());
   const [localStream, setLocalStream] = useState(null); const [remoteStream, setRemoteStream] = useState(null);
+  const remoteStreamRef = useRef(null); remoteStreamRef.current = remoteStream;
+  const playbackGeneration = useRef(0); const routeGeneration = useRef(0);
+  const [playbackBlocked, setPlaybackBlocked] = useState(false); const [playbackError, setPlaybackError] = useState("");
+  const [routeStatus, setRouteStatus] = useState("unknown");
   const [remoteVideoOn, setRemoteVideoOn] = useState(false);
   const [cameraStatus, setCameraStatus] = useState("off"); const [micStatus, setMicStatus] = useState("off");
   const micOn = micStatus === "on";
@@ -90,13 +95,14 @@ export function useRoomMedia(room) {
   }, []);
   const closePeer = useCallback(() => {
     peerGeneration.current += 1;
+    playbackGeneration.current += 1; routeGeneration.current += 1; remoteStreamRef.current = null;
     clearTimeout(peerTimers.current.connection); clearTimeout(peerTimers.current.disconnect); peerTimers.current = { connection: null, disconnect: null };
     peerFailed.current = false; peerHadRemoteVideo.current = false;
     const peer = pcRef.current; pcRef.current = null;
     if (peer) { peer.ontrack = null; peer.onicecandidate = null; peer.onnegotiationneeded = null; peer.onconnectionstatechange = null; peer.close(); }
     receiverTracks.current.forEach((entry) => entry.cleanup()); receiverTracks.current.clear();
     acceptSignalRef.current = null; signalQueue.current = [];
-    if (mounted.current) { setRemoteStream(null); setRemoteVideoOn(false); }
+    if (mounted.current) { setRemoteStream(null); setRemoteVideoOn(false); setPlaybackBlocked(false); setPlaybackError(""); setRouteStatus("unknown"); }
   }, []);
   const stop = useCallback(() => {
     disableInput("video"); disableInput("audio"); closePeer();
@@ -113,11 +119,34 @@ export function useRoomMedia(room) {
     video.muted = true; video.srcObject = localStream;
     if (localStream) Promise.resolve(video.play()).catch(() => {}); else video.pause?.();
   }, [localStream]);
+  const playRemoteStream = useCallback((video, stream) => {
+    const generation = ++playbackGeneration.current;
+    const valid = () => mounted.current && generation === playbackGeneration.current && remoteVideoRef.current === video && remoteStreamRef.current === stream && video.srcObject === stream;
+    const blocked = () => { if (valid()) { setPlaybackBlocked(true); setPlaybackError("Partner playback is paused. Choose Play partner video/audio to continue."); } };
+    // Calling play synchronously preserves the user activation of the retry button.
+    try {
+      Promise.resolve(video.play()).then(() => { if (valid()) { setPlaybackBlocked(false); setPlaybackError(""); } }).catch(blocked);
+    } catch { blocked(); }
+  }, []);
+  const retryRemotePlayback = useCallback(() => {
+    const video = remoteVideoRef.current; const stream = remoteStreamRef.current;
+    if (video && stream) playRemoteStream(video, stream);
+  }, [playRemoteStream]);
   useEffect(() => {
     const video = remoteVideoRef.current; if (!video) return;
+    playbackGeneration.current += 1; setPlaybackBlocked(false); setPlaybackError("");
     video.muted = !remoteAudioEnabled; video.srcObject = remoteStream;
-    if (remoteStream) Promise.resolve(video.play()).catch(() => setNotice("Tap the partner video to start playback.")); else video.pause?.();
-  }, [remoteStream, remoteAudioEnabled]);
+    if (remoteStream) playRemoteStream(video, remoteStream); else video.pause?.();
+    return () => { playbackGeneration.current += 1; };
+  }, [remoteStream, remoteAudioEnabled, playRemoteStream]);
+  const checkVideoRoute = useCallback(async () => {
+    const peer = pcRef.current; const generation = peerGeneration.current; const request = ++routeGeneration.current;
+    if (!peer || peer.connectionState !== "connected" || typeof peer.getStats !== "function" || roomRef.current.status !== "connected") { if (mounted.current) setRouteStatus("unknown"); return; }
+    const valid = () => mounted.current && request === routeGeneration.current && generation === peerGeneration.current && pcRef.current === peer && peer.connectionState === "connected" && roomRef.current.status === "connected";
+    setRouteStatus("checking");
+    try { const stats = await peer.getStats(); if (valid()) setRouteStatus(mediaRoute(stats)); }
+    catch { if (valid()) setRouteStatus("unknown"); }
+  }, []);
   useEffect(() => room.subscribeSignal((data) => {
     if (data?.reset) { signalQueue.current = []; setAttempt((n) => n + 1); return; }
     if (acceptSignalRef.current) acceptSignalRef.current(data);
@@ -135,6 +164,7 @@ export function useRoomMedia(room) {
     const valid = () => !cancelled && generation === peerGeneration.current && peer && pcRef.current === peer;
     const fail = (message) => {
       if (!valid()) return;
+      routeGeneration.current += 1; setRouteStatus("unknown");
       peerFailed.current = true;
       // Receive transceivers warm up without user media. A dormant ICE failure
       // should not turn a working text conversation into a video error alert.
@@ -191,6 +221,7 @@ export function useRoomMedia(room) {
         };
         peer.onconnectionstatechange = () => {
           if (!valid()) return;
+          if (peer.connectionState !== "connected") { routeGeneration.current += 1; setRouteStatus("unknown"); }
           clearTimeout(failureTimer);
           if (peer.connectionState === "connected") { clearTimeout(connectionTimer); peerFailed.current = false; setMediaStatus("connected"); setError(inputFailure.current); }
           else if (peer.connectionState === "failed") fail("Video could not connect across these networks. Retry video or enable relay; text messages still work.");
@@ -223,5 +254,5 @@ export function useRoomMedia(room) {
     setError(""); signalQueue.current = []; roomRef.current.sendSignal({ reset: true }); setAttempt((n) => n + 1);
     if (cameraStatus === "error") enableCamera();
   }, [cameraStatus, enableCamera]);
-  return { localVideoRef, remoteVideoRef, cameraOn: cameraStatus === "on", micOn, micStatus, cameraStatus, mediaStatus, error, notice, localStream, remoteStream, remoteVideoOn, enableCamera, disableCamera, enableMic, disableMic, retry, stop, forceRelay, setForceRelay, remoteAudioEnabled, setRemoteAudioEnabled };
+  return { localVideoRef, remoteVideoRef, cameraOn: cameraStatus === "on", micOn, micStatus, cameraStatus, mediaStatus, error, notice, localStream, remoteStream, remoteVideoOn, enableCamera, disableCamera, enableMic, disableMic, retry, stop, forceRelay, setForceRelay, remoteAudioEnabled, setRemoteAudioEnabled, playbackBlocked, playbackError, retryRemotePlayback, routeStatus, checkVideoRoute };
 }

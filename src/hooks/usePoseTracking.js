@@ -1,10 +1,6 @@
 import { useEffect, useEffectEvent, useState } from "react";
-import wasmLoaderPath from "@mediapipe/tasks-vision/vision_wasm_internal.js?url";
-import wasmBinaryPath from "@mediapipe/tasks-vision/vision_wasm_internal.wasm?url";
-import noSimdLoaderPath from "@mediapipe/tasks-vision/vision_wasm_nosimd_internal.js?url";
-import noSimdBinaryPath from "@mediapipe/tasks-vision/vision_wasm_nosimd_internal.wasm?url";
-
-const MODEL_URL = "https://storage.googleapis.com/mediapipe-models/holistic_landmarker/holistic_landmarker/float16/1/holistic_landmarker.task";
+import { loadPoseTracker, POSE_TRACKER_MODEL_URL } from "../lib/poseTracker.js";
+import { captureContextForVideo } from "../lib/poseCaptureContext.js";
 
 /** Body + left/right hands use the same joint order as the training corpus. */
 export function usePoseTracking({ videoRef, active, onFrame }) {
@@ -25,16 +21,8 @@ export function usePoseTracking({ videoRef, active, onFrame }) {
       if (!stopped) setState({ status: "error", error: runtime ? "Body and hand tracking stopped. Retry tracking; the camera can stay on." : "Body and hand tracking could not start. Check your connection, then retry tracking." });
     };
     (async () => {
-      const { FilesetResolver, HolisticLandmarker } = await import("@mediapipe/tasks-vision");
-      if (stopped) return;
-      const simd = await FilesetResolver.isSimdSupported();
-      if (stopped) return;
-      const files = simd ? { wasmLoaderPath, wasmBinaryPath } : { wasmLoaderPath: noSimdLoaderPath, wasmBinaryPath: noSimdBinaryPath };
-      task = await HolisticLandmarker.createFromOptions(files, {
-        baseOptions: { modelAssetPath: MODEL_URL, delegate: "CPU" }, runningMode: "VIDEO",
-        outputFaceBlendshapes: false, outputPoseSegmentationMasks: false,
-      });
-      if (stopped) { release(); return; }
+      task = await loadPoseTracker(() => stopped);
+      if (stopped || !task) { release(); return; }
       setState({ status: "ready", error: "" });
       let failures = 0;
       const loop = (now) => {
@@ -43,7 +31,10 @@ export function usePoseTracking({ videoRef, active, onFrame }) {
         // At most eight samples per second; synchronous tracking can run slower on this device.
         if (now - lastAt >= 125 && video?.readyState >= 2 && video.videoWidth && !video.paused && !video.ended && video.currentTime !== lastVideoTime) {
           lastAt = now; lastVideoTime = video.currentTime;
-          try { frame(task.detectForVideo(video, now), video); failures = 0; }
+          try {
+            const context = captureContextForVideo(video, POSE_TRACKER_MODEL_URL);
+            frame(task.detectForVideo(video, now), video, context); failures = 0;
+          }
           catch { if (++failures >= 8) { fail(true); return; } }
         }
         raf = requestAnimationFrame(loop);

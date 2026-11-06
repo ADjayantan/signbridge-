@@ -1,0 +1,36 @@
+.wlasl-workspace { max-width: 1280px; }
+.wlasl-intro { max-width: 48rem; margin: 1rem 0; }
+.wlasl-intro h2 { font-size: clamp(1.7rem, 3vw, 2.6rem); letter-spacing: -.04em; line-height: 1.15; margin: .4rem 0 .7rem; }
+.wlasl-intro > p { margin-bottom: .6rem; }
+.wlasl-model { display: flex; align-items: center; gap: .7rem 1.2rem; flex-wrap: wrap; margin-bottom: 1.25rem; }
+.wlasl-model > span { flex: 1 1 300px; font-size: .85rem; }
+.wlasl-columns { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); align-items: start; gap: 1.2rem; }
+.wlasl-columns .panel { min-width: 0; padding: 1.25rem; }
+.wlasl-columns h2 { font-size: 1.15rem; margin-bottom: 1rem; }
+.wlasl-columns .actions { flex-wrap: wrap; }
+.wlasl-input > .actions:first-of-type { margin-bottom: .9rem; }
+.wlasl-input [aria-pressed="true"] { border-color: var(--accent); background: var(--bg-soft); }
+.wlasl-camera { position: relative; overflow: hidden; border-radius: 14px; background: #132922; aspect-ratio: 16 / 9; margin-bottom: .8rem; }
+.wlasl-camera video { width: 100%; height: 100%; object-fit: contain; transform: scaleX(-1); }
+.wlasl-camera > p { position: absolute; inset: 0; display: grid; place-items: center; color: #fff; padding: 1rem; }
+.wlasl-clip { margin-top: 1rem; }
+.wlasl-clip video { display: block; width: 100%; max-height: 300px; border-radius: 12px; background: #132922; }
+.wlasl-input input[type="file"] { max-width: 100%; }
+.wlasl-analyze { margin: 1rem 0; }
+.wlasl-suggestion { background: var(--bg-soft); border: 1px solid var(--border); border-radius: 12px; padding: 1rem; margin-bottom: 1rem; }
+.wlasl-suggestion > span { display: block; font-weight: 600; font-size: .85rem; }
+.wlasl-suggestion > strong { display: block; margin: .65rem 0; font-size: clamp(2rem, 4vw, 3.4rem); line-height: 1.1; overflow-wrap: anywhere; }
+.wlasl-suggestion p { font-size: .85rem; color: var(--muted); margin-top: .6rem; }
+.wlasl-output textarea { width: 100%; min-height: 140px; resize: vertical; padding: .8rem; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); color: var(--text); font: inherit; }
+.wlasl-output .field { margin: 1rem 0; }
+.wlasl-output details { padding: .5rem 0; }
+.wlasl-output ul { padding-left: 1.3rem; }
+.wlasl-auto-voice { display: flex; gap: .6rem; align-items: center; font-size: .85rem; margin-top: 1rem; color: var(--muted); }
+.wlasl-auto-voice input { width: 18px; height: 18px; }
+.wlasl-vocabulary { padding: 1rem 1.25rem; margin: 1.2rem 0; }
+.wlasl-vocabulary summary { cursor: pointer; font-weight: 600; min-height: 28px; }
+.wlasl-vocabulary .field { max-width: 28rem; margin: .8rem 0; }
+.wlasl-vocabulary ul { list-style: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: .5rem; padding: 0; margin-top: 1rem; max-height: 22rem; overflow: auto; }
+.wlasl-vocabulary li { border: 1px solid var(--border); border-radius: 6px; padding: .45rem .65rem; font-size: .8rem; overflow-wrap: anywhere; }
+@media (max-width: 800px) { .wlasl-columns { grid-template-columns: 1fr; } }
+@media (max-width: 450px) { .wlasl-columns .panel { padding: .9rem; } .wlasl-columns .actions > .btn-primary { flex: 1 1 100%; } }

@@ -45,6 +45,23 @@ test("inventory counts distinguish known/unknown examples and filtering does not
   expect(mocks.library.add).not.toHaveBeenCalled();
 });
 
+test("inventory distinguishes attested nonsigning, unsupported signs and unreviewed legacy unknowns", () => {
+  mocks.library.samples = [
+    { ...sample("idle", "asl", "unknown", "__unknown__", "person-a", "session-a", 0), negativeType: "nonsigning" },
+    { ...sample("unsupported", "asl", "unknown", "__unknown__", "person-b", "session-b", 1), negativeType: "unsupported-sign" },
+    sample("old", "isl", "unknown", "__unknown__", "person-c", "session-c", 2),
+  ];
+  setup();
+  expect(screen.getByRole("rowheader", { name: /No intentional sign/ }).textContent).toContain("No intentional sign");
+  expect(screen.getByRole("rowheader", { name: /Unsupported sign/ }).textContent).toContain("Unsupported sign");
+  expect(screen.getByRole("rowheader", { name: /Unknown example/ }).textContent).toContain("Unreviewed type");
+  expect(screen.queryByText("Unknown / no sign")).toBeNull();
+  expect(screen.getByText(/Unknown types in this view:/).textContent).toContain("1 no intentional sign · 1 unsupported sign · 1 unreviewed type");
+  filter("asl");
+  expect(screen.getByText(/Unknown types in this view:/).textContent).toContain("1 no intentional sign · 1 unsupported sign · 0 unreviewed type");
+  expect(mocks.library.add).not.toHaveBeenCalled();
+});
+
 test("repeated labels remain one class while each signer's same-named session is counted separately", () => {
   mocks.library.samples.push(sample("water-second-signer", "isl", "known", "WATER", "signer-b", "session-a", 3));
   setup();

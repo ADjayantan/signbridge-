@@ -3,6 +3,16 @@
 .connect-intro h2 { font-size: clamp(2rem, 4vw, 3.6rem); letter-spacing: -.065em; line-height: 1.1; margin: .35rem 0 .8rem; }
 .connect-intro p { max-width: 44rem; }
 .connect-human-note { flex: 0 0 auto; border: 1px solid var(--accent); padding: .7rem 1rem; border-radius: 100px; color: var(--accent); font-weight: 700; }
+.room-quick-setup, .room-sign-availability, .room-partner-sign-reply { padding: 1rem 1.25rem; margin-bottom: 1.3rem; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); }
+.room-quick-setup h3, .room-sign-availability h3, .room-partner-sign-reply h3 { font-size: 1.05rem; margin-bottom: .65rem; }
+.room-quick-setup > p, .room-sign-availability > p { max-width: 66rem; margin-block: .65rem; }
+.room-setup-choices { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .8rem; margin-block: 1rem; }
+.room-setup-choice { display: grid; align-content: start; gap: .5rem; text-align: left; min-width: 0; min-height: 88px; white-space: normal; }
+.room-setup-choice strong { font-size: 1rem; }
+.room-setup-choice span { font-size: .8rem; font-weight: 400; line-height: 1.5; }
+.room-setup-choice[aria-pressed="true"] { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 8%, var(--surface)); }
+.room-sign-availability { border-left: 3px solid var(--accent); }
+.room-partner-sign-reply { margin-block: 1.25rem 0; }
 .room-connection { display: inline-flex; align-items: center; gap: .5rem; color: var(--muted); font-size: .8rem; }
 .room-connection > span { width: 9px; height: 9px; border-radius: 50%; background: var(--muted); }
 .room-connection.connected > span { background: var(--accent); }
@@ -97,5 +107,5 @@
 .connect-home .home-tools .actions { margin: 1rem 0; }
 @media (max-width: 650px) { .connect-home .home-quick-grid { grid-template-columns: 1fr; } .connect-home .mode-card { padding: 1.3rem; } }
 @media (max-width: 950px) { .room-layout { grid-template-columns: 1fr; } .room-video-stage { max-height: 480px; min-height: 260px; } }
-@media (max-width: 650px) { .connect-intro { align-items: flex-start; gap: 1rem; } .connect-human-note { display: none; } .room-preference-grid, .room-entry { grid-template-columns: 1fr; gap: 1rem; } .room-preferences summary span { display: block; margin-left: 0; } .room-call, .room-messages { padding: .8rem; } .room-message.mine { margin-left: 1rem; } .room-message.theirs { margin-right: .75rem; } .room-connection { max-width: 12rem; } .room-invite-copy { flex-basis: 100%; } }
+@media (max-width: 650px) { .connect-intro { align-items: flex-start; gap: 1rem; } .connect-human-note { display: none; } .room-preference-grid, .room-entry, .room-setup-choices { grid-template-columns: 1fr; gap: 1rem; } .room-preferences summary span { display: block; margin-left: 0; } .room-call, .room-messages, .room-quick-setup, .room-sign-availability, .room-partner-sign-reply { padding: .8rem; } .room-message.mine { margin-left: 1rem; } .room-message.theirs { margin-right: .75rem; } .room-connection { max-width: 12rem; } .room-invite-copy { flex-basis: 100%; } }
 @media (prefers-reduced-motion: reduce) { .connect-mode .btn { transition: none; } }

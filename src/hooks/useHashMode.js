@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 
-const MODES = ["home", "connect", "voice", "sign", "live-sign", "trained-sign", "sign-workspace", "training-studio", "sign-videos"];
+const MODES = ["home", "connect", "voice", "sign", "live-sign", "trained-sign", "sign-workspace", "training-studio", "sign-videos", "wlasl"];
 
 function fromHash() {
   const hash = window.location.hash.replace(/^#\/?/, "").split("?")[0];

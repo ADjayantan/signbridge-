@@ -1,77 +1,1113 @@
-.sign-workspace .live-layout { align-items: start; }
-.sign-workspace { max-width: 1280px; gap: .9rem; }
-.sign-workspace .topbar-extra:empty { display: none; }
-.workspace-intro { display: flex; align-items: flex-start; justify-content: space-between; gap: 1.25rem; margin: .35rem 0; }
-.workspace-intro h2 { font-size: clamp(1.75rem, 3.2vw, 2.6rem); letter-spacing: -.045em; line-height: 1.15; margin: .35rem 0 .6rem; }
-.workspace-intro p:not(.eyebrow) { max-width: 40rem; color: var(--muted); }
-.workspace-destination { padding: .85rem 1rem; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); }
+/* =========================================================
+   SIGN WORKSPACE — MINIMALIST ALIGNED LAYOUT
+   Left: Camera Input | Right: 3D Hand & Result | Bottom: Message Box
+   ========================================================= */
+
+.sign-workspace {
+  max-width: 1380px;
+  padding: 0.9rem 1.75rem 5.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+/* Header Intro Row */
+.workspace-intro {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.25rem 0;
+}
+.workspace-intro h2 {
+  font-family: var(--display-font);
+  font-size: clamp(1.45rem, 2.2vw, 1.85rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+  margin: 0.15rem 0 0.2rem;
+  color: var(--text);
+}
+.workspace-intro p:not(.eyebrow) {
+  font-size: 0.8rem;
+  color: var(--muted);
+  max-width: 44rem;
+  margin: 0;
+}
+.sign-workspace .live-preview-badge {
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--accent-bright);
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid var(--border-strong);
+  padding: 0.38rem 0.75rem;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.workspace-partner-button {
+  border-radius: 999px;
+  background: rgba(16, 185, 129, 0.1);
+  border-color: var(--border-strong);
+  color: var(--accent-bright);
+}
+
+/* Step Navigation Bar */
+.workspace-steps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.65rem;
+  margin: 0;
+}
+.workspace-steps button {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  text-align: left;
+  min-height: 52px;
+  padding: 0.55rem 0.9rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+.workspace-steps button:hover {
+  border-color: rgba(255, 255, 255, 0.18);
+  background: var(--surface-2);
+}
+.workspace-steps button[aria-current="step"] {
+  border-color: var(--border-strong);
+  background: var(--surface-alt);
+}
+.workspace-step-number,
+.workspace-step-heading > span {
+  display: inline-grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 1.55rem;
+  height: 1.55rem;
+  border-radius: 7px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  color: var(--accent-bright);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+.workspace-steps button[aria-current="step"] .workspace-step-number {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+}
+.workspace-steps strong {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+.workspace-steps small {
+  display: block;
+  font-size: 0.7rem;
+  color: var(--muted);
+  margin-top: 0.1rem;
+}
+
+/* =========================================================
+   MAIN WORKSPACE 2-COLUMN + BOTTOM MESSAGE GRID
+   ========================================================= */
+.sign-workspace .live-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 1rem;
+  align-items: start;
+}
+
+.sign-workspace .live-camera-panel,
+.sign-workspace .workspace-right-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1.1rem;
+  border-radius: 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  min-width: 0;
+  position: static;
+}
+
+.workspace-panel-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+.workspace-step-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-size: 0.94rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin: 0;
+  color: var(--text);
+}
+
+.workspace-input-source {
+  display: inline-flex;
+  gap: 0.25rem;
+  padding: 0.2rem;
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  margin: 0;
+}
+.workspace-input-source .btn {
+  min-height: 28px;
+  padding: 0.2rem 0.65rem;
+  font-size: 0.74rem;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--muted);
+}
+.workspace-input-source .btn[aria-pressed="true"] {
+  background: var(--surface-2);
+  color: var(--text);
+  font-weight: 600;
+}
+
+/* Language & Camera Controls */
+.workspace-language-row {
+  display: grid;
+  grid-template-columns: 180px minmax(0, 1fr);
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0.6rem 0.75rem;
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+.workspace-language-row .field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  margin: 0;
+}
+.workspace-language-row label {
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+}
+.workspace-language-row select {
+  min-height: 34px;
+  padding: 0.3rem 0.6rem;
+  font-size: 0.8rem;
+  width: 100%;
+}
+.workspace-language-row .fine-print {
+  font-size: 0.72rem;
+  line-height: 1.45;
+  margin: 0;
+}
+
+.workspace-camera-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0;
+}
+.workspace-camera-actions .btn {
+  min-height: 38px;
+  font-size: 0.8rem;
+}
+.workspace-camera-actions .btn-primary {
+  flex: 1 1 190px;
+}
+
+.sign-workspace .live-session-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.76rem;
+  margin: 0;
+  padding: 0.35rem 0.65rem;
+  background: var(--bg-soft);
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+.sign-workspace .live-clock {
+  margin-left: auto;
+  color: var(--accent-bright);
+  font-weight: 600;
+  font-size: 0.74rem;
+}
+
+/* Camera Viewport (Left) — matched height with 3D Hand Viewport (Right) */
+.sign-workspace .live-camera {
+  position: relative;
+  width: 100%;
+  height: 310px;
+  aspect-ratio: auto;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  background: #060908;
+}
+.sign-workspace .live-camera.is-recording {
+  border-color: var(--danger);
+}
+.sign-workspace .workspace-camera-idle {
+  position: absolute;
+  inset: 0;
+  padding: 0;
+  display: block;
+  text-align: center;
+  background: radial-gradient(circle at 50% 42%, #11221c 0%, #070b0a 80%);
+  color: var(--text);
+}
+.workspace-camera-idle .workspace-idle-scene {
+  position: absolute;
+  top: -6%;
+  left: 0;
+  width: 100%;
+  height: 82%;
+}
+.workspace-camera-idle > .workspace-camera-off {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.38rem;
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: var(--muted);
+  background: rgba(9, 12, 11, 0.8);
+  padding: 0.24rem 0.6rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+}
+.workspace-camera-off > span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent-2);
+}
+.workspace-idle-copy {
+  position: absolute;
+  bottom: 0.9rem;
+  left: 1rem;
+  right: 1rem;
+  display: grid;
+  justify-items: center;
+  gap: 0.2rem;
+}
+.live-camera-idle .workspace-idle-copy strong {
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+.live-camera-idle .workspace-idle-copy p {
+  font-size: 0.74rem;
+  color: var(--muted);
+}
+
+/* Live Output Bar under Camera */
+.workspace-live-output-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.85rem;
+  padding: 0.75rem 0.95rem;
+  margin: 0;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg-soft);
+}
+.workspace-live-output-card.is-holding {
+  border-color: rgba(245, 158, 11, 0.45);
+  background: rgba(245, 158, 11, 0.06);
+}
+.workspace-live-output-card.is-recognized {
+  border-color: var(--border-strong);
+  background: rgba(16, 185, 129, 0.08);
+}
+.workspace-live-output-main { min-width: 0; flex: 1; }
+.workspace-live-output-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--accent-bright);
+  margin-bottom: 0.15rem;
+}
+.workspace-live-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent-bright);
+}
+.workspace-live-output-word {
+  display: block;
+  font-size: 1.02rem;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--text);
+}
+.workspace-live-quick-guide {
+  margin: 0.15rem 0 0;
+  font-size: 0.73rem;
+  color: var(--muted);
+}
+.workspace-live-output-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+/* Switches & Voice Controls inside Camera Column */
+.workspace-auto-control,
+.sign-workspace .workspace-voice-controls {
+  padding: 0.65rem 0.8rem;
+  margin: 0;
+  border-radius: 10px;
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  display: grid;
+  gap: 0.45rem;
+}
+.switch {
+  padding: 0.15rem 0;
+  gap: 0.65rem;
+  align-items: flex-start;
+}
+.switch-track {
+  width: 40px;
+  height: 22px;
+}
+.switch-track::after {
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+}
+.switch input:checked + .switch-track::after {
+  transform: translateX(18px);
+}
+.switch-text {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text);
+}
+.switch-description {
+  font-size: 0.72rem;
+  color: var(--muted);
+  line-height: 1.45;
+}
+.sign-workspace .live-framing {
+  font-size: 0.74rem;
+  color: var(--muted);
+  padding: 0.15rem 0;
+  min-height: 0;
+}
+.workspace-framing-check {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.65rem 0.75rem;
+  background: var(--bg-soft);
+}
+.workspace-framing-check ul {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.5rem;
+  padding: 0;
+  margin: 0 0 0.4rem;
+}
+.workspace-framing-check strong,
+.workspace-framing-check span {
+  display: block;
+  font-size: 0.73rem;
+}
+.workspace-framing-check span { color: var(--muted); }
+.workspace-tracking-status {
+  padding: 0.25rem 0;
+  font-size: 0.74rem;
+  color: var(--muted);
+}
+
+/* =========================================================
+   RIGHT COLUMN: 3D HAND VIEWPORT + CHECK RESULT + 20 SIGNS
+   ========================================================= */
+.sign3d-stage {
+  margin: 0;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: radial-gradient(120% 120% at 50% 18%, #132a23 0%, #091411 70%, #060b09 100%);
+  color: var(--text);
+  overflow: hidden;
+}
+.sign3d-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.65rem 0.85rem;
+  border-bottom: 1px solid var(--border);
+  background: rgba(9, 14, 12, 0.65);
+}
+.sign3d-title-block { min-width: 0; }
+.sign3d-kicker {
+  display: block;
+  font-size: 0.64rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--accent-bright);
+  text-transform: uppercase;
+}
+.sign3d-title-block strong {
+  display: block;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-top: 0.08rem;
+}
+.sign3d-title-block small {
+  display: block;
+  font-size: 0.71rem;
+  color: var(--muted);
+  margin-top: 0.05rem;
+}
+.sign3d-controls {
+  display: flex;
+  gap: 0.3rem;
+  flex-wrap: wrap;
+}
+.sign3d-pill {
+  padding: 0.24rem 0.55rem;
+  border-radius: 7px;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--muted);
+  font-size: 0.7rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.14s ease;
+}
+.sign3d-pill:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+  color: var(--text);
+}
+.sign3d-pill.is-active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+  font-weight: 600;
+}
+.sign3d-viewport {
+  position: relative;
+  width: 100%;
+  height: 310px;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+.sign3d-viewport:active { cursor: grabbing; }
+.sign3d-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.sign3d-hud-overlay {
+  position: absolute;
+  top: 0.55rem;
+  left: 0.65rem;
+  right: 0.65rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  pointer-events: none;
+}
+.sign3d-hud-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  background: rgba(9, 13, 12, 0.78);
+  border: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 0.66rem;
+  font-weight: 500;
+}
+.sign3d-hud-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent-bright);
+}
+.sign3d-hud-dot.is-live {
+  background: var(--accent-2);
+}
+.sign3d-zoom-dock {
+  display: inline-flex;
+  gap: 0.25rem;
+  pointer-events: auto;
+}
+.sign3d-zoom-dock button {
+  width: 1.7rem;
+  height: 1.7rem;
+  border-radius: 7px;
+  border: 1px solid var(--border);
+  background: rgba(9, 13, 12, 0.82);
+  color: var(--text);
+  font-size: 0.76rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.sign3d-zoom-dock button:hover {
+  border-color: var(--accent-bright);
+}
+.sign3d-footer {
+  padding: 0.5rem 0.85rem 0.65rem;
+  background: rgba(9, 14, 12, 0.72);
+  border-top: 1px solid var(--border);
+}
+.sign3d-hint {
+  display: block;
+  font-size: 0.68rem;
+  color: var(--muted);
+  margin-bottom: 0.38rem;
+}
+.sign3d-quick-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+.sign3d-chip {
+  padding: 0.22rem 0.5rem;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text);
+  font-size: 0.69rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+.sign3d-chip:hover {
+  border-color: var(--border-strong);
+  background: rgba(16, 185, 129, 0.12);
+}
+.sign3d-chip.is-selected {
+  background: var(--accent-bright);
+  border-color: var(--accent-bright);
+  color: var(--accent-ink);
+  font-weight: 600;
+}
+
+/* Step 2 Check Result Card inside Right Column */
+.workspace-check-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 0.85rem 0.95rem;
+  border-radius: 12px;
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+}
+.workspace-auto-status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.5rem 0.7rem;
+  margin: 0;
+  background: var(--surface);
+  font-size: 0.76rem;
+  color: var(--muted);
+}
+.workspace-auto-dot {
+  flex: 0 0 auto;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent-bright);
+}
+.workspace-auto-status.is-capturing {
+  border-color: var(--border-strong);
+  color: var(--accent-bright);
+}
+.workspace-result-empty {
+  min-height: 108px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0.85rem;
+  border: 1px dashed var(--border);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.015);
+  margin: 0;
+}
+.workspace-empty-mark {
+  color: var(--muted);
+  margin-bottom: 0.35rem;
+  width: 32px;
+  height: 32px;
+}
+.workspace-result-empty strong {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text);
+  max-width: 24rem;
+}
+.workspace-result-empty p {
+  font-size: 0.72rem;
+  color: var(--muted);
+  margin-top: 0.2rem;
+}
+.workspace-main-output .live-interpretation {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent-bright);
+  border-radius: 9px;
+  padding: 0.65rem 0.85rem;
+  margin: 0;
+}
+.workspace-main-output .live-interpretation > strong {
+  display: block;
+  margin: 0.15rem 0;
+  font-family: var(--display-font);
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--accent-bright);
+}
+.workspace-main-output .live-meaning-form {
+  display: grid;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+}
+
+/* 20 Daily Conversation Signs Board inside Right Column */
+.workspace-daily-board {
+  margin: 0;
+  padding: 0.85rem 0.95rem;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--bg-soft);
+}
+.workspace-daily-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.65rem;
+}
+.workspace-daily-header strong {
+  display: block;
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: var(--text);
+}
+.workspace-daily-header span {
+  display: block;
+  font-size: 0.71rem;
+  color: var(--muted);
+}
+.workspace-daily-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.28rem;
+}
+.workspace-daily-tab {
+  padding: 0.22rem 0.55rem;
+  border-radius: 7px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 0.69rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+.workspace-daily-tab:hover {
+  color: var(--text);
+  border-color: rgba(255, 255, 255, 0.18);
+}
+.workspace-daily-tab.is-active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+  font-weight: 600;
+}
+.workspace-daily-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(138px, 1fr));
+  gap: 0.42rem;
+  max-height: 255px;
+  overflow-y: auto;
+  padding-right: 0.2rem;
+}
+.workspace-daily-card {
+  display: flex;
+  align-items: center;
+  gap: 0.48rem;
+  text-align: left;
+  padding: 0.45rem 0.58rem;
+  border-radius: 9px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+}
+.workspace-daily-card:hover {
+  border-color: var(--border-strong);
+  background: var(--surface-2);
+}
+.workspace-daily-card.is-holding {
+  border-color: var(--accent-2);
+  background: rgba(245, 158, 11, 0.1);
+}
+.workspace-daily-card.is-recognized {
+  border-color: var(--accent-bright);
+  background: rgba(16, 185, 129, 0.14);
+}
+.workspace-daily-icon {
+  font-size: 1.1rem;
+  line-height: 1;
+  flex: 0 0 auto;
+}
+.workspace-daily-copy { min-width: 0; display: block; }
+.workspace-daily-copy strong {
+  display: block;
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.2;
+}
+.workspace-daily-copy small {
+  display: block;
+  font-size: 0.64rem;
+  color: var(--muted);
+  line-height: 1.2;
+  margin-top: 0.1rem;
+}
+
+/* =========================================================
+   BOTTOM FULL-WIDTH MESSAGE BOX (STEP 3)
+   ========================================================= */
+.workspace-bottom-message {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+  gap: 1rem;
+  align-items: start;
+  padding: 1.1rem;
+  border-radius: 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+}
+.workspace-composer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+.workspace-section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin: 0;
+}
+.workspace-section-heading > span {
+  font-size: 0.72rem;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.workspace-composer > label {
+  font-size: 0.76rem;
+  font-weight: 500;
+  color: var(--muted);
+}
+.workspace-composer textarea {
+  width: 100%;
+  min-height: 96px;
+  padding: 0.7rem 0.85rem;
+  resize: vertical;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg-soft);
+  color: var(--text);
+  font-size: 0.86rem;
+}
+.workspace-composer .actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin: 0;
+}
+
+.workspace-bottom-side {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  padding-left: 1rem;
+  border-left: 1px solid var(--border);
+}
+.workspace-destination {
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
 .workspace-destination fieldset { min-width: 0; border: 0; }
-.workspace-destination legend { font-size: .85rem; font-weight: 600; margin-bottom: .6rem; }
-.workspace-purpose-choices { display: flex; flex-wrap: wrap; gap: .6rem; }
-.workspace-purpose-choices label { display: flex; align-items: center; gap: .6rem; min-height: 56px; padding: .5rem .8rem; border: 1px solid var(--border); border-radius: var(--radius-sm); cursor: pointer; background: var(--bg-soft); }
-.workspace-purpose-choices label.selected { border-color: var(--accent); }
-.workspace-purpose-choices input { width: 18px; height: 18px; accent-color: var(--accent); }
-.workspace-purpose-choices strong, .workspace-purpose-choices small { display: block; }
-.workspace-purpose-choices strong { font-size: .85rem; }
-.workspace-purpose-choices small { color: var(--muted); font-size: .7rem; }
-.workspace-destination > .fine-print { margin-top: .7rem; }
-.workspace-partner-entry { display: flex; align-items: center; gap: .75rem; margin-top: .6rem; }
-.workspace-partner-entry p { max-width: 40rem; }
-.workspace-steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .65rem; margin: .35rem 0; }
-.workspace-steps button { display: flex; align-items: center; gap: .65rem; text-align: left; min-width: 0; min-height: 68px; padding: .75rem 1rem; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); cursor: pointer; }
-.workspace-steps button[aria-current="step"] { border-color: var(--accent); background: var(--bg-soft); }
-.workspace-step-number, .workspace-step-heading > span { display: inline-grid; place-items: center; flex: 0 0 auto; width: 1.8rem; height: 1.8rem; border-radius: 50%; background: var(--surface-2); color: var(--accent); font-size: .85rem; }
-.workspace-steps strong { display: block; font-size: .9rem; }
-.workspace-steps small { display: block; font-size: .7rem; color: var(--muted); }
-.workspace-step-heading { display: flex; align-items: center; gap: .6rem; font-size: 1.05rem; margin-bottom: 1rem; scroll-margin-top: 1rem; }
-.workspace-language-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: center; gap: .8rem; margin-bottom: .9rem; }
-.workspace-language-row .field { margin: 0; }
-.workspace-camera-actions { margin: 0 0 .9rem; }
-.workspace-camera-actions .btn-primary { flex: 1 1 200px; min-height: 56px; }
-.workspace-next-action { border-left: 3px solid var(--accent); padding: .65rem .85rem; background: var(--bg-soft); margin-top: .65rem; }
-.workspace-tracking-status { padding: .65rem 0; font-size: .75rem; color: var(--muted); }
-.workspace-tracking-status .btn { margin-top: .6rem; }
-.workspace-framing-check { border: 1px solid var(--border); border-radius: var(--radius-sm); padding: .75rem; background: var(--bg-soft); }
-.workspace-framing-check ul { list-style: none; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .7rem; padding: 0; margin: 0 0 .6rem; }
-.workspace-framing-check strong, .workspace-framing-check span { display: block; font-size: .75rem; }
-.workspace-framing-check span { color: var(--muted); margin-top: .2rem; }
-.workspace-help, .workspace-disclosure { border-top: 1px solid var(--border); margin-top: .8rem; padding-top: .3rem; }
-.workspace-help summary, .workspace-disclosure > summary { display: list-item; cursor: pointer; min-height: 48px; padding: .7rem .15rem; font-weight: 600; font-size: .85rem; }
-.workspace-help ol { padding-left: 1.25rem; font-size: .85rem; }
-.workspace-help li { margin-bottom: .5rem; }
-.workspace-help .fine-print { margin: .7rem 0; }
-.workspace-result-empty { border: 1px dashed var(--border); border-radius: var(--radius-sm); background: var(--bg-soft); padding: 1rem; margin-bottom: 1rem; }
-.workspace-result-empty strong { display: block; font-size: .9rem; }
-.workspace-result-empty p { color: var(--muted); font-size: .8rem; margin-top: .45rem; }
-.workspace-main-output .live-interpretation > .fine-print { display: block; }
-.workspace-main-output .live-meaning-form { margin-top: .8rem; }
-.workspace-more-result { margin-block: .8rem; }
-.workspace-ai-options > .hint { margin: .6rem 0; }
-.workspace-ai-send { margin: .8rem 0; }
-.workspace-advanced { padding: .6rem 1rem; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); margin-top: 1.2rem; }
-.workspace-advanced-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 1.2rem; padding-bottom: .75rem; }
-.workspace-advanced-grid .actions { margin-top: 1rem; }
-.workspace-advanced-grid .workspace-quality:first-child { margin-top: 0; }
-.workspace-pending { margin-bottom: 1rem; }
-.workspace-section-heading { display: flex; align-items: center; justify-content: space-between; gap: .8rem; margin-bottom: .7rem; }
-.workspace-section-heading .panel-title { margin: 0; font-size: 1rem; }
-.workspace-section-heading > span { font-size: .75rem; color: var(--muted); text-align: right; }
-.workspace-candidates { padding: .7rem 0; }
-.workspace-candidates .actions { margin-top: .5rem; }
-.workspace-composer { display: grid; gap: .65rem; margin: 1.2rem 0; padding: 1.1rem; border: 1px solid var(--accent); border-radius: var(--radius-sm); background: var(--bg-soft); }
-.workspace-composer > label { color: var(--muted); font-size: .85rem; }
-.workspace-composer textarea { min-width: 0; width: 100%; padding: .75rem; resize: vertical; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); color: var(--text); font: inherit; }
-.workspace-composer .actions { margin: 0; }
-.workspace-ai-status { margin-bottom: 1.2rem; }
-.workspace-quality, .workspace-save { border: 1px solid var(--border); border-radius: var(--radius-sm); padding: .8rem 1rem; margin-top: 1rem; }
-.workspace-quality summary, .workspace-save summary { cursor: pointer; font-weight: 600; }
-.workspace-quality dl { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .7rem; padding: 1rem 0; }
-.workspace-quality dt { font-size: .75rem; color: var(--muted); }
-.workspace-quality dd { font-weight: 600; }
-.workspace-save form { display: grid; gap: .8rem; margin-top: .9rem; }
-.workspace-reply-options { display: grid; gap: .65rem; border-top: 1px solid var(--border); padding-top: 1rem; margin-top: 1rem; }
-@media (max-width: 600px) { .workspace-section-heading { align-items: start; flex-wrap: wrap; } .workspace-composer { padding: .8rem; } }
-@media (max-width: 600px) { .workspace-purpose-choices label { flex: 1 1 180px; } .workspace-partner-entry { align-items: flex-start; flex-direction: column; } }
-@media (max-width: 850px) { .workspace-intro { flex-direction: column; gap: .8rem; } .workspace-advanced-grid { grid-template-columns: 1fr; } }
-@media (max-width: 600px) { .workspace-steps { gap: .4rem; } .workspace-steps button { padding: .65rem .35rem; flex-direction: column; align-items: flex-start; min-height: 94px; } .workspace-steps strong { font-size: .78rem; } .workspace-steps small { font-size: .64rem; } .workspace-language-row { grid-template-columns: 1fr; gap: .4rem; } .workspace-intro h2 { font-size: 1.9rem; } }
-@media (max-width: 420px) { .workspace-framing-check ul { grid-template-columns: 1fr; } }
+.workspace-destination legend {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 0.5rem;
+}
+.workspace-purpose-choices {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+.workspace-purpose-choices label {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 52px;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  cursor: pointer;
+  background: var(--bg-soft);
+}
+.workspace-purpose-choices label.selected {
+  border-color: var(--border-strong);
+  background: var(--surface-alt);
+}
+.workspace-purpose-choices input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--accent);
+}
+.workspace-purpose-choices strong {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+.workspace-purpose-choices small {
+  display: block;
+  font-size: 0.68rem;
+  color: var(--muted);
+}
+.workspace-destination > .fine-print {
+  margin-top: 0.45rem;
+}
+
+/* Collapsible Disclosures */
+.workspace-help,
+.workspace-disclosure {
+  border-top: 1px solid var(--border);
+  margin-top: 0.25rem;
+  padding-top: 0.15rem;
+}
+.workspace-help summary,
+.workspace-disclosure > summary {
+  display: list-item;
+  cursor: pointer;
+  padding: 0.45rem 0.1rem;
+  font-weight: 500;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+.workspace-help summary:hover,
+.workspace-disclosure > summary:hover {
+  color: var(--text);
+}
+.workspace-advanced {
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  margin-top: 0.2rem;
+}
+.workspace-advanced-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 1rem;
+  padding-bottom: 0.6rem;
+}
+
+/* =========================================================
+   SUBTLE REACT BITS INTERACTIVE ENHANCEMENTS
+   ========================================================= */
+.rb-aurora-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+  opacity: 0.45;
+}
+.rb-aurora-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.rb-aurora-vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 40%, transparent 30%, rgba(9, 12, 11, 0.85) 100%);
+}
+.rb-decrypted {
+  display: inline-block;
+  font-variant-numeric: tabular-nums;
+  color: var(--accent-bright);
+}
+.rb-output-prefix {
+  color: var(--muted);
+  font-weight: 500;
+}
+.rb-spotlight-card {
+  position: relative;
+  overflow: hidden;
+  --mouse-x: 50%;
+  --mouse-y: 50%;
+  --spotlight-color: rgba(16, 185, 129, 0.12);
+}
+.rb-spotlight-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(280px circle at var(--mouse-x) var(--mouse-y), var(--spotlight-color), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  z-index: 0;
+}
+.rb-spotlight-card:hover::before { opacity: 1; }
+.rb-spotlight-card > * { position: relative; z-index: 1; }
+.rb-tilted-card {
+  will-change: transform;
+  transition: transform 0.14s ease, border-color 0.14s ease, background 0.14s ease;
+}
+
+/* Minimalist Floating Dock */
+.rb-dock-wrap {
+  position: fixed;
+  left: 50%;
+  bottom: 0.85rem;
+  transform: translateX(-50%);
+  z-index: 60;
+}
+.rb-dock {
+  display: flex;
+  align-items: center;
+  gap: 0.38rem;
+  padding: 0.38rem 0.6rem;
+  border-radius: 999px;
+  background: rgba(15, 21, 19, 0.9);
+  border: 1px solid var(--border);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(14px);
+}
+.rb-dock-item {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text);
+  cursor: pointer;
+  transform-origin: bottom center;
+  transition: transform 0.14s ease, border-color 0.14s ease;
+}
+.rb-dock-item:hover {
+  border-color: var(--accent-bright);
+}
+.rb-dock-item.is-active {
+  border-color: var(--accent-bright);
+  background: rgba(16, 185, 129, 0.2);
+}
+.rb-dock-icon { font-size: 0.98rem; line-height: 1; }
+.rb-dock-badge {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  padding: 1px 4px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-size: 0.5rem;
+  font-weight: 700;
+}
+.rb-dock-tooltip {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 0.22rem 0.5rem;
+  border-radius: 6px;
+  background: #0b0f0e;
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-size: 0.66rem;
+  font-weight: 500;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.14s ease;
+}
+.rb-dock-item:hover .rb-dock-tooltip { opacity: 1; }
+
+/* Responsive Breakpoints */
+@media (max-width: 980px) {
+  .sign-workspace .live-layout {
+    grid-template-columns: 1fr;
+  }
+  .workspace-bottom-message {
+    grid-template-columns: 1fr;
+  }
+  .workspace-bottom-side {
+    padding-left: 0;
+    padding-top: 0.85rem;
+    border-left: 0;
+    border-top: 1px solid var(--border);
+  }
+}
+@media (max-width: 640px) {
+  .sign-workspace {
+    padding: 0.75rem 1rem 5rem;
+  }
+  .workspace-intro {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .workspace-language-row {
+    grid-template-columns: 1fr;
+  }
+  .workspace-purpose-choices,
+  .workspace-advanced-grid {
+    grid-template-columns: 1fr;
+  }
+}

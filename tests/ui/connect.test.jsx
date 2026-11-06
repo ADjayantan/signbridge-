@@ -3,13 +3,13 @@ import { act, cleanup, fireEvent, render, screen, within } from "@testing-librar
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
 import ConnectMode from "../../src/modes/ConnectMode.jsx";
 
-const mocks = vi.hoisted(() => ({ room: null, media: null, speaker: null, recognitionCallbacks: null, captureProps: null, listen: vi.fn(), microphone: null }));
+const mocks = vi.hoisted(() => ({ room: null, media: null, speaker: null, videos: null, signVideoProps: null, canListen: true, canSpeak: true, recognitionCallbacks: null, captureProps: null, listen: vi.fn(), microphone: null }));
 vi.mock("../../src/hooks/useRoom.js", () => ({ useRoom: () => mocks.room }));
 vi.mock("../../src/hooks/useRoomMedia.js", () => ({ useRoomMedia: () => mocks.media }));
-vi.mock("../../src/hooks/useSignVideos.js", () => ({ useSignVideos: () => ({ clips: [], error: "" }) }));
-vi.mock("../../src/lib/speech.js", () => ({ canListen: true, canSpeak: true, createSpeaker: () => mocks.speaker, listenOnce: (callbacks) => { mocks.recognitionCallbacks = callbacks; mocks.listen(callbacks); return mocks.microphone; }, listenErrorMessage: () => "Microphone permission denied. Keep typing.", speakErrorMessage: (code) => `Speech playback failed: ${code}. Check laptop audio and try again.` }));
+vi.mock("../../src/hooks/useSignVideos.js", () => ({ useSignVideos: () => mocks.videos }));
+vi.mock("../../src/lib/speech.js", () => ({ get canListen() { return mocks.canListen; }, get canSpeak() { return mocks.canSpeak; }, createSpeaker: () => mocks.speaker, listenOnce: (callbacks) => { mocks.recognitionCallbacks = callbacks; mocks.listen(callbacks); return mocks.microphone; }, listenErrorMessage: () => "Microphone permission denied. Keep typing.", speakErrorMessage: (code) => `Speech playback failed: ${code}. Check laptop audio and try again.` }));
 vi.mock("../../src/components/RoomSignCapture.jsx", () => ({ default: (props) => { mocks.captureProps = props; return <button type="button" onClick={() => props.onAppend({ text: "THANK YOU", lang: "en", inputMethod: "sign", signLanguage: props.signLanguage })}>Add reviewed test sign</button>; } }));
-vi.mock("../../src/components/SignVideoPlayer.jsx", () => ({ default: ({ text, signLanguage }) => <p>Saved video request: {text} ({signLanguage})</p> }));
+vi.mock("../../src/components/SignVideoPlayer.jsx", () => ({ default: (props) => { mocks.signVideoProps = props; return <p>Saved video request: {props.text} ({props.signLanguage})</p>; } }));
 
 const settings = { rate: 1 };
 const back = vi.fn(); const tool = vi.fn();
@@ -29,6 +29,7 @@ const liveRegion = () => document.querySelector(".sr-only[aria-live]");
 beforeEach(() => {
   vi.clearAllMocks(); localStorage.clear(); sessionStorage.clear(); window.location.hash = "#connect";
   mocks.recognitionCallbacks = null; mocks.captureProps = null;
+  mocks.videos = { clips: [], error: "", loading: false }; mocks.signVideoProps = null; mocks.canListen = true; mocks.canSpeak = true;
   mocks.microphone = { abort: vi.fn(), stop: vi.fn() };
   mocks.speaker = { speak: vi.fn().mockResolvedValue(), cancel: vi.fn() };
   mocks.room = { status: "connected", error: "", notice: "", roomId: "room1", participantId: "host", role: "host", inviteUrl: "https://demo.example/#connect?room=room1&invite=private", messages: [], participants: [{ id: "host", online: true }, { id: "guest", online: true }], create: vi.fn(), join: vi.fn(), send: vi.fn().mockResolvedValue({ ok: true, id: "message_1" }), leave: vi.fn(), end: vi.fn(), retry: vi.fn(), askAI: vi.fn().mockResolvedValue({ reply: "Suggested reply" }) };
@@ -37,8 +38,29 @@ beforeEach(() => {
   mocks.room.sendAction = vi.fn().mockResolvedValue({ ok: true, id: "action_1" });
   mocks.room.pendingActions = [];
   mocks.media = { localVideoRef: { current: null }, remoteVideoRef: { current: null }, cameraOn: false, micOn: false, cameraStatus: "off", mediaStatus: "waiting", error: "", notice: "", remoteStream: null, localStream: null, enableCamera: vi.fn(), disableCamera: vi.fn(), enableMic: vi.fn(), disableMic: vi.fn(), retry: vi.fn(), stop: vi.fn(), forceRelay: false, setForceRelay: vi.fn(), remoteAudioEnabled: false, setRemoteAudioEnabled: vi.fn() };
+  Object.assign(mocks.media, { playbackBlocked: false, playbackError: "", retryRemotePlayback: vi.fn(), routeStatus: "unknown", checkVideoRoute: vi.fn() });
 });
 afterEach(cleanup);
+
+test("blocked partner playback exposes an explicit button without resending, reconnecting or enabling devices", () => {
+  const app = setup(); expect(screen.queryByRole("button", { name: "Play partner video/audio" })).toBeNull();
+  mocks.media = { ...mocks.media, playbackBlocked: true, playbackError: "Partner playback is paused. Choose Play partner video/audio to continue.", notice: "Video relay is unavailable." }; app.rerender(view());
+  const play = screen.getByRole("button", { name: "Play partner video/audio" }); expect(play.type).toBe("button"); expect(play.disabled).toBe(false);
+  fireEvent.click(play); expect(mocks.media.retryRemotePlayback).toHaveBeenCalledOnce(); expect(screen.getByText("Video relay is unavailable.")).toBeTruthy();
+  expect(mocks.media.retry).not.toHaveBeenCalled(); expect(mocks.media.enableCamera).not.toHaveBeenCalled(); expect(mocks.media.enableMic).not.toHaveBeenCalled(); expect(mocks.room.send).not.toHaveBeenCalled();
+  mocks.media = { ...mocks.media, playbackBlocked: false, playbackError: "" }; app.rerender(view()); expect(screen.queryByRole("button", { name: "Play partner video/audio" })).toBeNull();
+});
+
+test("video-route control requires a connected peer, shows only route labels, and pauses while checking", () => {
+  const app = setup(); const options = document.querySelector(".room-network-options"); fireEvent.click(options.querySelector("summary"));
+  let check = screen.getByRole("button", { name: "Check video route" }); expect(check.disabled).toBe(true); fireEvent.click(check); expect(mocks.media.checkVideoRoute).not.toHaveBeenCalled();
+  mocks.media = { ...mocks.media, mediaStatus: "connected" }; app.rerender(view()); check = screen.getByRole("button", { name: "Check video route" }); expect(check.disabled).toBe(false); fireEvent.click(check); expect(mocks.media.checkVideoRoute).toHaveBeenCalledOnce();
+  mocks.media = { ...mocks.media, routeStatus: "checking" }; app.rerender(view()); expect(screen.getByRole("button", { name: "Check video route" }).disabled).toBe(true); expect(screen.getByText("Checking the current video route…")).toBeTruthy();
+  for (const [routeStatus, label] of [["relay", "Relay is in use for the selected media connection."], ["direct", "Direct media connection; relay is not in use."], ["mixed", "Selected media connections use both relay and direct routes."], ["unknown", "Video route is not available yet. Connect, then check again."]]) {
+    mocks.media = { ...mocks.media, routeStatus }; app.rerender(view()); expect(screen.getByText(label)).toBeTruthy();
+  }
+  expect(screen.getByText("This checks the current connection route. It does not test video quality or sign recognition.")).toBeTruthy(); expect(mocks.room.send).not.toHaveBeenCalled(); expect(mocks.room.askAI).not.toHaveBeenCalled();
+});
 
 test("reviewed text fills an empty room draft once as editable English text, without an automatic send, AI or speech", async () => {
   const text = "  WATER\nPlease help me.  ", consumed = vi.fn();
@@ -112,6 +134,29 @@ test("voice can be tested locally before joining a room without sending text or 
   expect(mocks.room.send).not.toHaveBeenCalled(); expect(mocks.room.askAI).not.toHaveBeenCalled();
 });
 
+test.each(["idle", "ended"])("standalone sign entry opens the existing local workspace without a room or AI (%s)", (status) => {
+  const savedDraft = { text: "Keep my unsent message", lang: "en", inputMethod: "text", referenceIds: [] };
+  sessionStorage.setItem("signbridge:conversation-draft", JSON.stringify(savedDraft));
+  mocks.room = { ...mocks.room, status, roomId: "", participants: [] };
+  setup();
+  const entry = screen.getByRole("region", { name: "Try signs on this device" });
+  expect(within(entry).getByText(/No room or AI key needed; recognition needs an available local model/)).toBeTruthy();
+  const open = within(entry).getByRole("button", { name: "Sign to text & voice" });
+  expect(open.type).toBe("button"); expect(open.disabled).toBe(false);
+  fireEvent.click(open);
+  expect(tool).toHaveBeenCalledOnce(); expect(tool).toHaveBeenCalledWith("trained-sign");
+  expect(JSON.parse(sessionStorage.getItem("signbridge:conversation-draft"))).toEqual(savedDraft);
+  expect(mocks.room.create).not.toHaveBeenCalled(); expect(mocks.room.join).not.toHaveBeenCalled(); expect(mocks.room.leave).not.toHaveBeenCalled();
+  expect(mocks.media.enableCamera).not.toHaveBeenCalled(); expect(mocks.media.enableMic).not.toHaveBeenCalled();
+  expect(mocks.room.send).not.toHaveBeenCalled(); expect(mocks.room.askAI).not.toHaveBeenCalled(); expect(mocks.speaker.speak).not.toHaveBeenCalled();
+});
+
+test("standalone sign entry stays outside an active conversation", () => {
+  setup();
+  expect(screen.queryByRole("region", { name: "Try signs on this device" })).toBeNull();
+  expect(screen.queryByRole("button", { name: "Sign to text & voice" })).toBeNull();
+});
+
 test("camera sharing does not start word recognition; activation is explicit and keeps the draft", () => {
   mocks.media.cameraOn = true; mocks.media.cameraStatus = "on";
   setup({ inputMethod: "sign" }); write("Keep this reviewed draft");
@@ -127,18 +172,133 @@ test("camera sharing does not start word recognition; activation is explicit and
   expect(mocks.room.send).not.toHaveBeenCalled(); expect(mocks.room.askAI).not.toHaveBeenCalled();
 });
 
+test("optional communication setups preserve the active room, draft, history and languages without starting devices or recognition", () => {
+  mocks.room.messages = [partnerMessage("old1", "Earlier partner message")];
+  mocks.media.cameraOn = true; mocks.media.cameraStatus = "on";
+  setup({ lang: "ta", signLanguage: "asl" }); write("My unsent message");
+  const savedDraft = JSON.parse(sessionStorage.getItem("signbridge:conversation-draft"));
+  const chooseSigns = screen.getByRole("button", { name: /^I use signs/ });
+  fireEvent.click(chooseSigns);
+  expect(JSON.parse(localStorage.getItem("signbridge:communication-preferences"))).toEqual({ inputMethod: "sign", receive: "text", signVideos: true, signLanguage: "asl", lang: "ta" });
+  expect(chooseSigns.getAttribute("aria-pressed")).toBe("true");
+  expect(draft().value).toBe("My unsent message"); expect(within(screen.getByRole("region", { name: "Conversation history" })).getByText("Earlier partner message")).toBeTruthy();
+  expect(screen.getByRole("switch", { name: "Enable hand-joint tracking and word recognition" }).checked).toBe(false);
+  expect(mocks.captureProps).toBeNull();
+  fireEvent.click(screen.getByRole("button", { name: /^I use speech or text/ }));
+  expect(JSON.parse(localStorage.getItem("signbridge:communication-preferences"))).toEqual({ inputMethod: "speech", receive: "speech", signVideos: false, signLanguage: "asl", lang: "ta" });
+  expect(screen.getByRole("radio", { name: "Text + voice", exact: true }).checked).toBe(true);
+  expect(draft().value).toBe("My unsent message"); expect(within(screen.getByRole("region", { name: "Conversation history" })).getByText("Earlier partner message")).toBeTruthy();
+  expect(JSON.parse(sessionStorage.getItem("signbridge:conversation-draft"))).toEqual(savedDraft);
+  expect(mocks.room.leave).not.toHaveBeenCalled(); expect(mocks.room.end).not.toHaveBeenCalled(); expect(mocks.room.create).not.toHaveBeenCalled(); expect(mocks.room.join).not.toHaveBeenCalled();
+  expect(mocks.media.enableCamera).not.toHaveBeenCalled(); expect(mocks.media.enableMic).not.toHaveBeenCalled(); expect(mocks.media.stop).not.toHaveBeenCalled();
+  expect(mocks.listen).not.toHaveBeenCalled(); expect(mocks.speaker.speak).not.toHaveBeenCalled(); expect(mocks.room.send).not.toHaveBeenCalled(); expect(mocks.room.askAI).not.toHaveBeenCalled();
+});
+
+test.each([[false, true, "text", "speech"], [true, false, "speech", "text"], [false, false, "text", "text"]])("speech/text setup uses available browser features (listen=%s, speak=%s)", (listenAvailable, speakAvailable, inputMethod, receive) => {
+  mocks.canListen = listenAvailable; mocks.canSpeak = speakAvailable;
+  setup({ inputMethod: "sign", signVideos: true }); write("Typing always remains available");
+  fireEvent.click(screen.getByRole("button", { name: /^I use speech or text/ }));
+  expect(JSON.parse(localStorage.getItem("signbridge:communication-preferences"))).toMatchObject({ inputMethod, receive, signVideos: false });
+  expect(draft().value).toBe("Typing always remains available"); expect(mocks.listen).not.toHaveBeenCalled(); expect(mocks.speaker.speak).not.toHaveBeenCalled();
+  expect(mocks.media.enableMic).not.toHaveBeenCalled(); expect(mocks.room.send).not.toHaveBeenCalled(); expect(mocks.room.askAI).not.toHaveBeenCalled();
+});
+
+test("choosing a setup cancels dictation and local playback, mutes remote audio, and rejects its late transcript", () => {
+  mocks.media.remoteAudioEnabled = true; mocks.media.setRemoteAudioEnabled.mockImplementation((enabled) => { mocks.media.remoteAudioEnabled = enabled; });
+  setup({ inputMethod: "speech" }); write("Keep my reviewed draft");
+  fireEvent.click(screen.getByRole("button", { name: "Start dictation" })); const pending = mocks.recognitionCallbacks;
+  const remote = screen.getByLabelText("Partner’s live video"); remote.muted = false; const cancels = mocks.speaker.cancel.mock.calls.length;
+  fireEvent.click(screen.getByRole("button", { name: /^I use signs/ }));
+  expect(mocks.microphone.abort).toHaveBeenCalled(); expect(mocks.speaker.cancel.mock.calls.length).toBeGreaterThan(cancels);
+  expect(remote.muted).toBe(true); expect(mocks.media.setRemoteAudioEnabled).toHaveBeenLastCalledWith(false);
+  act(() => pending.onEnd("Late words must not replace this draft")); expect(draft().value).toBe("Keep my reviewed draft");
+  expect(mocks.room.send).not.toHaveBeenCalled(); expect(mocks.room.askAI).not.toHaveBeenCalled();
+});
+
+test("communication setup changes wait for sign capture to finish and never restart previously enabled tracking", () => {
+  setup({ inputMethod: "sign" }); fireEvent.click(screen.getByRole("switch", { name: "Enable hand-joint tracking and word recognition" }));
+  act(() => mocks.captureProps.onActivityChange(true));
+  const before = localStorage.getItem("signbridge:communication-preferences");
+  for (const name of [/^I use signs/, /^I use speech or text/]) { const button = screen.getByRole("button", { name }); expect(button.disabled).toBe(true); fireEvent.click(button); }
+  expect(localStorage.getItem("signbridge:communication-preferences")).toBe(before);
+  expect(screen.getByText(/Finish or cancel the current sign capture/)).toBeTruthy();
+  act(() => mocks.captureProps.onActivityChange(false)); fireEvent.click(screen.getByRole("button", { name: /^I use signs/ }));
+  expect(screen.queryByRole("button", { name: "Add reviewed test sign" })).toBeNull();
+  expect(screen.getByRole("switch", { name: "Enable hand-joint tracking and word recognition" }).checked).toBe(false);
+  expect(mocks.media.enableCamera).not.toHaveBeenCalled(); expect(mocks.room.send).not.toHaveBeenCalled(); expect(mocks.room.askAI).not.toHaveBeenCalled();
+});
+
+test("sign-video availability shows this browser's selected sign language, loading, error and real local clip count", () => {
+  mocks.videos.loading = true; const app = setup({ signVideos: true, signLanguage: "asl" });
+  const availability = () => screen.getByRole("region", { name: "Sign-video availability on this device" });
+  expect(within(availability()).getByText(/Loading this browser's ASL/)).toBeTruthy();
+  expect(within(availability()).queryByText(/No ASL sign videos/)).toBeNull();
+  mocks.videos = { clips: [], error: "Browser storage is blocked.", loading: false }; app.rerender(view());
+  expect(within(availability()).getByRole("alert").textContent).toContain("Partner messages remain visible as text");
+  mocks.videos = { clips: [], error: "", loading: false }; app.rerender(view());
+  expect(within(availability()).getByText(/No ASL sign videos are saved in this browser/)).toBeTruthy();
+  expect(screen.queryByRole("button", { name: "Open saved sign videos" })).toBeNull();
+  expect(within(availability()).getByText(/leave this room first/)).toBeTruthy(); expect(tool).not.toHaveBeenCalled();
+  mocks.videos.clips = [{ signLanguage: "asl", textLanguage: "en" }, { signLanguage: "asl", textLanguage: "ta" }, { signLanguage: "isl", textLanguage: "en" }]; app.rerender(view());
+  expect(within(availability()).getByText(/2 saved ASL clips are available/)).toBeTruthy();
+  expect(within(availability()).getByText(/Each reply needs matching wording and text language/)).toBeTruthy();
+});
+
+test("sign-video library can be opened before a room starts without creating or leaving a conversation", () => {
+  mocks.room = { ...mocks.room, status: "idle", roomId: "", participants: [] }; setup({ signVideos: true });
+  fireEvent.click(screen.getByRole("button", { name: "Open saved sign videos" }));
+  expect(tool).toHaveBeenCalledWith("sign-videos"); expect(mocks.room.create).not.toHaveBeenCalled(); expect(mocks.room.join).not.toHaveBeenCalled(); expect(mocks.room.leave).not.toHaveBeenCalled();
+});
+
 test("a reviewed sign that exceeds the message limit is rejected without changing the draft, then adds after shortening", () => {
   setup({ inputMethod: "sign" }); write("x".repeat(1995));
   fireEvent.click(screen.getByRole("switch", { name: "Enable hand-joint tracking and word recognition" }));
   const word = { text: "THANK YOU", lang: "en", inputMethod: "sign", signLanguage: "isl" };
+  const scroll = vi.fn(); draft().scrollIntoView = scroll;
+  const action = screen.getByRole("button", { name: "Add reviewed test sign" }); action.focus();
   let accepted;
   act(() => { accepted = mocks.captureProps.onAppend(word); });
   expect(accepted).toBe(false); expect(draft().value).toBe("x".repeat(1995));
   expect(screen.getByRole("alert").textContent).toMatch(/2,000 characters/);
+  expect(document.activeElement).toBe(action); expect(scroll).not.toHaveBeenCalled();
+  expect(screen.queryByText(/Reviewed sign added to your draft/)).toBeNull();
   write("Hello"); act(() => { accepted = mocks.captureProps.onAppend(word); });
   expect(accepted).toBe(true); expect(draft().value).toBe("Hello THANK YOU");
+  expect(document.activeElement).toBe(draft()); expect(scroll).toHaveBeenCalledWith({ block: "center" });
+  expect(screen.getByText(/Reviewed sign added to your draft/)).toBeTruthy();
   expect(JSON.parse(sessionStorage.getItem("signbridge:conversation-draft"))).toMatchObject({ inputMethod: "sign", signLanguage: "isl" });
   expect(mocks.room.send).not.toHaveBeenCalled();
+});
+
+test("adding a reviewed sign focuses its draft and explains the explicit send; review edits, captures and sending clear the old feedback", async () => {
+  setup({ inputMethod: "sign", receive: "speech" });
+  fireEvent.click(screen.getByRole("switch", { name: "Enable hand-joint tracking and word recognition" }));
+  fireEvent.click(screen.getByRole("button", { name: "Add reviewed test sign" }));
+  expect(document.activeElement).toBe(draft());
+  expect(screen.getByText(/Check the message, then choose Send to partner.*Nothing has been sent yet/)).toBeTruthy();
+  expect(draft().getAttribute("aria-describedby")).toBe("room-sign-added");
+  expect(mocks.room.send).not.toHaveBeenCalled(); expect(mocks.room.askAI).not.toHaveBeenCalled(); expect(mocks.speaker.speak).not.toHaveBeenCalled();
+  act(() => mocks.captureProps.onReviewChange()); expect(screen.queryByText(/Reviewed sign added to your draft/)).toBeNull();
+  fireEvent.click(screen.getByRole("button", { name: "Add reviewed test sign" }));
+  act(() => mocks.captureProps.onActivityChange(true)); expect(screen.queryByText(/Reviewed sign added to your draft/)).toBeNull();
+  act(() => mocks.captureProps.onActivityChange(false));
+  fireEvent.click(screen.getByRole("button", { name: "Add reviewed test sign" }));
+  write("Edited reviewed message"); expect(screen.queryByText(/Reviewed sign added to your draft/)).toBeNull();
+  expect(draft().getAttribute("aria-describedby")).toBeNull();
+  fireEvent.click(screen.getByRole("button", { name: "Add reviewed test sign" }));
+  await act(async () => send());
+  expect(screen.queryByText(/Reviewed sign added to your draft/)).toBeNull(); expect(mocks.captureProps.addedToDraft).toBe(false);
+  expect(draft().value).toBe(""); expect(mocks.room.send).toHaveBeenCalledOnce();
+});
+
+test("a reviewed sign can be kept locally during reconnection without implying delivery or reading its own message", () => {
+  mocks.room.status = "reconnecting"; setup({ inputMethod: "sign", receive: "speech" });
+  fireEvent.click(screen.getByRole("switch", { name: "Enable hand-joint tracking and word recognition" }));
+  fireEvent.click(screen.getByRole("button", { name: "Add reviewed test sign" }));
+  expect(draft().value).toBe("THANK YOU"); expect(document.activeElement).toBe(draft());
+  expect(screen.getByText(/Your draft is kept. Reconnect before sending/)).toBeTruthy();
+  expect(screen.getByRole("button", { name: "Send to partner" }).disabled).toBe(true);
+  expect(mocks.room.send).not.toHaveBeenCalled(); expect(mocks.room.askAI).not.toHaveBeenCalled(); expect(mocks.speaker.speak).not.toHaveBeenCalled();
 });
 
 test("changing input/output and sign language preserves conversation history and the unsent draft", () => {
@@ -188,7 +348,7 @@ test("screen-reader output announces only new partner messages, with no synthesi
   expect(liveRegion().textContent).toBe(""); expect(liveRegion().getAttribute("aria-live")).toBe("polite");
   const next = partnerMessage("new2", "A new partner message"); updateMessages(app, [...mocks.room.messages, next]); expect(liveRegion().textContent).toBe("Partner: A new partner message");
   updateMessages(app, mocks.room.messages.map((message) => ({ ...message, delivery: "received" }))); expect(liveRegion().textContent).toBe("Partner: A new partner message"); expect(mocks.speaker.speak).not.toHaveBeenCalled();
-  showPreferences(); fireEvent.click(screen.getByRole("radio", { name: "Read aloud", exact: true })); expect(liveRegion().getAttribute("aria-live")).toBe("off"); expect(liveRegion().textContent).toBe(""); expect(mocks.speaker.speak).not.toHaveBeenCalled();
+  showPreferences(); fireEvent.click(screen.getByRole("radio", { name: "Text + voice", exact: true })); expect(liveRegion().getAttribute("aria-live")).toBe("off"); expect(liveRegion().textContent).toBe(""); expect(mocks.speaker.speak).not.toHaveBeenCalled();
 });
 test("identical partner text from distinct IDs creates separate announcements while receipt updates preserve the latest announcement", () => {
   const app = setup({ receive: "screenreader" }); const before = liveRegion().firstElementChild;
@@ -212,6 +372,34 @@ test("read-aloud output reads each new partner message once and silences live mi
   expect(mocks.speaker.speak).toHaveBeenCalledOnce(); expect(mocks.speaker.speak).toHaveBeenCalledWith("Read this partner turn", expect.objectContaining({ lang: "en-IN" }));
   expect(mocks.media.disableMic).toHaveBeenCalled(); expect(mocks.media.setRemoteAudioEnabled).toHaveBeenLastCalledWith(false); expect(liveRegion().getAttribute("aria-live")).toBe("off");
   updateMessages(app, mocks.room.messages.map((message) => ({ ...message, delivery: "received" }))); await act(async () => {}); expect(mocks.speaker.speak).toHaveBeenCalledOnce();
+});
+
+test("speech/text setup shows a fresh reviewed sign as text and speaks it once without replaying history or requesting AI", async () => {
+  mocks.room.messages = [partnerMessage("old1", "Earlier message")]; const app = setup();
+  fireEvent.click(screen.getByRole("button", { name: /^I use speech or text/ }));
+  expect(mocks.speaker.speak).not.toHaveBeenCalled();
+  const incoming = { ...partnerMessage("new2", "HELLO"), inputMethod: "sign", signLanguage: "asl" };
+  updateMessages(app, [mocks.room.messages[0], incoming]); await act(async () => {});
+  expect(screen.getByText("HELLO")).toBeTruthy(); expect(screen.getByText("Reviewed sign · ASL")).toBeTruthy();
+  expect(mocks.speaker.speak).toHaveBeenCalledOnce(); expect(mocks.speaker.speak).toHaveBeenCalledWith("HELLO", expect.objectContaining({ lang: "en-IN" }));
+  updateMessages(app, mocks.room.messages.map((message) => ({ ...message, delivery: "received" }))); await act(async () => {});
+  expect(mocks.speaker.speak).toHaveBeenCalledOnce(); expect(mocks.room.askAI).not.toHaveBeenCalled(); expect(mocks.room.send).not.toHaveBeenCalled();
+});
+
+test("sign setup presents the latest typed or speech reply for recipient-language saved clips, independently of AI and without autoplay", () => {
+  mocks.videos.clips = [{ signLanguage: "asl", textLanguage: "ta", label: "வணக்கம்" }];
+  const app = setup({ signLanguage: "asl", lang: "en" }); fireEvent.click(screen.getByRole("button", { name: /^I use signs/ }));
+  const first = partnerMessage("typed1", "Hello"), latest = { ...partnerMessage("speech2", "வணக்கம்"), inputMethod: "speech", lang: "ta" };
+  updateMessages(app, [first]); expect(mocks.signVideoProps.text).toBe("Hello");
+  updateMessages(app, [first, latest]);
+  const panel = screen.getByRole("region", { name: "Your partner’s reply in signs" });
+  expect(within(panel).getByText("வணக்கம்")).toBeTruthy();
+  expect(mocks.signVideoProps).toMatchObject({ text: "வணக்கம்", signLanguage: "asl", textLanguage: "ta", autoPlay: false });
+  expect(mocks.signVideoProps.clips).toBe(mocks.videos.clips);
+  expect(within(panel).getByText(/Choose Play when a matching saved clip is available/)).toBeTruthy();
+  updateMessages(app, [first, latest, { ...partnerMessage("own3", "My own reviewed message"), senderId: "host" }]);
+  expect(mocks.signVideoProps.text).toBe("வணக்கம்");
+  expect(mocks.speaker.speak).not.toHaveBeenCalled(); expect(mocks.room.askAI).not.toHaveBeenCalled(); expect(mocks.room.send).not.toHaveBeenCalled();
 });
 test.each(["speech", "screenreader"])("%s output cannot accidentally unmute remote live audio", (receive) => {
   setup({ receive }); const toggle = screen.getByRole("switch", { name: /^Listen to partner audio/ }); expect(toggle.disabled).toBe(true); fireEvent.click(toggle);

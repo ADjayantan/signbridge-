@@ -3,7 +3,8 @@ services:
     name: signbridge-conversations
     runtime: node
     plan: free
-    buildCommand: npm ci && npm run build:public
+    autoDeployTrigger: off
+    buildCommand: npm ci --include=dev && npm run build:public
     startCommand: npm start
     healthCheckPath: /api/health
     envVars:

@@ -47,7 +47,7 @@ export default function LiveSignMode({ settings, update, onBack, onLibrary, onLo
     const controller = new AbortController();
     setAI({ state: "checking" });
     checkSignAI({ signal: controller.signal }).then((data) => {
-      if (!controller.signal.aborted) setAI({ state: data.roomAuthRequired ? "room-only" : data.configured ? "configured" : "missing" });
+      if (!controller.signal.aborted) setAI({ state: !data.configured ? "missing" : data.roomAuthRequired ? "room-only" : "configured" });
     }).catch(() => { if (!controller.signal.aborted) setAI({ state: "unavailable" }); });
     return () => controller.abort();
   }, [checkAttempt]);
@@ -123,7 +123,7 @@ export default function LiveSignMode({ settings, update, onBack, onLibrary, onLo
       {ai.state !== "configured" && (
         <aside className="live-setup notice" aria-label="AI setup">
           <strong>{ai.state === "room-only" ? "AI help is available inside rooms" : ai.state === "checking" ? "Checking AI setup…" : ai.state === "missing" ? "AI setup needed" : "AI server unavailable"}</strong>
-          <p>{ai.state === "room-only" ? "Open Connect from Home for optional AI draft help. This interpretation tool runs with AI on the laptop’s development server. Local recording, speech and saved videos remain available here." : ai.state === "missing" ? "Add GEMINI_API_KEY to .env.local and restart npm run dev. Camera recording and your saved videos can still work locally." : "Camera recording stays available. AI interpretation and answers need the server and an internet connection."}</p>
+          <p>{ai.state === "room-only" ? "This server accepts AI requests inside authenticated conversation rooms. Open Connect from Home for optional AI draft help. Recording, local speech and saved videos remain available here." : ai.state === "missing" ? "AI replies and video interpretation are not enabled on this server. Set GEMINI_API_KEY in the server environment and restart the service. Camera recording and local speech remain available." : ai.state === "checking" ? "Camera recording stays available while AI availability is checked." : "The AI server could not be checked. Check your connection, then try again. Camera recording and local speech remain available."}</p>
           <p>The camera preview tracks hands only. Record a turn and interpret it to get words; without AI setup, you can type its meaning after recording and use Speak my message.</p>
           <button type="button" className="btn btn-small" onClick={() => setCheckAttempt((n) => n + 1)} disabled={ai.state === "checking"}>Check AI setup again</button>
         </aside>

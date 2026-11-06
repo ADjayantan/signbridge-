@@ -1,0 +1,1078 @@
+{
+  "format": "signbridge-geometry-experiment-v2",
+  "scope": "Local known-reference diagnostic; not a webcam recognition or new accuracy test",
+  "videoSha256": "61a50323776fe04f732aba8668a1ea8fac09c17d387af26c78a94412f003e7ff",
+  "modelSha256": "55c23fffe387944a102c804676ae91aa7276781d598b7adaf03f0115234acdd9",
+  "source": {
+    "width": 1920,
+    "height": 1088,
+    "durationSeconds": 1.96
+  },
+  "metadataDimensions": {
+    "width": 1920,
+    "height": 1080
+  },
+  "historicalExperimentReference": {
+    "width": 1920,
+    "height": 1088
+  },
+  "tracker": "Existing Tasks Holistic CPU VIDEO loader, fresh instance per condition",
+  "sampling": "Sequential decoded source timestamps; not realtime throughput",
+  "padding": "Centered black aspect-preserving padding; original conditions use a canvas at actual intrinsic dimensions",
+  "resizeSmoothing": {
+    "enabled": true,
+    "quality": "low"
+  },
+  "correction": "Diagnostic centered x offsets times sourceAspect/measuredReferenceAspect; y/z/confidences/timing unchanged",
+  "threshold": 0.95,
+  "requiredMargin": 0.3,
+  "results": [
+    {
+      "name": "original-25",
+      "width": 1920,
+      "height": 1088,
+      "fps": 25,
+      "frameCount": 49,
+      "durationMs": 1960,
+      "factor": 1,
+      "draw": {
+        "scale": 1,
+        "width": 1920,
+        "height": 1088,
+        "offsetX": 0,
+        "offsetY": 0
+      },
+      "observedSourceDimensions": [
+        {
+          "atMs": 0,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 40,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 80,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 120,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 160,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 200,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 240,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 280,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 320,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 360,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 400,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 440,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 480,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 520,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 560,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 600,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 640,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 680,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 720,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 760,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 800,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 840,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 880,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 920,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 960,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 1000,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 1040,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 1080,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 1120,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 1160,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 1200,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 1240,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 1280,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 1320,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 1360,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 1400,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 1440,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 1480,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 1520,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 1560,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 1600,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 1640,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 1680,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 1720,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 1760,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 1800,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 1840,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 1880,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 1920,
+          "width": 1920,
+          "height": 1088
+        }
+      ],
+      "quality": {
+        "passed": true,
+        "code": "",
+        "handFrames": 49,
+        "shoulderFrames": 49,
+        "qualifiedFrames": 49,
+        "largestGapMs": 40
+      },
+      "fixed": {
+        "status": "recognized",
+        "meaning": "HELLO",
+        "score": 0.9784676876239585,
+        "margin": 0.9716245263430285,
+        "topLabel": "HELLO",
+        "topScore": 0.9784676876239585,
+        "inferenceRan": true,
+        "reasonCodes": [
+          "recognized"
+        ],
+        "scorePassed": true,
+        "marginPassed": true,
+        "cameraGate": {
+          "passed": true,
+          "code": ""
+        }
+      },
+      "adjusted": {
+        "status": "recognized",
+        "meaning": "HELLO",
+        "score": 0.9784676876239585,
+        "margin": 0.9716245263430285,
+        "topLabel": "HELLO",
+        "topScore": 0.9784676876239585,
+        "inferenceRan": true,
+        "reasonCodes": [
+          "recognized"
+        ],
+        "scorePassed": true,
+        "marginPassed": true,
+        "cameraGate": {
+          "passed": true,
+          "code": ""
+        }
+      }
+    },
+    {
+      "name": "padded-4x3-25",
+      "width": 1920,
+      "height": 1440,
+      "fps": 25,
+      "frameCount": 49,
+      "durationMs": 1960,
+      "factor": 0.7555555555555555,
+      "draw": {
+        "scale": 1,
+        "width": 1920,
+        "height": 1088,
+        "offsetX": 0,
+        "offsetY": 176
+      },
+      "observedSourceDimensions": [
+        {
+          "atMs": 0,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 40,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 80,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 120,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 160,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 200,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 240,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 280,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 320,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 360,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 400,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 440,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 480,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 520,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 560,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 600,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 640,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 680,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 720,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 760,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 800,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 840,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 880,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 920,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 960,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 1000,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 1040,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 1080,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 1120,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 1160,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 1200,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 1240,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 1280,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 1320,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 1360,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 1400,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 1440,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 1480,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 1520,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 1560,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 1600,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 1640,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 1680,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 1720,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 1760,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 1800,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 1840,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 1880,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 1920,
+          "width": 1920,
+          "height": 1088
+        }
+      ],
+      "quality": {
+        "passed": true,
+        "code": "",
+        "handFrames": 49,
+        "shoulderFrames": 49,
+        "qualifiedFrames": 49,
+        "largestGapMs": 40
+      },
+      "fixed": {
+        "status": "unclear",
+        "meaning": "",
+        "score": 0.6318695372392902,
+        "margin": 0.5526762262424763,
+        "topLabel": "IT",
+        "topScore": 0.6318695372392902,
+        "inferenceRan": true,
+        "reasonCodes": [
+          "low-score"
+        ],
+        "scorePassed": false,
+        "marginPassed": true,
+        "cameraGate": {
+          "passed": true,
+          "code": ""
+        }
+      },
+      "adjusted": {
+        "status": "recognized",
+        "meaning": "HELLO",
+        "score": 0.9744454554852888,
+        "margin": 0.9658767371727375,
+        "topLabel": "HELLO",
+        "topScore": 0.9744454554852888,
+        "inferenceRan": true,
+        "reasonCodes": [
+          "recognized"
+        ],
+        "scorePassed": true,
+        "marginPassed": true,
+        "cameraGate": {
+          "passed": true,
+          "code": ""
+        }
+      }
+    },
+    {
+      "name": "original-8",
+      "width": 1920,
+      "height": 1088,
+      "fps": 8,
+      "frameCount": 16,
+      "durationMs": 1960,
+      "factor": 1,
+      "draw": {
+        "scale": 1,
+        "width": 1920,
+        "height": 1088,
+        "offsetX": 0,
+        "offsetY": 0
+      },
+      "observedSourceDimensions": [
+        {
+          "atMs": 0,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 125,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 250,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 375,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 500,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 625,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 750,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 875,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 1000,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 1125,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 1250,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 1375,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 1500,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 1625,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 1750,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 1875,
+          "width": 1920,
+          "height": 1088
+        }
+      ],
+      "quality": {
+        "passed": true,
+        "code": "",
+        "handFrames": 16,
+        "shoulderFrames": 16,
+        "qualifiedFrames": 16,
+        "largestGapMs": 125
+      },
+      "fixed": {
+        "status": "recognized",
+        "meaning": "HELLO",
+        "score": 0.9836577181667145,
+        "margin": 0.9778200244998542,
+        "topLabel": "HELLO",
+        "topScore": 0.9836577181667145,
+        "inferenceRan": true,
+        "reasonCodes": [
+          "recognized"
+        ],
+        "scorePassed": true,
+        "marginPassed": true,
+        "cameraGate": {
+          "passed": true,
+          "code": ""
+        }
+      },
+      "adjusted": {
+        "status": "recognized",
+        "meaning": "HELLO",
+        "score": 0.9836577181667145,
+        "margin": 0.9778200244998542,
+        "topLabel": "HELLO",
+        "topScore": 0.9836577181667145,
+        "inferenceRan": true,
+        "reasonCodes": [
+          "recognized"
+        ],
+        "scorePassed": true,
+        "marginPassed": true,
+        "cameraGate": {
+          "passed": true,
+          "code": ""
+        }
+      }
+    },
+    {
+      "name": "padded-4x3-8",
+      "width": 1920,
+      "height": 1440,
+      "fps": 8,
+      "frameCount": 16,
+      "durationMs": 1960,
+      "factor": 0.7555555555555555,
+      "draw": {
+        "scale": 1,
+        "width": 1920,
+        "height": 1088,
+        "offsetX": 0,
+        "offsetY": 176
+      },
+      "observedSourceDimensions": [
+        {
+          "atMs": 0,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 125,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 250,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 375,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 500,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 625,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 750,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 875,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 1000,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 1125,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 1250,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 1375,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 1500,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 1625,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 1750,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 1875,
+          "width": 1920,
+          "height": 1088
+        }
+      ],
+      "quality": {
+        "passed": true,
+        "code": "",
+        "handFrames": 16,
+        "shoulderFrames": 16,
+        "qualifiedFrames": 16,
+        "largestGapMs": 125
+      },
+      "fixed": {
+        "status": "unclear",
+        "meaning": "",
+        "score": 0.6961938863626311,
+        "margin": 0.6314970874018772,
+        "topLabel": "IT",
+        "topScore": 0.6961938863626311,
+        "inferenceRan": true,
+        "reasonCodes": [
+          "low-score"
+        ],
+        "scorePassed": false,
+        "marginPassed": true,
+        "cameraGate": {
+          "passed": true,
+          "code": ""
+        }
+      },
+      "adjusted": {
+        "status": "recognized",
+        "meaning": "HELLO",
+        "score": 0.9790056745057429,
+        "margin": 0.9715251276049259,
+        "topLabel": "HELLO",
+        "topScore": 0.9790056745057429,
+        "inferenceRan": true,
+        "reasonCodes": [
+          "recognized"
+        ],
+        "scorePassed": true,
+        "marginPassed": true,
+        "cameraGate": {
+          "passed": true,
+          "code": ""
+        }
+      }
+    },
+    {
+      "name": "resized-4x3-8",
+      "width": 640,
+      "height": 480,
+      "fps": 8,
+      "frameCount": 16,
+      "durationMs": 1960,
+      "factor": 0.7555555555555555,
+      "draw": {
+        "scale": 0.3333333333333333,
+        "width": 640,
+        "height": 362.66666666666663,
+        "offsetX": 0,
+        "offsetY": 58.666666666666686
+      },
+      "observedSourceDimensions": [
+        {
+          "atMs": 0,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 125,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 250,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 375,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 500,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 625,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 750,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 875,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 1000,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 1125,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 1250,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 1375,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 1500,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 1625,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 1750,
+          "width": 1920,
+          "height": 1088
+        },
+        {
+          "atMs": 1875,
+          "width": 1920,
+          "height": 1088
+        }
+      ],
+      "quality": {
+        "passed": true,
+        "code": "",
+        "handFrames": 16,
+        "shoulderFrames": 16,
+        "qualifiedFrames": 16,
+        "largestGapMs": 125
+      },
+      "fixed": {
+        "status": "unclear",
+        "meaning": "",
+        "score": 0.7194760413431617,
+        "margin": 0.6442594403685514,
+        "topLabel": "IT",
+        "topScore": 0.7194760413431617,
+        "inferenceRan": true,
+        "reasonCodes": [
+          "low-score"
+        ],
+        "scorePassed": false,
+        "marginPassed": true,
+        "cameraGate": {
+          "passed": true,
+          "code": ""
+        }
+      },
+      "adjusted": {
+        "status": "unclear",
+        "meaning": "",
+        "score": 0.9430021702380186,
+        "margin": 0.9144866893764473,
+        "topLabel": "HELLO",
+        "topScore": 0.9430021702380186,
+        "inferenceRan": true,
+        "reasonCodes": [
+          "low-score"
+        ],
+        "scorePassed": false,
+        "marginPassed": true,
+        "cameraGate": {
+          "passed": true,
+          "code": ""
+        }
+      }
+    }
+  ],
+  "limits": [
+    "One previously known validation clip; no held-out signer or webcam performance established.",
+    "Metadata and every sampled decoded frame dimension are recorded; changing dimensions fail explicitly.",
+    "The correction is diagnostic only and is not connected to live inference.",
+    "No fabricated quiet tail, duplicated poses, expected-label predictor argument, saved recording or AI request.",
+    "Scalar report only; video and pose coordinates are not returned."
+  ]
+}

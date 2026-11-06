@@ -1,0 +1,785 @@
+{
+  "format": "signbridge-tasks-study-scalar-results-v1",
+  "date": "2026-10-13",
+  "scope": "Measured official-video replay and reused historical archived poses; not user-webcam evidence",
+  "acquisition": {
+    "rawVideos": 60,
+    "learningVideos": 46,
+    "learningFrames": 1056,
+    "learningExtractionSeconds": 158.494,
+    "testVideos": 14,
+    "testFrames": 304,
+    "testExtractionSeconds": 44.986,
+    "allExtractionStatuses": "ok"
+  },
+  "decision": "retain-active-model",
+  "installed": false,
+  "activeModelSha256": "55c23fffe387944a102c804676ae91aa7276781d598b7adaf03f0115234acdd9",
+  "candidates": {
+    "A": {
+      "candidateSha256": "dff40d9aa064429e845604ab4358d361b076f3e64014f5f8f0fe019cf4a59b79",
+      "benchmarkSha256": "5bffbfd70cc7d1bc0d9fec4dbbef93e9dc8a693c51e2664c43e510808364c15c",
+      "testPoseSha256": "f64a71f5087977024ea8dcd817de273a9f96a73e098fd6ff83b4814a4549d3a3",
+      "run": {
+        "epochs": 45,
+        "bestEpoch": 25,
+        "trainingSeconds": 11.836117300001206,
+        "stopReason": "early-stopping"
+      },
+      "tasksValidation": {
+        "clips": 6,
+        "top1_correct": 6,
+        "top1_accuracy": 1.0,
+        "accepted_correct": 2,
+        "accepted_incorrect": 0,
+        "rejected": 4,
+        "unknown_clips": 6,
+        "unknown_false_accepts": 0,
+        "knownSourceClips": 6,
+        "unknownSourceClips": 6,
+        "knownPrecision": 1.0,
+        "correctKnownCoverage": 0.3333333333333333,
+        "unknownFalseAcceptRateAllSource": 0.0,
+        "focusWords": {
+          "HELLO": {
+            "clips": 1,
+            "top1Correct": 1,
+            "acceptedCorrect": 0,
+            "acceptedIncorrect": 0,
+            "eligibleClips": 1,
+            "qualityRejected": 0
+          },
+          "THANK YOU": {
+            "clips": 1,
+            "top1Correct": 1,
+            "acceptedCorrect": 0,
+            "acceptedIncorrect": 0,
+            "eligibleClips": 1,
+            "qualityRejected": 0
+          },
+          "GOOD MORNING": {
+            "clips": 2,
+            "top1Correct": 2,
+            "acceptedCorrect": 0,
+            "acceptedIncorrect": 0,
+            "eligibleClips": 2,
+            "qualityRejected": 0
+          },
+          "FATHER": {
+            "clips": 2,
+            "top1Correct": 2,
+            "acceptedCorrect": 2,
+            "acceptedIncorrect": 0,
+            "eligibleClips": 2,
+            "qualityRejected": 0
+          }
+        }
+      },
+      "tasksTest": {
+        "clips": 8,
+        "top1_correct": 7,
+        "top1_accuracy": 0.875,
+        "accepted_correct": 1,
+        "accepted_incorrect": 0,
+        "rejected": 7,
+        "unknown_clips": 6,
+        "unknown_false_accepts": 0,
+        "knownSourceClips": 8,
+        "unknownSourceClips": 6,
+        "knownPrecision": 1.0,
+        "correctKnownCoverage": 0.125,
+        "unknownFalseAcceptRateAllSource": 0.0,
+        "focusWords": {
+          "HELLO": {
+            "clips": 2,
+            "top1Correct": 2,
+            "acceptedCorrect": 0,
+            "acceptedIncorrect": 0,
+            "eligibleClips": 2,
+            "qualityRejected": 0
+          },
+          "THANK YOU": {
+            "clips": 2,
+            "top1Correct": 2,
+            "acceptedCorrect": 1,
+            "acceptedIncorrect": 0,
+            "eligibleClips": 2,
+            "qualityRejected": 0
+          },
+          "GOOD MORNING": {
+            "clips": 2,
+            "top1Correct": 2,
+            "acceptedCorrect": 0,
+            "acceptedIncorrect": 0,
+            "eligibleClips": 2,
+            "qualityRejected": 0
+          },
+          "FATHER": {
+            "clips": 2,
+            "top1Correct": 1,
+            "acceptedCorrect": 0,
+            "acceptedIncorrect": 0,
+            "eligibleClips": 2,
+            "qualityRejected": 0
+          }
+        }
+      },
+      "historical": {
+        "validation": {
+          "candidate": {
+            "clips": 117,
+            "top1_correct": 99,
+            "top1_accuracy": 0.8462,
+            "accepted_correct": 32,
+            "accepted_incorrect": 0,
+            "rejected": 85,
+            "unknown_clips": 100,
+            "unknown_false_accepts": 4,
+            "knownSourceClips": 117,
+            "unknownSourceClips": 100,
+            "knownPrecision": 1.0,
+            "correctKnownCoverage": 0.27350427350427353,
+            "unknownFalseAcceptRateAllSource": 0.04,
+            "focusWords": {
+              "HELLO": {
+                "clips": 2,
+                "top1Correct": 2,
+                "acceptedCorrect": 0,
+                "acceptedIncorrect": 0
+              },
+              "THANK YOU": {
+                "clips": 2,
+                "top1Correct": 2,
+                "acceptedCorrect": 0,
+                "acceptedIncorrect": 0
+              },
+              "GOOD MORNING": {
+                "clips": 3,
+                "top1Correct": 1,
+                "acceptedCorrect": 0,
+                "acceptedIncorrect": 0
+              },
+              "FATHER": {
+                "clips": 3,
+                "top1Correct": 3,
+                "acceptedCorrect": 3,
+                "acceptedIncorrect": 0
+              }
+            }
+          },
+          "initial": {
+            "clips": 117,
+            "top1_correct": 105,
+            "top1_accuracy": 0.8974,
+            "accepted_correct": 83,
+            "accepted_incorrect": 3,
+            "rejected": 31,
+            "unknown_clips": 100,
+            "unknown_false_accepts": 23,
+            "knownSourceClips": 117,
+            "unknownSourceClips": 100,
+            "knownPrecision": 0.9651162790697675,
+            "correctKnownCoverage": 0.7094017094017094,
+            "unknownFalseAcceptRateAllSource": 0.23,
+            "focusWords": {
+              "HELLO": {
+                "clips": 2,
+                "top1Correct": 2,
+                "acceptedCorrect": 2,
+                "acceptedIncorrect": 0
+              },
+              "THANK YOU": {
+                "clips": 2,
+                "top1Correct": 2,
+                "acceptedCorrect": 2,
+                "acceptedIncorrect": 0
+              },
+              "GOOD MORNING": {
+                "clips": 3,
+                "top1Correct": 3,
+                "acceptedCorrect": 1,
+                "acceptedIncorrect": 0
+              },
+              "FATHER": {
+                "clips": 3,
+                "top1Correct": 3,
+                "acceptedCorrect": 3,
+                "acceptedIncorrect": 0
+              }
+            }
+          },
+          "activeBaseline": {
+            "clips": 117,
+            "top1_correct": 90,
+            "top1_accuracy": 0.7692,
+            "accepted_correct": 47,
+            "accepted_incorrect": 6,
+            "rejected": 64,
+            "unknown_clips": 100,
+            "unknown_false_accepts": 10,
+            "knownSourceClips": 117,
+            "unknownSourceClips": 100,
+            "knownPrecision": 0.8867924528301887,
+            "correctKnownCoverage": 0.4017094017094017,
+            "unknownFalseAcceptRateAllSource": 0.1,
+            "focusWords": {
+              "HELLO": {
+                "clips": 2,
+                "top1Correct": 2,
+                "acceptedCorrect": 1,
+                "acceptedIncorrect": 0
+              },
+              "THANK YOU": {
+                "clips": 2,
+                "top1Correct": 2,
+                "acceptedCorrect": 0,
+                "acceptedIncorrect": 0
+              },
+              "GOOD MORNING": {
+                "clips": 3,
+                "top1Correct": 1,
+                "acceptedCorrect": 1,
+                "acceptedIncorrect": 1
+              },
+              "FATHER": {
+                "clips": 3,
+                "top1Correct": 2,
+                "acceptedCorrect": 2,
+                "acceptedIncorrect": 0
+              }
+            }
+          }
+        },
+        "test": {
+          "candidate": {
+            "clips": 192,
+            "top1_correct": 176,
+            "top1_accuracy": 0.9167,
+            "accepted_correct": 47,
+            "accepted_incorrect": 1,
+            "rejected": 144,
+            "unknown_clips": 200,
+            "unknown_false_accepts": 3,
+            "knownSourceClips": 192,
+            "unknownSourceClips": 200,
+            "knownPrecision": 0.9791666666666666,
+            "correctKnownCoverage": 0.24479166666666666,
+            "unknownFalseAcceptRateAllSource": 0.015,
+            "focusWords": {
+              "HELLO": {
+                "clips": 7,
+                "top1Correct": 7,
+                "acceptedCorrect": 3,
+                "acceptedIncorrect": 0
+              },
+              "THANK YOU": {
+                "clips": 7,
+                "top1Correct": 7,
+                "acceptedCorrect": 6,
+                "acceptedIncorrect": 0
+              },
+              "GOOD MORNING": {
+                "clips": 4,
+                "top1Correct": 4,
+                "acceptedCorrect": 0,
+                "acceptedIncorrect": 0
+              },
+              "FATHER": {
+                "clips": 2,
+                "top1Correct": 1,
+                "acceptedCorrect": 1,
+                "acceptedIncorrect": 0
+              }
+            }
+          },
+          "initial": {
+            "clips": 192,
+            "top1_correct": 179,
+            "top1_accuracy": 0.9323,
+            "accepted_correct": 133,
+            "accepted_incorrect": 3,
+            "rejected": 56,
+            "unknown_clips": 200,
+            "unknown_false_accepts": 36,
+            "knownSourceClips": 192,
+            "unknownSourceClips": 200,
+            "knownPrecision": 0.9779411764705882,
+            "correctKnownCoverage": 0.6927083333333334,
+            "unknownFalseAcceptRateAllSource": 0.18,
+            "focusWords": {
+              "HELLO": {
+                "clips": 7,
+                "top1Correct": 6,
+                "acceptedCorrect": 6,
+                "acceptedIncorrect": 0
+              },
+              "THANK YOU": {
+                "clips": 7,
+                "top1Correct": 7,
+                "acceptedCorrect": 7,
+                "acceptedIncorrect": 0
+              },
+              "GOOD MORNING": {
+                "clips": 4,
+                "top1Correct": 4,
+                "acceptedCorrect": 1,
+                "acceptedIncorrect": 0
+              },
+              "FATHER": {
+                "clips": 2,
+                "top1Correct": 1,
+                "acceptedCorrect": 1,
+                "acceptedIncorrect": 0
+              }
+            }
+          },
+          "activeBaseline": {
+            "clips": 192,
+            "top1_correct": 144,
+            "top1_accuracy": 0.75,
+            "accepted_correct": 90,
+            "accepted_incorrect": 3,
+            "rejected": 99,
+            "unknown_clips": 200,
+            "unknown_false_accepts": 27,
+            "knownSourceClips": 192,
+            "unknownSourceClips": 200,
+            "knownPrecision": 0.967741935483871,
+            "correctKnownCoverage": 0.46875,
+            "unknownFalseAcceptRateAllSource": 0.135,
+            "focusWords": {
+              "HELLO": {
+                "clips": 7,
+                "top1Correct": 4,
+                "acceptedCorrect": 3,
+                "acceptedIncorrect": 0
+              },
+              "THANK YOU": {
+                "clips": 7,
+                "top1Correct": 7,
+                "acceptedCorrect": 5,
+                "acceptedIncorrect": 0
+              },
+              "GOOD MORNING": {
+                "clips": 4,
+                "top1Correct": 1,
+                "acceptedCorrect": 1,
+                "acceptedIncorrect": 0
+              },
+              "FATHER": {
+                "clips": 2,
+                "top1Correct": 1,
+                "acceptedCorrect": 1,
+                "acceptedIncorrect": 0
+              }
+            }
+          }
+        }
+      },
+      "numericalParity": {
+        "modelSha256": "dff40d9aa064429e845604ab4358d361b076f3e64014f5f8f0fe019cf4a59b79",
+        "validationFixtures": 3,
+        "maxFeatureError": 6.108504395641035e-07,
+        "maxProbabilityError": 4.72325160122411e-07,
+        "tolerance": 1e-05,
+        "emptyDetectionGatePassed": true,
+        "passed": true,
+        "scope": "Native Python / browser JavaScript numerical parity and empty-frame gate; not webcam accuracy or idle-camera evaluation"
+      },
+      "gateFailures": [
+        "Tasks validation and test correct coverage below 60%",
+        "No correctly accepted HELLO test recording",
+        "Historical validation and test correct coverage below 60%; worse than active baseline"
+      ]
+    },
+    "B": {
+      "candidateSha256": "e44e19d151f8a73d9b983af277a05fc3032e3d3a504102391d0255ab23afe2d3",
+      "benchmarkSha256": "c26ec534890a5d336bf0e5e0de860295f5399fcb1f41ff891e8552790c706fb6",
+      "testPoseSha256": "f64a71f5087977024ea8dcd817de273a9f96a73e098fd6ff83b4814a4549d3a3",
+      "run": {
+        "epochs": 47,
+        "bestEpoch": 27,
+        "trainingSeconds": 16.03051989999949,
+        "stopReason": "early-stopping"
+      },
+      "tasksValidation": {
+        "clips": 6,
+        "top1_correct": 5,
+        "top1_accuracy": 0.8333,
+        "accepted_correct": 5,
+        "accepted_incorrect": 0,
+        "rejected": 1,
+        "unknown_clips": 6,
+        "unknown_false_accepts": 1,
+        "knownSourceClips": 6,
+        "unknownSourceClips": 6,
+        "knownPrecision": 1.0,
+        "correctKnownCoverage": 0.8333333333333334,
+        "unknownFalseAcceptRateAllSource": 0.16666666666666666,
+        "focusWords": {
+          "HELLO": {
+            "clips": 1,
+            "top1Correct": 1,
+            "acceptedCorrect": 1,
+            "acceptedIncorrect": 0,
+            "eligibleClips": 1,
+            "qualityRejected": 0
+          },
+          "THANK YOU": {
+            "clips": 1,
+            "top1Correct": 0,
+            "acceptedCorrect": 0,
+            "acceptedIncorrect": 0,
+            "eligibleClips": 1,
+            "qualityRejected": 0
+          },
+          "GOOD MORNING": {
+            "clips": 2,
+            "top1Correct": 2,
+            "acceptedCorrect": 2,
+            "acceptedIncorrect": 0,
+            "eligibleClips": 2,
+            "qualityRejected": 0
+          },
+          "FATHER": {
+            "clips": 2,
+            "top1Correct": 2,
+            "acceptedCorrect": 2,
+            "acceptedIncorrect": 0,
+            "eligibleClips": 2,
+            "qualityRejected": 0
+          }
+        }
+      },
+      "tasksTest": {
+        "clips": 8,
+        "top1_correct": 6,
+        "top1_accuracy": 0.75,
+        "accepted_correct": 2,
+        "accepted_incorrect": 0,
+        "rejected": 6,
+        "unknown_clips": 6,
+        "unknown_false_accepts": 2,
+        "knownSourceClips": 8,
+        "unknownSourceClips": 6,
+        "knownPrecision": 1.0,
+        "correctKnownCoverage": 0.25,
+        "unknownFalseAcceptRateAllSource": 0.3333333333333333,
+        "focusWords": {
+          "HELLO": {
+            "clips": 2,
+            "top1Correct": 2,
+            "acceptedCorrect": 1,
+            "acceptedIncorrect": 0,
+            "eligibleClips": 2,
+            "qualityRejected": 0
+          },
+          "THANK YOU": {
+            "clips": 2,
+            "top1Correct": 1,
+            "acceptedCorrect": 1,
+            "acceptedIncorrect": 0,
+            "eligibleClips": 2,
+            "qualityRejected": 0
+          },
+          "GOOD MORNING": {
+            "clips": 2,
+            "top1Correct": 2,
+            "acceptedCorrect": 0,
+            "acceptedIncorrect": 0,
+            "eligibleClips": 2,
+            "qualityRejected": 0
+          },
+          "FATHER": {
+            "clips": 2,
+            "top1Correct": 1,
+            "acceptedCorrect": 0,
+            "acceptedIncorrect": 0,
+            "eligibleClips": 2,
+            "qualityRejected": 0
+          }
+        }
+      },
+      "historical": {
+        "validation": {
+          "candidate": {
+            "clips": 117,
+            "top1_correct": 102,
+            "top1_accuracy": 0.8718,
+            "accepted_correct": 25,
+            "accepted_incorrect": 0,
+            "rejected": 92,
+            "unknown_clips": 100,
+            "unknown_false_accepts": 3,
+            "knownSourceClips": 117,
+            "unknownSourceClips": 100,
+            "knownPrecision": 1.0,
+            "correctKnownCoverage": 0.21367521367521367,
+            "unknownFalseAcceptRateAllSource": 0.03,
+            "focusWords": {
+              "HELLO": {
+                "clips": 2,
+                "top1Correct": 2,
+                "acceptedCorrect": 0,
+                "acceptedIncorrect": 0
+              },
+              "THANK YOU": {
+                "clips": 2,
+                "top1Correct": 2,
+                "acceptedCorrect": 1,
+                "acceptedIncorrect": 0
+              },
+              "GOOD MORNING": {
+                "clips": 3,
+                "top1Correct": 3,
+                "acceptedCorrect": 0,
+                "acceptedIncorrect": 0
+              },
+              "FATHER": {
+                "clips": 3,
+                "top1Correct": 3,
+                "acceptedCorrect": 3,
+                "acceptedIncorrect": 0
+              }
+            }
+          },
+          "initial": {
+            "clips": 117,
+            "top1_correct": 105,
+            "top1_accuracy": 0.8974,
+            "accepted_correct": 83,
+            "accepted_incorrect": 3,
+            "rejected": 31,
+            "unknown_clips": 100,
+            "unknown_false_accepts": 23,
+            "knownSourceClips": 117,
+            "unknownSourceClips": 100,
+            "knownPrecision": 0.9651162790697675,
+            "correctKnownCoverage": 0.7094017094017094,
+            "unknownFalseAcceptRateAllSource": 0.23,
+            "focusWords": {
+              "HELLO": {
+                "clips": 2,
+                "top1Correct": 2,
+                "acceptedCorrect": 2,
+                "acceptedIncorrect": 0
+              },
+              "THANK YOU": {
+                "clips": 2,
+                "top1Correct": 2,
+                "acceptedCorrect": 2,
+                "acceptedIncorrect": 0
+              },
+              "GOOD MORNING": {
+                "clips": 3,
+                "top1Correct": 3,
+                "acceptedCorrect": 1,
+                "acceptedIncorrect": 0
+              },
+              "FATHER": {
+                "clips": 3,
+                "top1Correct": 3,
+                "acceptedCorrect": 3,
+                "acceptedIncorrect": 0
+              }
+            }
+          },
+          "activeBaseline": {
+            "clips": 117,
+            "top1_correct": 90,
+            "top1_accuracy": 0.7692,
+            "accepted_correct": 47,
+            "accepted_incorrect": 6,
+            "rejected": 64,
+            "unknown_clips": 100,
+            "unknown_false_accepts": 10,
+            "knownSourceClips": 117,
+            "unknownSourceClips": 100,
+            "knownPrecision": 0.8867924528301887,
+            "correctKnownCoverage": 0.4017094017094017,
+            "unknownFalseAcceptRateAllSource": 0.1,
+            "focusWords": {
+              "HELLO": {
+                "clips": 2,
+                "top1Correct": 2,
+                "acceptedCorrect": 1,
+                "acceptedIncorrect": 0
+              },
+              "THANK YOU": {
+                "clips": 2,
+                "top1Correct": 2,
+                "acceptedCorrect": 0,
+                "acceptedIncorrect": 0
+              },
+              "GOOD MORNING": {
+                "clips": 3,
+                "top1Correct": 1,
+                "acceptedCorrect": 1,
+                "acceptedIncorrect": 1
+              },
+              "FATHER": {
+                "clips": 3,
+                "top1Correct": 2,
+                "acceptedCorrect": 2,
+                "acceptedIncorrect": 0
+              }
+            }
+          }
+        },
+        "test": {
+          "candidate": {
+            "clips": 192,
+            "top1_correct": 178,
+            "top1_accuracy": 0.9271,
+            "accepted_correct": 36,
+            "accepted_incorrect": 1,
+            "rejected": 155,
+            "unknown_clips": 200,
+            "unknown_false_accepts": 4,
+            "knownSourceClips": 192,
+            "unknownSourceClips": 200,
+            "knownPrecision": 0.972972972972973,
+            "correctKnownCoverage": 0.1875,
+            "unknownFalseAcceptRateAllSource": 0.02,
+            "focusWords": {
+              "HELLO": {
+                "clips": 7,
+                "top1Correct": 7,
+                "acceptedCorrect": 3,
+                "acceptedIncorrect": 0
+              },
+              "THANK YOU": {
+                "clips": 7,
+                "top1Correct": 7,
+                "acceptedCorrect": 6,
+                "acceptedIncorrect": 0
+              },
+              "GOOD MORNING": {
+                "clips": 4,
+                "top1Correct": 4,
+                "acceptedCorrect": 0,
+                "acceptedIncorrect": 0
+              },
+              "FATHER": {
+                "clips": 2,
+                "top1Correct": 1,
+                "acceptedCorrect": 0,
+                "acceptedIncorrect": 0
+              }
+            }
+          },
+          "initial": {
+            "clips": 192,
+            "top1_correct": 179,
+            "top1_accuracy": 0.9323,
+            "accepted_correct": 133,
+            "accepted_incorrect": 3,
+            "rejected": 56,
+            "unknown_clips": 200,
+            "unknown_false_accepts": 36,
+            "knownSourceClips": 192,
+            "unknownSourceClips": 200,
+            "knownPrecision": 0.9779411764705882,
+            "correctKnownCoverage": 0.6927083333333334,
+            "unknownFalseAcceptRateAllSource": 0.18,
+            "focusWords": {
+              "HELLO": {
+                "clips": 7,
+                "top1Correct": 6,
+                "acceptedCorrect": 6,
+                "acceptedIncorrect": 0
+              },
+              "THANK YOU": {
+                "clips": 7,
+                "top1Correct": 7,
+                "acceptedCorrect": 7,
+                "acceptedIncorrect": 0
+              },
+              "GOOD MORNING": {
+                "clips": 4,
+                "top1Correct": 4,
+                "acceptedCorrect": 1,
+                "acceptedIncorrect": 0
+              },
+              "FATHER": {
+                "clips": 2,
+                "top1Correct": 1,
+                "acceptedCorrect": 1,
+                "acceptedIncorrect": 0
+              }
+            }
+          },
+          "activeBaseline": {
+            "clips": 192,
+            "top1_correct": 144,
+            "top1_accuracy": 0.75,
+            "accepted_correct": 90,
+            "accepted_incorrect": 3,
+            "rejected": 99,
+            "unknown_clips": 200,
+            "unknown_false_accepts": 27,
+            "knownSourceClips": 192,
+            "unknownSourceClips": 200,
+            "knownPrecision": 0.967741935483871,
+            "correctKnownCoverage": 0.46875,
+            "unknownFalseAcceptRateAllSource": 0.135,
+            "focusWords": {
+              "HELLO": {
+                "clips": 7,
+                "top1Correct": 4,
+                "acceptedCorrect": 3,
+                "acceptedIncorrect": 0
+              },
+              "THANK YOU": {
+                "clips": 7,
+                "top1Correct": 7,
+                "acceptedCorrect": 5,
+                "acceptedIncorrect": 0
+              },
+              "GOOD MORNING": {
+                "clips": 4,
+                "top1Correct": 1,
+                "acceptedCorrect": 1,
+                "acceptedIncorrect": 0
+              },
+              "FATHER": {
+                "clips": 2,
+                "top1Correct": 1,
+                "acceptedCorrect": 1,
+                "acceptedIncorrect": 0
+              }
+            }
+          }
+        }
+      },
+      "numericalParity": {
+        "modelSha256": "e44e19d151f8a73d9b983af277a05fc3032e3d3a504102391d0255ab23afe2d3",
+        "validationFixtures": 3,
+        "maxFeatureError": 6.108504395641035e-07,
+        "maxProbabilityError": 1.0389993319037671e-06,
+        "tolerance": 1e-05,
+        "emptyDetectionGatePassed": true,
+        "passed": true,
+        "scope": "Native Python / browser JavaScript numerical parity and empty-frame gate; not webcam accuracy or idle-camera evaluation"
+      },
+      "gateFailures": [
+        "Tasks validation and test unsupported false acceptance above 5%",
+        "Tasks test correct coverage below 60%",
+        "Historical validation and test correct coverage below 60%; worse than active baseline"
+      ]
+    }
+  },
+  "trainingInventory": {
+    "distinctKnownSourceRecordings": 628,
+    "knownRepresentationRowsBeforeWeights": 650,
+    "newTasksKnownReextractionsOfLegacyTrainIds": 22,
+    "distinctUnsupportedTrainingRecordings": 212,
+    "newTasksUnsupportedTrainingRecordings": 12,
+    "archiveUnsupportedTrainingRecordings": 200,
+    "stageAKnownWeightedEntries": 716,
+    "stageBKnownWeightedEntries": 980,
+    "stageAUnsupportedWeightedEntries": 212,
+    "stageBUnsupportedWeightedEntries": 248,
+    "metadataErratum": "Frozen distinctKnownTrainingClips=650 counts representations from two detector versions, not independent source recordings; the actual union is 628. Frozen sources and weights were preserved."
+  }
+}

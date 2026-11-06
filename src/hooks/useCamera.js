@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { analyzeCameraFrame } from "../lib/cameraFrameHealth.js";
 
 function preferredCamera(devices) {
   const virtual = (d) => /virtual|redmi|phone|droid|iriun|obs|snap camera|continuity/i.test(d.label);
@@ -28,14 +29,18 @@ function cameraErrorMessage(err) {
 /**
  * Starts the camera while `active` is true and stops it afterwards.
  * Render <video ref={videoRef} muted playsInline /> at all times so the stream has a target.
+ * preferredFormat "widescreen" requests 1280×720 when the camera supports it.
+ * All format constraints are ideals; the browser's actual stream may differ.
  * status: "off" | "starting" | "on" | "error"
  */
-export function useCamera({ active, facingMode = "user", deviceId = "" }) {
+export function useCamera({ active, facingMode = "user", deviceId = "", preferredFormat = "standard" }) {
   const videoRef = useRef(null);
   const [attempt, setAttempt] = useState(0);
   const [result, setResult] = useState({ key: "", status: "starting", error: "" });
+  const [health, setHealth] = useState({ key: "", value: "unknown" });
   const [devices, setDevices] = useState([]);
-  const key = JSON.stringify([facingMode, deviceId, attempt]);
+  const format = preferredFormat === "widescreen" ? "widescreen" : "standard";
+  const key = JSON.stringify([facingMode, deviceId, format, attempt]);
 
   useEffect(() => {
     if (!active) return undefined;
@@ -58,7 +63,11 @@ export function useCamera({ active, facingMode = "user", deviceId = "" }) {
       } catch { return []; }
     };
     const open = (id) => navigator.mediaDevices.getUserMedia({
-      video: { ...(id ? { deviceId: { exact: id } } : { facingMode }), width: { ideal: 640 }, height: { ideal: 480 } },
+      video: { ...(id ? { deviceId: { exact: id } } : { facingMode }),
+        ...(format === "widescreen"
+          ? { width: { ideal: 1280 }, height: { ideal: 720 }, aspectRatio: { ideal: 16 / 9 } }
+          : { width: { ideal: 640 }, height: { ideal: 480 } }),
+      },
       audio: false,
     });
 
@@ -100,9 +109,43 @@ export function useCamera({ active, facingMode = "user", deviceId = "" }) {
       if (video) video.srcObject = null;
       setResult({ key: "", status: "starting", error: "" });
     };
-  }, [active, facingMode, deviceId, key]);
+  }, [active, facingMode, deviceId, format, key]);
 
   const retry = useCallback(() => setAttempt((n) => n + 1), []);
   const current = result.key === key ? result : { status: "starting", error: "" };
-  return { videoRef, status: active ? current.status : "off", error: active ? current.error : "", name: active && current.status === "on" ? current.name : "", selectedDeviceId: current.deviceId || deviceId, devices, retry };
+  useEffect(() => {
+    let cancelled = false, consecutiveDark = 0;
+    const publish = (value) => {
+      if (!cancelled) setHealth((previous) => previous.key === key && previous.value === value ? previous : { key, value });
+    };
+    publish("unknown");
+    if (!active || current.status !== "on") return undefined;
+    const canvas = document.createElement("canvas");
+    canvas.width = 32; canvas.height = 24;
+    let context = null;
+    const sample = () => {
+      const video = videoRef.current;
+      let next = "unknown";
+      if (video?.readyState >= 2 && video.videoWidth && video.videoHeight && !video.paused && !video.ended) {
+        try {
+          context ||= canvas.getContext("2d", { willReadFrequently: true });
+          if (context) {
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            next = analyzeCameraFrame(context.getImageData(0, 0, canvas.width, canvas.height));
+          }
+        } catch { /* Unreadable frames are unknown, not a dark-camera diagnosis. */ }
+      }
+      if (next === "dark") {
+        consecutiveDark++;
+        if (consecutiveDark >= 3) publish("dark");
+      } else {
+        consecutiveDark = 0;
+        publish(next);
+      }
+    };
+    sample();
+    const timer = setInterval(sample, 1000);
+    return () => { cancelled = true; clearInterval(timer); canvas.width = 0; canvas.height = 0; };
+  }, [active, key, current.status]);
+  return { videoRef, status: active ? current.status : "off", error: active ? current.error : "", name: active && current.status === "on" ? current.name : "", selectedDeviceId: current.deviceId || deviceId, devices, retry, frameHealth: active && current.status === "on" && health.key === key ? health.value : "unknown" };
 }

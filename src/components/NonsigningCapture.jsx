@@ -18,16 +18,17 @@ export default function NonsigningCapture({ signLanguage, store, disabled = fals
   const [error, setError] = useState(""), [notice, setNotice] = useState(""), [fresh, setFresh] = useState(false);
   const [reloading, setReloading] = useState(false);
   const [sessionId] = useState(() => `nonsigning-${Date.now().toString(36)}`);
-  const camera = useCamera({ active: cameraOn });
+  const camera = useCamera({ active: cameraOn, preferredFormat: "widescreen" });
   const recording = useRef(false), frames = useRef([]), started = useRef(0), lastFrame = useRef(null);
   const alive = useRef(true), epoch = useRef(0), pending = useRef(false), finishRef = useRef(null), freshnessTimer = useRef(0);
   const quality = review?.quality;
   const resetConsent = () => { setAttested(false); setConsent(false); setNotice(""); };
   const clearCapture = () => { recording.current = false; frames.current = []; epoch.current++; setReview(null); setElapsed(0); setPhase("ready"); resetConsent(); };
-  const tracking = usePoseTracking({ videoRef: camera.videoRef, active: camera.status === "on", onFrame: (detected) => {
+  const tracking = usePoseTracking({ videoRef: camera.videoRef, active: camera.status === "on", onFrame: (detected, video, captureContext) => {
     const now = performance.now();
     if (!alive.current || !cameraOn || !Number.isFinite(now) || (lastFrame.current !== null && now <= lastFrame.current)) return;
     const pose = poseFrameFromHolistic(detected);
+    if (captureContext) pose.captureContext = captureContext;
     if (!copyNonsigningFrame(pose, 0)) return;
     lastFrame.current = now; setFresh(true); clearTimeout(freshnessTimer.current);
     freshnessTimer.current = setTimeout(() => { if (alive.current) setFresh(false); }, 1000);
@@ -48,7 +49,7 @@ export default function NonsigningCapture({ signLanguage, store, disabled = fals
   const finish = () => {
     if (!recording.current) return;
     recording.current = false;
-    const durationMs = Math.min(NONSIGNING_CAPTURE_MS, Math.max(0, performance.now() - started.current));
+    const durationMs = Math.max(0, performance.now() - started.current);
     const captured = frames.current; frames.current = [];
     setElapsed(durationMs); setReview({ frames: captured, quality: assessNonsigningCapture(captured, durationMs) }); setPhase("review"); resetConsent();
   };
@@ -79,7 +80,7 @@ export default function NonsigningCapture({ signLanguage, store, disabled = fals
     const currentEpoch = epoch.current, captured = review.frames;
     pending.current = true; setPhase("saving"); setError(""); setNotice("");
     try {
-      await store.add({ signLanguage, signerId: signer.trim(), sessionId, frames: captured, kind: "unknown", label: "__unknown__", negativeType: "nonsigning", consent: true });
+      await store.add({ signLanguage, signerId: signer.trim(), sessionId, frames: captured, captureDurationMs: quality.durationMs, kind: "unknown", label: "__unknown__", negativeType: "nonsigning", consent: true });
       if (alive.current && epoch.current === currentEpoch) { setAttested(false); setConsent(false); setReview(null); setElapsed(0); setNotice("Saved one nonsigning example locally. The recognition model has not been retrained."); setPhase("ready"); }
     } catch (cause) { if (alive.current && epoch.current === currentEpoch) { setError(cause?.message || "Could not save this example. The recording is kept for retry."); setPhase("review"); } }
     finally { pending.current = false; }

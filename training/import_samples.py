@@ -16,6 +16,11 @@ attested nonsigning examples remain in separate inventories; they do not
 masquerade as unsupported-sign calibration inputs. Omitted negativeType metadata
 remains unspecified, preserving the existing v1 unknown-sample policy. Incomplete collections
 produce an inventory manifest explaining why training arrays are unavailable.
+Optional captureDurationMs preserves the measured recording window separately
+from the legacy pose-span durationMs; neither field changes model features.
+Optional per-frame captureContext records the asserted detector and image geometry.
+Legacy absence is preserved. A language collection with partial, missing or mixed
+recorded contexts emits inventory only, rather than mixing unknown capture domains.
 Use a new output directory: existing outputs are never overwritten.
 """
 from __future__ import annotations
@@ -41,6 +46,20 @@ MAX_COLLECTION_SAMPLES = 10000
 CODE = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{0,79}\Z")
 SPLITS = ["train", "val", "test", "unknown_validation", "unknown_test"]
 NEGATIVE_TYPES = ("nonsigning", "unsupported-sign", "unspecified")
+CAPTURE_CONTEXT_LITERALS = {
+    "format": "signbridge-capture-context-v1",
+    "tracker": "mediapipe-tasks-holistic",
+    "modelAsset": "holistic_landmarker/float16/1",
+    "delegate": "CPU", "runningMode": "VIDEO",
+    "coordinateSpace": "normalized-image", "sampleIntervalMs": 125,
+    "mirrorApplied": False,
+}
+CAPTURE_CONTEXT_KEYS = set(CAPTURE_CONTEXT_LITERALS) | {"width", "height"}
+CAPTURE_CONTEXT_CAVEAT = (
+    "Capture context is caller-supplied provenance, not proof of detector identity, "
+    "actual timing, physical camera, signer identity, valid sign labels or recognition accuracy. "
+    "Legacy absence is never inferred."
+)
 
 
 def finite(value):
@@ -73,6 +92,52 @@ def eligible(frames):
 def negative_type_counts(samples):
     return {kind: sum(row["kind"] == "unknown" and row.get("negativeType", "unspecified") == kind
                       for row in samples) for kind in NEGATIVE_TYPES}
+
+
+def validate_capture_context(value):
+    """Whitelist and copy explicit context; never guess one from pose coordinates."""
+    if type(value) is not dict or set(value) != CAPTURE_CONTEXT_KEYS:
+        raise ValueError("Capture context needs exactly the supported detector and geometry fields")
+    for key, expected in CAPTURE_CONTEXT_LITERALS.items():
+        actual = value[key]
+        if key == "mirrorApplied":
+            valid = actual is False
+        elif key == "sampleIntervalMs":
+            valid = actual == expected and finite(actual)
+        else:
+            valid = type(actual) is str and actual == expected
+        if not valid:
+            raise ValueError(f"Invalid capture context {key}")
+    for key in ("width", "height"):
+        if (type(value[key]) not in (int, float) or not 1 <= value[key] <= 16384
+                or not finite(value[key]) or not float(value[key]).is_integer()):
+            raise ValueError(f"Capture context {key} must be an integer between 1 and 16384")
+    return dict(CAPTURE_CONTEXT_LITERALS) | {
+        "width": int(value["width"]), "height": int(value["height"])}
+
+
+def capture_context_summary(samples):
+    """Count source assertions without retaining raw pose data in inventory metadata."""
+    complete, legacy, partial, total_frames, recorded_frames = 0, 0, 0, 0, 0
+    identities = {}
+    for row in samples:
+        frames = row["frames"]
+        recorded = [frame["captureContext"] for frame in frames if "captureContext" in frame]
+        total_frames += len(frames); recorded_frames += len(recorded)
+        if not recorded:
+            legacy += 1
+        elif len(recorded) == len(frames):
+            complete += 1
+        else:
+            partial += 1
+        for context in recorded:
+            # A full context identity includes pipeline assertions and geometry.
+            identities[json.dumps(context, sort_keys=True, separators=(",", ":"))] = context
+    return {"fullyRecordedSamples": complete, "legacySamples": legacy,
+            "partialSamples": partial, "totalSamples": len(samples),
+            "recordedFrames": recorded_frames, "totalFrames": total_frames,
+            "contextIdentities": [dict(identities[key]) for key in sorted(identities)],
+            "identityCount": len(identities), "caveat": CAPTURE_CONTEXT_CAVEAT}
 
 
 def validate_sample(sample):
@@ -110,7 +175,10 @@ def validate_sample(sample):
             raise ValueError("Pose coordinates must be finite and bounded by +/-10")
         if any(not finite(v) or not 0 <= v <= 1 for v in scores):
             raise ValueError("Pose confidences must be in [0,1]")
-        copied.append({"keypoints": [point[:] for point in points], "confidences": scores[:], "atMs": at})
+        copied_frame = {"keypoints": [point[:] for point in points], "confidences": scores[:], "atMs": at}
+        if "captureContext" in frame:
+            copied_frame["captureContext"] = validate_capture_context(frame["captureContext"])
+        copied.append(copied_frame)
     duration = copied[-1]["atMs"] - copied[0]["atMs"]
     if type(sample.get("frameCount")) is not int or sample["frameCount"] != len(copied) or not finite(sample.get("durationMs")) or sample["durationMs"] != duration:
         raise ValueError("Sample counts/duration do not match the raw poses")
@@ -124,6 +192,13 @@ def validate_sample(sample):
         if kind != "unknown" or sample["negativeType"] not in NEGATIVE_TYPES:
             raise ValueError("Only unknown samples can declare nonsigning, unsupported-sign or unspecified negative type")
         result["negativeType"] = sample["negativeType"]
+    # A measured capture window includes leading/trailing tracking gaps. Do not
+    # reconstruct it from legacy last-minus-first duration or absent metadata.
+    if "captureDurationMs" in sample:
+        capture_duration = sample["captureDurationMs"]
+        if not finite(capture_duration) or not 350 <= capture_duration <= 12000 or capture_duration < copied[-1]["atMs"]:
+            raise ValueError("Capture duration must be a measured 350-12000 ms recording window covering every pose timestamp")
+        result["captureDurationMs"] = capture_duration
     prediction = sample.get("prediction")
     if prediction is not None:
         if not isinstance(prediction, dict) or prediction.get("status") not in ("recognized", "unclear", "no_sign") or not short_text(prediction.get("meaning"), 120):
@@ -185,6 +260,7 @@ def combine_datasets(datasets, source_hashes=None, source_bytes=None):
                         "known": sum(row["kind"] == "known" for row in rows),
                         "unknown": sum(row["kind"] == "unknown" for row in rows),
                         "negative_type_counts": negative_type_counts(rows),
+                        "capture_context": capture_context_summary(rows),
                         "source_bytes": source_bytes[index] if source_bytes is not None else encoded_bytes,
                         "sha256": source_hashes[index] if source_hashes is not None else None})
     exported_at = max((datetime.fromisoformat(dataset["exportedAt"].replace("Z", "+00:00")) for dataset in datasets)).isoformat()
@@ -220,16 +296,24 @@ def prepare_language(samples, mapping, language):
             if row.get("negativeType") == "nonsigning":
                 nonsigning.append({"id": row["id"], "signerId": row["signerId"], "split": split,
                                    "negativeType": "nonsigning",
+                                   **({"captureDurationMs": row["captureDurationMs"]} if "captureDurationMs" in row else {}),
                                    "reason": "Explicit nonsigning example; retained separately, excluded from model calibration"})
                 continue
             if not eligible(row["frames"]):
                 background.append({"id": row["id"], "signerId": row["signerId"], "split": split,
                                    "negativeType": row.get("negativeType", "unspecified"),
+                                   **({"captureDurationMs": row["captureDurationMs"]} if "captureDurationMs" in row else {}),
                                    "reason": "Insufficient simultaneous hand/shoulder visibility; retained in inventory, excluded from model calibration"})
                 continue
         split_rows[split].append(row)
     labels = sorted({row["label"] for row in rows if row["kind"] == "known"})
     problems = []
+    capture_context = capture_context_summary(rows)
+    if capture_context["recordedFrames"]:
+        if capture_context["legacySamples"] or capture_context["partialSamples"]:
+            problems.append("Capture context is missing from some frames or samples; do not mix recorded and unknown capture domains")
+        if capture_context["identityCount"] > 1:
+            problems.append("Multiple capture context identities occur in this language collection; keep detector and geometry domains separate")
     if not 2 <= len(labels) <= 500:
         problems.append("At least two known labels are required")
     for split in ("train", "val", "test"):
@@ -254,6 +338,7 @@ def prepare_language(samples, mapping, language):
                           "timestamp_policy": "Validated timestamps retained in inventory; existing v1 model does not use elapsed time"},
         "unknown_policy": "Unknown samples only enter validation/test; explicit nonsigning and insufficient-visibility samples are retained separately; omitted negative types remain unspecified",
         "negative_type_counts": negative_type_counts(rows),
+        "capture_context": capture_context,
         "background_samples": background,
         "nonsigning_samples": nonsigning,
         "splits": {split: {"clips": len(group), "class_counts": dict(Counter(row["label"] for row in group)),
@@ -322,8 +407,10 @@ def import_dataset(dataset, assignment, output_dir, source_hash=None, source_byt
                 "source_exports": collection["sourceExports"], "source_bytes": collection["sourceBytes"], "sample_count": len(samples),
                 "known_count": sum(row["kind"] == "known" for row in samples), "unknown_count": sum(row["kind"] == "unknown" for row in samples),
                 "negative_type_counts": negative_type_counts(samples),
+                "capture_context": capture_context_summary(samples),
                 "signer_assignment": mapping, "languages": {language: metadata for language, (_, metadata) in prepared.items()},
-                "samples": [{key: row[key] for key in ("id", "signLanguage", "kind", "label", "signerId", "sessionId", "frameCount", "durationMs", "negativeType") if key in row} for row in samples]}
+                "samples": [{**{key: row[key] for key in ("id", "signLanguage", "kind", "label", "signerId", "sessionId", "frameCount", "durationMs", "captureDurationMs", "negativeType") if key in row},
+                             "capture_context": capture_context_summary([row])} for row in samples]}
     # Preserve the validated raw poses/timestamps, including background holdouts.
     (output_dir / "poses.json").write_text(json.dumps(collection, ensure_ascii=False), encoding="utf-8")
     for language, (arrays, metadata) in prepared.items():

@@ -17,7 +17,24 @@ import numpy as np
 import torch
 from torch import nn
 
-from graph_models import ARCHITECTURES, GRAPH_CONFIG, SignGraphModel
+from graph_models import ARCHITECTURES, GRAPH_CONFIG, LSTM75_CONFIG, TEMPORAL_CONTROL_ARCHITECTURES, SignGraphModel
+
+TEMPORAL_EXPERIMENT_KIND = "temporal-lstm-control-v1"
+
+
+def training_profile(architecture, experiment_kind):
+    """Separate the new temporal study from historical graph protocols."""
+    if experiment_kind == TEMPORAL_EXPERIMENT_KIND:
+        if architecture not in TEMPORAL_CONTROL_ARCHITECTURES:
+            raise ValueError("Temporal controls must be GRU75 or experimental LSTM75")
+        return {"format": "signbridge-temporal-control-training-v1",
+                "experimentKind": experiment_kind, "experimental": True,
+                "architectureConfig": LSTM75_CONFIG.copy() if architecture == "lstm75" else
+                    {"inputSize": 225, "hiddenSize": 64, "layers": 1, "headDropout": .15},
+                "promoted": False, "acceptanceEnabled": False}
+    if experiment_kind != "frozen-graph" or architecture not in ARCHITECTURES:
+        raise ValueError("Experimental architectures require a separate temporal study")
+    return {"format": "signbridge-graph-training-v1"}
 
 
 def sha256(path):
@@ -118,7 +135,8 @@ def load_data(data_path, language, legacy_path):
     return labels, metadata, arrays, norm, legacy_norm
 
 
-def train_run(args, architecture, seed, output, labels, metadata, arrays, norm, legacy_norm, data_hash, experiment_hash):
+def train_run(args, architecture, seed, output, labels, metadata, arrays, norm, legacy_norm, data_hash, experiment_hash, *, experiment_kind="frozen-graph"):
+    profile = training_profile(architecture, experiment_kind)
     random.seed(seed); np.random.seed(seed); torch.manual_seed(seed)
     torch.set_num_threads(args.threads)
     torch.use_deterministic_algorithms(True)
@@ -170,7 +188,7 @@ def train_run(args, architecture, seed, output, labels, metadata, arrays, norm, 
         targets=arrays["val"]["targets"], unknown_scores=scores_unknown,
         clip_ids=np.asarray(arrays["val"]["ids"]), unknown_clip_ids=np.asarray(arrays["unknown_validation"]["ids"]))
     report = {
-        "format": "signbridge-graph-training-v1", "task": "experimental isolated-word recognition",
+        **profile, "task": "experimental isolated-word recognition",
         "signLanguage": args.language, "language": args.language, "architecture": architecture, "seed": seed,
         "graphConfig": GRAPH_CONFIG if architecture == "stgcn" else None,
         "labels": labels, "parameters": parameters, "normalization": normalization,
@@ -192,7 +210,9 @@ def train_run(args, architecture, seed, output, labels, metadata, arrays, norm, 
         "history": history, "source": metadata,
         "finalTestEvaluated": False, "distributionStatus": "local-research-only",
         "limits": ["No sentence translation", "No live or fluent-user accuracy established",
-            "No face or depth features", "Previously inspected benchmark is not a newly untouched test"],
+            "No face or depth features"] + (["Validation-only temporal control, not a frozen graph study",
+            "No browser/device verification or model promotion"] if experiment_kind == TEMPORAL_EXPERIMENT_KIND else
+            ["Previously inspected benchmark is not a newly untouched test"]),
     }
     write_json(output / "run.json", report)
     print(json.dumps({"event": "complete", "run": str(output), "architecture": architecture, "seed": seed,

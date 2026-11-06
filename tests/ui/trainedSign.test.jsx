@@ -4,13 +4,15 @@ import { afterEach, beforeEach, expect, test, vi } from "vitest";
 import TrainedSignMode from "../../src/modes/TrainedSignMode.jsx";
 import { DEFAULT_SETTINGS } from "../../src/hooks/useSettings.js";
 import { legacyCameraModel } from "../helpers/legacyCamera.js";
+import { captureContextForVideo } from "../../src/lib/poseCaptureContext.js";
 
 const mocks = vi.hoisted(() => ({
-  active: false, frame: null, cameraStatus: "on", trackingStatus: "ready", trained: null,
+  active: false, frame: null, cameraStatus: "on", frameHealth: "visible", trackingStatus: "ready", trained: null,
   predict: vi.fn(), speak: vi.fn(), stopSpeech: vi.fn(), retry: vi.fn(), language: null,
   ask: vi.fn(), check: vi.fn(), save: vi.fn(), draw: vi.fn(),
 }));
 vi.mock("../../src/lib/drawHands.js", () => ({ drawHands: mocks.draw }));
+vi.mock("../../src/components/RecognitionReplay.jsx", () => ({ default: ({ signLanguage }) => <div data-testid="reference-replay">Reference replay · {signLanguage}</div> }));
 vi.mock("../../src/lib/api.js", () => ({ askSign: mocks.ask, checkSignAI: mocks.check, interpretSignVideo: vi.fn() }));
 vi.mock("../../src/hooks/useTrainingSamples.js", () => ({ useTrainingSamples: () => ({ samples: [], loading: false, error: "", add: mocks.save }) }));
 vi.mock("../../src/hooks/useSignVideos.js", () => ({ useSignVideos: () => ({ clips: [], loading: false, error: "" }) }));
@@ -18,7 +20,7 @@ vi.mock("../../src/hooks/useCamera.js", async () => {
   const { useRef } = await import("react");
   return { useCamera: ({ active }) => {
     mocks.active = active;
-    return { videoRef: useRef(null), status: active ? mocks.cameraStatus : "off", devices: [], error: "Camera disconnected", retry: mocks.retry };
+    return { videoRef: useRef(null), status: active ? mocks.cameraStatus : "off", frameHealth: active ? mocks.frameHealth : "unknown", devices: [], error: "Camera disconnected", retry: mocks.retry };
   } };
 });
 vi.mock("../../src/hooks/usePoseTracking.js", () => ({ usePoseTracking: ({ onFrame, active }) => {
@@ -38,7 +40,12 @@ vi.mock("../../src/lib/trainedSignModel.js", async (importOriginal) => {
 });
 vi.mock("../../src/lib/speech.js", () => ({ canSpeak: true, createSpeaker: () => ({ speak: mocks.speak, cancel: mocks.stopSpeech }) }));
 
-const setup = (patch = {}, props = {}) => render(<TrainedSignMode settings={{ ...DEFAULT_SETTINGS, ...patch }} update={() => {}} onBack={() => {}} onLive={() => {}} {...props} />);
+// These cases exercise the explicit manual fallback; automatic turns have their own suite.
+const setup = (patch = {}, props = {}) => {
+  const app = render(<TrainedSignMode settings={{ ...DEFAULT_SETTINGS, ...patch }} update={() => {}} onBack={() => {}} onLive={() => {}} {...props} />);
+  fireEvent.click(screen.getByRole("switch", { name: /^Automatic sign capture/ }));
+  return app;
+};
 const button = (name) => screen.getByRole("button", { name });
 const click = (name) => fireEvent.click(button(name));
 const disclosure = (name) => screen.getByText(name, { selector: "summary", exact: true }).closest("details");
@@ -48,17 +55,17 @@ const openDisclosure = (name) => {
   expect(section.open).toBe(true);
   return section;
 };
-const enableAutoSpeech = () => { openDisclosure("Advanced settings"); fireEvent.click(screen.getByRole("switch", { name: /^Speak recognized words/ })); };
+const enableAutoSpeech = () => fireEvent.click(screen.getByRole("switch", { name: /^Speak recognized words/ }));
 const pose = () => ({ keypoints: Array.from({ length: 75 }, () => [.5, .5, 0]), confidences: Array(75).fill(1) });
-const emit = (count = 4) => act(() => {
-  for (let i = 0; i < count; i++) { now += 125; mocks.frame(pose(), { videoWidth: 640, videoHeight: 480 }); }
+const emit = (count = 4, captureContext) => act(() => {
+  for (let i = 0; i < count; i++) { now += 125; mocks.frame(pose(), { videoWidth: 640, videoHeight: 480 }, captureContext); }
 });
-const capture = () => { click("Start camera"); emit(1); click(/^Capture a sign/); emit(); };
+const capture = (captureContext) => { click("Start camera"); emit(1, captureContext); click(/^Capture a sign/); emit(4, captureContext); };
 
 let now;
 beforeEach(() => {
   vi.clearAllMocks();
-  mocks.active = false; mocks.frame = null; mocks.cameraStatus = "on"; mocks.trackingStatus = "ready";
+  mocks.active = false; mocks.frame = null; mocks.cameraStatus = "on"; mocks.frameHealth = "visible"; mocks.trackingStatus = "ready";
   mocks.trained = { status: "ready", model: { ...legacyCameraModel(), signLanguage: "isl", labels: ["WATER", "HELP"], metrics: { test: { top1_accuracy: .8 } } }, error: "", retry: mocks.retry };
   mocks.predict.mockReturnValue({ status: "recognized", meaning: "WATER", glosses: ["WATER"], feedback: "Check this prediction" });
   now = 1000; vi.spyOn(performance, "now").mockImplementation(() => now);
@@ -159,6 +166,51 @@ test("a tracking failure cancels capture without speaking or predicting a partia
   expect(mocks.predict).not.toHaveBeenCalled(); expect(mocks.speak).not.toHaveBeenCalled();
 });
 
+test("uniform dark frames block capture and Space, preserve typing, and require fresh tracking after recovery", () => {
+  mocks.frameHealth = "dark";
+  const app = setup(); click("Start camera"); emit(2);
+  expect(screen.getByText(/The camera image is too dark to read/)).toBeTruthy();
+  expect(button(/^Capture a sign/).disabled).toBe(true);
+  fireEvent.keyDown(window, { code: "Space", key: " " }); emit(4);
+  expect(screen.queryByRole("button", { name: /^Finish sign/ })).toBeNull();
+  expect(mocks.predict).not.toHaveBeenCalled();
+  fireEvent.change(message(), { target: { value: "Keep my typed message" } });
+  click("Speak my message");
+  expect(mocks.speak).toHaveBeenCalledWith("Keep my typed message", expect.objectContaining({ lang: "en-IN" }));
+  click("Retry dark camera"); expect(mocks.retry).toHaveBeenCalledOnce();
+  mocks.frameHealth = "visible";
+  app.rerender(<TrainedSignMode settings={DEFAULT_SETTINGS} update={() => {}} onBack={() => {}} onLive={() => {}} />);
+  expect(screen.queryByText(/The camera image is too dark to read/)).toBeNull();
+  expect(button(/^Capture a sign/).disabled).toBe(true);
+  emit(1); expect(button(/^Capture a sign/).disabled).toBe(false);
+  click(/^Capture a sign/); emit(4); click(/^Finish sign/);
+  expect(mocks.predict).toHaveBeenCalledOnce();
+  expect(message().value).toBe("Keep my typed message"); expect(mocks.ask).not.toHaveBeenCalled();
+});
+
+test("a newly dark camera cancels a partial sign and never reads its result", () => {
+  const app = setup(); enableAutoSpeech(); capture();
+  mocks.frameHealth = "dark";
+  app.rerender(<TrainedSignMode settings={DEFAULT_SETTINGS} update={() => {}} onBack={() => {}} onLive={() => {}} />);
+  expect(screen.getByText(/This turn was cancelled/)).toBeTruthy();
+  expect(screen.queryByRole("button", { name: /^Finish sign/ })).toBeNull();
+  expect(mocks.predict).not.toHaveBeenCalled(); expect(mocks.speak).not.toHaveBeenCalled();
+});
+
+test("the reference demo is explicit, stops the camera, and closes before a new camera session", () => {
+  setup(); click("Start camera"); emit(1); click(/^Capture a sign/); emit(2);
+  const section = disclosure("Reference video demo");
+  expect(section.open).toBe(false); expect(screen.queryByTestId("reference-replay")).toBeNull();
+  section.open = true; fireEvent(section, new Event("toggle"));
+  expect(mocks.active).toBe(false); expect(mocks.predict).not.toHaveBeenCalled();
+  expect(screen.getByTestId("reference-replay").textContent).toContain("isl");
+  expect(screen.getByText(/does not verify live webcam accuracy/)).toBeTruthy();
+  click("Start camera");
+  expect(mocks.active).toBe(true); expect(section.open).toBe(false);
+  expect(screen.queryByTestId("reference-replay")).toBeNull();
+  expect(mocks.ask).not.toHaveBeenCalled(); expect(mocks.speak).not.toHaveBeenCalled();
+});
+
 test("uncertain words stay silent with auto speech enabled; a reviewed correction can be spoken", () => {
   mocks.predict.mockReturnValue({ status: "unclear", meaning: "", glosses: [], feedback: "No vocabulary match" });
   setup(); enableAutoSpeech();
@@ -175,6 +227,37 @@ test("recognized auto speech waits for the complete sign and speaks only that ac
   capture(); expect(mocks.speak).not.toHaveBeenCalled();
   click(/^Finish sign/);
   expect(mocks.speak).toHaveBeenCalledOnce(); expect(mocks.speak.mock.calls[0][0]).toBe("WATER");
+});
+
+test("camera plus read aloud explicitly opts in; an accepted HELLO is visible and spoken once after Finish", () => {
+  mocks.predict.mockReturnValue({ status: "recognized", meaning: "HELLO", glosses: ["HELLO"], feedback: "Check this prediction" });
+  setup();
+  expect(screen.getByRole("switch", { name: /^Speak recognized words/ }).checked).toBe(false);
+  click("Start camera + read aloud");
+  expect(mocks.active).toBe(true);
+  expect(screen.getByRole("switch", { name: /^Speak recognized words/ }).checked).toBe(true);
+  expect(mocks.predict).not.toHaveBeenCalled(); expect(mocks.speak).not.toHaveBeenCalled();
+  emit(1); click(/^Capture a sign/); emit(4);
+  expect(mocks.speak).not.toHaveBeenCalled();
+  click(/^Finish sign/);
+  expect(screen.getByLabelText("Review or correct the word").value).toBe("HELLO");
+  expect(screen.getByText("HELLO", { selector: ".live-interpretation > strong" })).toBeTruthy();
+  expect(mocks.speak).toHaveBeenCalledExactlyOnceWith("HELLO", expect.objectContaining({ lang: "en-IN" }));
+  expect(mocks.ask).not.toHaveBeenCalled();
+
+  mocks.predict.mockReturnValue({ status: "unclear", meaning: "", glosses: [], feedback: "No vocabulary match" });
+  click(/^Capture a sign/); emit(4); click(/^Finish sign/);
+  expect(screen.getByLabelText("Review or correct the word").value).toBe("");
+  expect(screen.queryByText("HELLO", { selector: ".live-interpretation > strong" })).toBeNull();
+  expect(mocks.speak).toHaveBeenCalledTimes(1);
+});
+
+test("speaker check is explicit output testing and never starts a camera or fabricates a recognition", () => {
+  setup(); click("Test speaker");
+  expect(mocks.speak).toHaveBeenCalledExactlyOnceWith("Voice output is ready.", expect.objectContaining({ lang: "en-IN" }));
+  expect(mocks.active).toBe(false); expect(mocks.predict).not.toHaveBeenCalled(); expect(mocks.ask).not.toHaveBeenCalled();
+  expect(screen.queryByLabelText("Review or correct the word")).toBeNull();
+  expect(screen.getByRole("switch", { name: /^Speak recognized words/ }).checked).toBe(false);
 });
 
 test("Escape cancels a turn without inference or a stale recognized word", () => {
@@ -210,6 +293,87 @@ test("a dense complete capture bounds pose samples without losing their order", 
 
 const message = () => screen.getByLabelText("Review or edit your message");
 const aiSetup = async () => { mocks.check.mockResolvedValue({ configured: true }); setup(); openDisclosure("AI replies (optional)"); await act(async () => {}); };
+
+test("a recognized greeting needs one explicit word confirmation for an AI reply without an empty-draft dead end", async () => {
+  mocks.predict.mockReturnValue({ status: "recognized", meaning: "HELLO", feedback: "Check the greeting" });
+  await aiSetup(); capture(); click(/^Finish sign/);
+  expect(screen.getByLabelText("Review or correct the word").value).toBe("HELLO");
+  expect(message().value).toBe(""); expect(mocks.ask).not.toHaveBeenCalled();
+  expect(button("Confirm word & get AI reply").disabled).toBe(false);
+  click("Confirm word & get AI reply"); await act(async () => {});
+  expect(mocks.ask).toHaveBeenCalledOnce();
+  expect(mocks.ask.mock.calls[0][0].messages.at(-1).text).toBe("Typed: HELLO");
+  expect(screen.getByText("I can help you.")).toBeTruthy();
+  expect(screen.getByLabelText("Review or correct the word").value).toBe("");
+  expect(document.activeElement).toBe(screen.getByRole("heading", { name: "AI conversation" }));
+  expect(mocks.speak).not.toHaveBeenCalled();
+});
+
+test("a longer draft must be reviewed as a whole rather than discarded by the word reply action", async () => {
+  await aiSetup(); fireEvent.change(message(), { target: { value: "Please explain" } });
+  capture(); click(/^Finish sign/);
+  expect(screen.queryByRole("button", { name: "Confirm word & get AI reply" })).toBeNull();
+  click("Add word to message"); expect(message().value).toBe("Please explain WATER");
+  click("Send reviewed message"); await act(async () => {});
+  expect(mocks.ask.mock.calls[0][0].messages.at(-1).text).toBe("Typed: Please explain WATER");
+});
+
+test("failed word replies retain the reviewed greeting for an explicit retry", async () => {
+  mocks.ask.mockRejectedValueOnce(new Error("AI connection interrupted"));
+  await aiSetup(); capture(); click(/^Finish sign/);
+  click("Confirm word & get AI reply"); await act(async () => {});
+  expect(screen.getByLabelText("Review or correct the word").value).toBe("WATER");
+  expect(button("Confirm word & get AI reply").disabled).toBe(false);
+  expect(screen.getAllByText("AI connection interrupted").length).toBeGreaterThan(0);
+  expect(mocks.ask).toHaveBeenCalledOnce();
+});
+
+test("a missing key is not advertised as available room AI and local word speech remains usable", async () => {
+  mocks.check.mockResolvedValue({ configured: false, roomAuthRequired: true });
+  setup({}, { initialDestination: "ai" }); await act(async () => {});
+  capture(); click(/^Finish sign/);
+  expect(screen.getByText("AI replies need setup")).toBeTruthy();
+  expect(screen.queryByText("AI help is available inside rooms")).toBeNull();
+  expect(screen.getByText(/AI cannot reply yet: the server has no Gemini key configured/)).toBeTruthy();
+  expect(button("Confirm word & get AI reply").disabled).toBe(true);
+  click("Confirm word & get AI reply"); expect(mocks.ask).not.toHaveBeenCalled();
+  click("Speak this word"); await act(async () => {});
+  expect(mocks.speak).toHaveBeenCalledWith("WATER", expect.objectContaining({ lang: "en-IN" }));
+});
+
+test("speech errors explain silence and retain both the reviewed word and draft", async () => {
+  mocks.speak.mockResolvedValueOnce({ status: "error", error: "Speech playback was blocked. Press Speak again." });
+  setup(); capture(); click(/^Finish sign/);
+  fireEvent.change(message(), { target: { value: "Please help" } });
+  click("Speak this word"); await act(async () => {});
+  expect(screen.getByRole("alert").textContent).toContain("Speech playback was blocked");
+  expect(screen.getByLabelText("Review or correct the word").value).toBe("WATER");
+  expect(message().value).toBe("Please help"); expect(mocks.ask).not.toHaveBeenCalled();
+});
+
+test("stopping speech suppresses a late start or error from the old utterance", async () => {
+  let settle;
+  mocks.speak.mockImplementationOnce(() => new Promise(resolve => { settle = resolve; }));
+  setup(); capture(); click(/^Finish sign/); click("Speak this word");
+  const options = mocks.speak.mock.calls.at(-1)[1];
+  expect(screen.getByLabelText("Voice playback status").textContent).toBe("Starting voice playback…");
+  click("Stop speech");
+  await act(async () => { options.onStart(); settle({ status: "error", error: "Late blocked voice" }); });
+  expect(screen.queryByLabelText("Voice playback status")).toBeNull();
+  expect(screen.queryByText(/Late blocked voice/)).toBeNull();
+  expect(screen.getByLabelText("Review or correct the word").value).toBe("WATER");
+});
+
+test("actual speech start and completion provide feedback without fabricating an AI response", async () => {
+  let settle;
+  mocks.speak.mockImplementationOnce(() => new Promise(resolve => { settle = resolve; }));
+  setup(); capture(); click(/^Finish sign/); click("Speak this word");
+  act(() => mocks.speak.mock.calls.at(-1)[1].onStart());
+  expect(screen.getByLabelText("Voice playback status").textContent).toBe("Speaking: WATER");
+  await act(async () => settle({ status: "ended" }));
+  expect(screen.getByLabelText("Voice playback status").textContent).toContain("Voice playback finished");
+  expect(mocks.ask).not.toHaveBeenCalled();
+});
 
 test("local purpose is the default and changing to AI preserves the camera, reviewed word and draft without sending", async () => {
   mocks.check.mockResolvedValue({ configured: true });
@@ -278,7 +442,8 @@ test("beginners see the core three-step workflow while optional controls start c
   expect(button("Speak my message").disabled).toBe(true);
   // JSDOM role queries do not simulate native closed-details visibility.
   // Assert the controls' placement inside the closed disclosure instead.
-  expect(disclosure("Advanced settings").contains(screen.getByRole("switch", { name: /^Speak recognized words/ }))).toBe(true);
+  expect(disclosure("Advanced settings").contains(screen.getByRole("switch", { name: /^Speak recognized words/ }))).toBe(false);
+  expect(screen.getByRole("switch", { name: /^Speak recognized words/ }).closest("details")).toBeNull();
   expect(disclosure("Advanced settings").contains(screen.getByRole("combobox", { name: /Word recognition model/ }))).toBe(true);
   expect(disclosure("AI replies (optional)").contains(button("Send reviewed message"))).toBe(true);
   expect(mocks.predict).not.toHaveBeenCalled(); expect(mocks.ask).not.toHaveBeenCalled();
@@ -519,8 +684,9 @@ test("New conversation clears prior context and ending during an answer cannot a
   expect(message().value).toBe("Fresh draft"); expect(screen.queryByText("Stale answer")).toBeNull();
 });
 
-test("training storage waits for explicit consent, uses the corrected label, and records ordered timing", async () => {
-  setup(); capture(); click(/^Finish sign/);
+test("training storage waits for consent and retains corrected labels, timing and measured capture context", async () => {
+  const context = captureContextForVideo({ videoWidth: 640, videoHeight: 480 }, "https://storage.googleapis.com/mediapipe-models/holistic_landmarker/holistic_landmarker/float16/1/holistic_landmarker.task");
+  setup(); capture(context); click(/^Finish sign/);
   expect(mocks.save).not.toHaveBeenCalled();
   fireEvent.change(screen.getByLabelText("Review or correct the word"), { target: { value: "HELP" } });
   openDisclosure("More result options");
@@ -532,6 +698,7 @@ test("training storage waits for explicit consent, uses the corrected label, and
   expect(mocks.save).toHaveBeenCalledOnce();
   expect(mocks.save.mock.calls[0][0]).toMatchObject({ label: "HELP", signerId: "anon-01", signLanguage: "isl", kind: "known", consent: true });
   expect(mocks.save.mock.calls[0][0].frames.map((f) => f.atMs)).toEqual([125, 250, 375, 500]);
+  expect(mocks.save.mock.calls[0][0].frames.every((f) => f.captureContext.width === 640 && f.captureContext.height === 480)).toBe(true);
   expect(screen.getByText(/Your model has not been retrained/)).toBeTruthy();
 });
 

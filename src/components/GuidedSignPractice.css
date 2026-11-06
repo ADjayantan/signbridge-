@@ -1,0 +1,13 @@
+.guided-sign-practice { margin: 1rem 0; padding: 1rem; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface-2); }
+.guided-sign-practice-heading h3 { margin: .25rem 0 .5rem; font-size: 1.05rem; }
+.guided-sign-practice > p { margin: .45rem 0 .75rem; }
+.guided-sign-practice-body { display: grid; grid-template-columns: minmax(150px, .85fr) minmax(170px, 1fr); gap: 1rem; align-items: start; }
+.guided-sign-practice-media { position: relative; min-width: 0; }
+.guided-sign-practice-media video { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: contain; border-radius: 9px; background: #183c34; }
+.guided-sign-practice-badge { display: block; margin-top: .4rem; font-size: .7rem; font-weight: 600; }
+.guided-sign-practice-copy > p { margin-top: 0; font-size: .82rem; line-height: 1.65; }
+.guided-sign-practice-copy .actions { margin: .65rem 0; }
+.guided-sign-practice-speed { display: flex; align-items: center; gap: .5rem; min-height: 36px; font-size: .8rem; }
+.guided-sign-practice-speed input { width: 18px; height: 18px; accent-color: var(--accent); }
+.guided-sign-practice-credit { border-top: 1px solid var(--border); padding-top: .75rem; font-size: .7rem; }
+@media (max-width: 600px) { .guided-sign-practice-body { grid-template-columns: minmax(0, 1fr); } }
