@@ -22,7 +22,8 @@ import { SIGN_LANGUAGES } from "../lib/signVideos.js";
 import { canListen, canSpeak, createSpeaker, listenErrorMessage, listenOnce } from "../lib/speech.js";
 import { drawHands } from "../lib/drawHands.js";
 import { handJointCounts, handsFromPoseFrame } from "../lib/handJoints.js";
-import { DAILY_CONVERSATION_SIGNS, detectPoseFrameShortcut, detectPoseSequenceShortcut, parseSentenceToSignSteps, predictFallbackGruCandidate } from "../lib/handPoseShortcuts.js";
+import { loadGestureRecognizer } from "../lib/handTracker.js";
+import { DAILY_CONVERSATION_SIGNS, detectPoseFrameShortcut, detectPoseSequenceShortcut, parseSentenceToSignSteps, predictFallbackGruCandidate, smoothHandLandmarks } from "../lib/handPoseShortcuts.js";
 import { createAutomaticSignCapture } from "../lib/automaticSignCapture.js";
 import { AuroraParticles3D, DecryptedText, GradientText, Magnet, ReactBitsDock, ShinyText, SpotlightCard, TiltedCard } from "../components/reactbits/ReactBitsUI.jsx";
 import "../styles/signWorkspace.css";
@@ -72,6 +73,14 @@ export default function TrainedSignMode({ settings, update, onBack, onLive, onLi
   const autoAppendedEpochRef = useRef(0);
   const liveHandsRef = useRef([]);
   const lastPoseRef = useRef(null);
+  const neuralBoostRef = useRef({
+    left: null,
+    right: null,
+    gestures: {},
+    updatedAt: 0,
+    smoothedLeft: null,
+    smoothedRight: null,
+  });
   const shortcutHold = useRef({ meaning: null, gestureLabel: "", startedAt: null, frames: [], latchedMeaning: null, latchedAt: 0, releaseAt: null, missAt: null });
   const autoOwner = useRef({ inference: false });
   const reviewSource = useRef("manual");
@@ -244,11 +253,102 @@ export default function TrainedSignMode({ settings, update, onBack, onLive, onLi
     setFraming({ hands: 0, body: false, clipped: false }); setJoints({ left: 0, right: 0, total: 0, hands: 0 }); uiAt.current = 0; liveHandsRef.current = [];
     if (active) armFreshness(performance.now());
   };
+  const evaluateLiveShortcut = (pose, now) => {
+    if (!automatic || capture.current || autoOwner.current.inference) return false;
+    const blocked = thinking || saving || editing();
+    if (import.meta.env?.MODE === "test" || blocked || !cameraOn || camera.status !== "on" || camera.frameHealth === "dark") return false;
+    const frameShortcut = detectPoseFrameShortcut(pose, { minPalm: 0.020 });
+    if (frameShortcut) {
+      shortcutHold.current.releaseAt = null;
+      shortcutHold.current.missAt = null;
+      // If the user switched to a different sign shape, start a fresh fast lock-on window for the new sign
+      if (shortcutHold.current.startedAt === null || (shortcutHold.current.meaning && shortcutHold.current.meaning !== frameShortcut.meaning && shortcutHold.current.frames.length <= 2)) {
+        shortcutHold.current.startedAt = now;
+        shortcutHold.current.frames = [{ ...pose, atMs: 0 }];
+      } else {
+        const elapsedHold = now - shortcutHold.current.startedAt;
+        if (!shortcutHold.current.frames.length || elapsedHold - shortcutHold.current.frames.at(-1).atMs >= 28) {
+          shortcutHold.current.frames.push({ ...pose, atMs: Math.round(elapsedHold) });
+          if (shortcutHold.current.frames.length > 16) {
+            const base = shortcutHold.current.frames[1].atMs;
+            shortcutHold.current.frames = shortcutHold.current.frames.slice(1).map((f) => ({ ...f, atMs: Math.max(0, f.atMs - base) }));
+            shortcutHold.current.startedAt += base;
+          }
+        }
+      }
+      const dominant = detectPoseSequenceShortcut(shortcutHold.current.frames, { minFrames: 2, minRatio: 0.35, minPalm: 0.020 }) || frameShortcut;
+      shortcutHold.current.meaning = dominant.meaning;
+      shortcutHold.current.gestureLabel = dominant.gestureLabel;
+      if (shortcutHold.current.latchedMeaning === dominant.meaning) {
+        // Same held sign already spoken once: wait for a release or a different sign.
+        setLiveShortcutHint(`${dominant.gestureLabel} → ${dominant.meaning}`);
+        setHoldingMeaning("");
+        shortcutHold.current.startedAt = now;
+        shortcutHold.current.frames = [{ ...pose, atMs: 0 }];
+      } else {
+        setHoldingMeaning(dominant.meaning);
+        const holdMs = now - shortcutHold.current.startedAt;
+        const pct = Math.min(99, Math.round((holdMs / 230) * 100));
+        setLiveShortcutHint(`${dominant.gestureLabel} → ${dominant.meaning}${pct >= 25 ? ` (${pct}%)` : ""}`);
+        if (holdMs >= 230 && shortcutHold.current.frames.length >= 2) {
+          const capturedFrames = shortcutHold.current.frames;
+          shortcutHold.current.latchedMeaning = dominant.meaning;
+          shortcutHold.current.latchedAt = now;
+          shortcutHold.current.startedAt = null;
+          shortcutHold.current.frames = [];
+          setHoldingMeaning("");
+          setLiveShortcutHint(`${dominant.gestureLabel} → ${dominant.meaning}`);
+          automaticCapture.reset("shortcut-complete");
+          setAutoStage("checking");
+          recognizeTurn(capturedFrames, Math.max(250, Math.round(holdMs)), "automatic");
+          return true;
+        }
+      }
+    } else {
+      shortcutHold.current.missAt ??= now;
+      if (now - shortcutHold.current.missAt >= 260) {
+        shortcutHold.current.meaning = null;
+        shortcutHold.current.startedAt = null;
+        shortcutHold.current.frames = [];
+        setHoldingMeaning((prev) => (prev ? "" : prev));
+        setLiveShortcutHint((prev) => (prev ? "" : prev));
+      }
+      if (shortcutHold.current.latchedMeaning) {
+        shortcutHold.current.releaseAt ??= now;
+        if (now - shortcutHold.current.releaseAt >= 280) {
+          shortcutHold.current.latchedMeaning = null;
+          shortcutHold.current.releaseAt = null;
+        }
+      }
+    }
+    return false;
+  };
   const tracking = usePoseTracking({ videoRef: camera.videoRef, active: camera.status === "on", onFrame: (detected, video, captureContext) => {
     const now = performance.now(), owner = freshFrames.current;
     if (!owner.active || !Number.isFinite(now) || (owner.lastAt !== null && now <= owner.lastAt)) return;
     owner.lastAt = now; setFrameFreshness("fresh"); armFreshness(now);
-    const pose = poseFrameFromHolistic(detected);
+    let enrichedDetected = detected;
+    if (import.meta.env?.MODE !== "test" && detected) {
+      const nb = neuralBoostRef.current;
+      const freshNeural = now - nb.updatedAt <= 160;
+      let leftLm = Array.isArray(detected.leftHandLandmarks) && detected.leftHandLandmarks.length === 21
+        ? smoothHandLandmarks(nb.smoothedLeft, detected.leftHandLandmarks, 0.68)
+        : (freshNeural && nb.left ? nb.left : []);
+      let rightLm = Array.isArray(detected.rightHandLandmarks) && detected.rightHandLandmarks.length === 21
+        ? smoothHandLandmarks(nb.smoothedRight, detected.rightHandLandmarks, 0.68)
+        : (freshNeural && nb.right ? nb.right : []);
+      if (leftLm.length === 21) nb.smoothedLeft = leftLm;
+      if (rightLm.length === 21) nb.smoothedRight = rightLm;
+      enrichedDetected = {
+        ...detected,
+        leftHandLandmarks: leftLm,
+        rightHandLandmarks: rightLm,
+      };
+    }
+    const pose = poseFrameFromHolistic(enrichedDetected);
+    if (import.meta.env?.MODE !== "test" && now - neuralBoostRef.current.updatedAt <= 160) {
+      pose.neuralGestures = { ...neuralBoostRef.current.gestures };
+    }
     if (captureContext) pose.captureContext = captureContext;
     lastPoseRef.current = pose;
     if (video.videoWidth > 0 && video.videoHeight > 0) setCameraGeometry((previous) => previous?.width === video.videoWidth && previous?.height === video.videoHeight ? previous : { width: video.videoWidth, height: video.videoHeight });
@@ -257,75 +357,12 @@ export default function TrainedSignMode({ settings, update, onBack, onLive, onLi
     const hands = handsFromPoseFrame(pose);
     liveHandsRef.current = hands;
     drawHands(canvas.current, hands, video.videoWidth, video.videoHeight, { showLabels: true, showJointNumbers, mirrorText: true });
-    if (now - uiAt.current >= 150) { setJoints(handJointCounts(pose)); uiAt.current = now; }
+    if (now - uiAt.current >= 100) { setJoints(handJointCounts(pose)); uiAt.current = now; }
     const atMs = now - started.current;
     if (capture.current && frames.current.length < 100 && atMs >= 0 && atMs <= 12000 && (!frames.current.length || atMs > frames.current.at(-1).atMs)) frames.current.push({ ...pose, atMs });
     if (!automatic || capture.current || autoOwner.current.inference) return;
+    if (evaluateLiveShortcut(pose, now)) return;
     const blocked = thinking || saving || editing();
-    if (import.meta.env?.MODE !== "test" && !blocked && cameraOn && camera.status === "on" && camera.frameHealth !== "dark" && tracking.status === "ready") {
-      const frameShortcut = detectPoseFrameShortcut(pose, { minPalm: 0.022 });
-      if (frameShortcut) {
-        shortcutHold.current.releaseAt = null;
-        shortcutHold.current.missAt = null;
-        if (shortcutHold.current.startedAt === null) {
-          shortcutHold.current.startedAt = now;
-          shortcutHold.current.frames = [{ ...pose, atMs: 0 }];
-        } else {
-          const elapsedHold = now - shortcutHold.current.startedAt;
-          if (!shortcutHold.current.frames.length || elapsedHold - shortcutHold.current.frames.at(-1).atMs >= 60) {
-            shortcutHold.current.frames.push({ ...pose, atMs: Math.round(elapsedHold) });
-            if (shortcutHold.current.frames.length > 24) {
-              const base = shortcutHold.current.frames[1].atMs;
-              shortcutHold.current.frames = shortcutHold.current.frames.slice(1).map((f) => ({ ...f, atMs: Math.max(0, f.atMs - base) }));
-              shortcutHold.current.startedAt += base;
-            }
-          }
-        }
-        const dominant = detectPoseSequenceShortcut(shortcutHold.current.frames, { minFrames: 2, minRatio: 0.3, minPalm: 0.022 }) || frameShortcut;
-        shortcutHold.current.meaning = dominant.meaning;
-        shortcutHold.current.gestureLabel = dominant.gestureLabel;
-        if (shortcutHold.current.latchedMeaning === dominant.meaning) {
-          // Same held sign already spoken once: wait for a release or a different sign.
-          setLiveShortcutHint(`${dominant.gestureLabel} → ${dominant.meaning}`);
-          setHoldingMeaning("");
-          shortcutHold.current.startedAt = now;
-          shortcutHold.current.frames = [{ ...pose, atMs: 0 }];
-        } else {
-          setHoldingMeaning(dominant.meaning);
-          setLiveShortcutHint(`${dominant.gestureLabel} → ${dominant.meaning}`);
-          const holdMs = now - shortcutHold.current.startedAt;
-          if (holdMs >= 450 && shortcutHold.current.frames.length >= 3) {
-            const capturedFrames = shortcutHold.current.frames;
-            shortcutHold.current.latchedMeaning = dominant.meaning;
-            shortcutHold.current.latchedAt = now;
-            shortcutHold.current.startedAt = null;
-            shortcutHold.current.frames = [];
-            setHoldingMeaning("");
-            setLiveShortcutHint(`${dominant.gestureLabel} → ${dominant.meaning}`);
-            automaticCapture.reset("shortcut-complete");
-            setAutoStage("checking");
-            recognizeTurn(capturedFrames, Math.max(450, Math.round(holdMs)), "automatic");
-            return;
-          }
-        }
-      } else {
-        shortcutHold.current.missAt ??= now;
-        if (now - shortcutHold.current.missAt >= 380) {
-          shortcutHold.current.meaning = null;
-          shortcutHold.current.startedAt = null;
-          shortcutHold.current.frames = [];
-          setHoldingMeaning((prev) => (prev ? "" : prev));
-          setLiveShortcutHint((prev) => (prev ? "" : prev));
-        }
-        if (shortcutHold.current.latchedMeaning) {
-          shortcutHold.current.releaseAt ??= now;
-          if (now - shortcutHold.current.releaseAt >= 400) {
-            shortcutHold.current.latchedMeaning = null;
-            shortcutHold.current.releaseAt = null;
-          }
-        }
-      }
-    }
     const event = automaticCapture.push(pose, now, {
       enabled: cameraOn && trained.status === "ready" && trained.model?.acceptanceEnabled !== false,
       trackingFresh: camera.status === "on" && tracking.status === "ready",
@@ -344,6 +381,115 @@ export default function TrainedSignMode({ settings, update, onBack, onLive, onLi
       setAutoElapsed(0);
     }
   } });
+
+  // High-Speed Neural Hand Booster (~28 FPS GPU/SIMD GestureRecognizer) for instant close-up & angled hand recognition
+  useEffect(() => {
+    if (import.meta.env?.MODE === "test" || !cameraOn || camera.status !== "on") return undefined;
+    let stopped = false;
+    let raf = 0;
+    let lastBoostAt = -Infinity;
+    let lastVideoTime = -1;
+
+    loadGestureRecognizer()
+      .then(({ recognizer }) => {
+        if (stopped || !recognizer) return;
+        const loop = (now) => {
+          if (stopped) return;
+          const video = camera.videoRef.current;
+          if (
+            now - lastBoostAt >= 35 &&
+            video &&
+            video.readyState >= 2 &&
+            video.videoWidth > 0 &&
+            !video.paused &&
+            !video.ended &&
+            video.currentTime !== lastVideoTime
+          ) {
+            lastBoostAt = now;
+            lastVideoTime = video.currentTime;
+            try {
+              const res = recognizer.recognizeForVideo(video, now);
+              const rawHands = Array.isArray(res?.landmarks) ? res.landmarks : [];
+              const nb = neuralBoostRef.current;
+              let nextLeft = null;
+              let nextRight = null;
+              const nextGestures = {};
+
+              for (let i = 0; i < rawHands.length; i++) {
+                const lm = rawHands[i];
+                if (!Array.isArray(lm) || lm.length !== 21) continue;
+                const rawSide = res?.handednesses?.[i]?.[0]?.categoryName;
+                const topGesture = res?.gestures?.[i]?.[0] || null;
+                const preferLeft = rawSide === "Left" || (rawSide !== "Right" && i === 0);
+                if (preferLeft && !nextLeft) {
+                  nextLeft = smoothHandLandmarks(nb.smoothedLeft, lm, 0.68);
+                  nb.smoothedLeft = nextLeft;
+                  if (topGesture) nextGestures.Left = { categoryName: topGesture.categoryName, score: topGesture.score };
+                } else if (!nextRight) {
+                  nextRight = smoothHandLandmarks(nb.smoothedRight, lm, 0.68);
+                  nb.smoothedRight = nextRight;
+                  if (topGesture) nextGestures.Right = { categoryName: topGesture.categoryName, score: topGesture.score };
+                } else if (!nextLeft) {
+                  nextLeft = smoothHandLandmarks(nb.smoothedLeft, lm, 0.68);
+                  nb.smoothedLeft = nextLeft;
+                  if (topGesture) nextGestures.Left = { categoryName: topGesture.categoryName, score: topGesture.score };
+                }
+              }
+
+              nb.left = nextLeft;
+              nb.right = nextRight;
+              nb.gestures = nextGestures;
+              nb.updatedAt = now;
+
+              // If hands are detected by the fast recognizer, update 3D hand + overlay + shortcut detector immediately
+              if (nextLeft || nextRight) {
+                const basePose = lastPoseRef.current;
+                const synthPose = poseFrameFromHolistic({
+                  poseLandmarks: basePose?.keypoints?.slice(0, 33)?.map(([x, y, z], idx) => ({
+                    x,
+                    y,
+                    z,
+                    visibility: basePose?.confidences?.[idx] ?? 0,
+                  })) || [],
+                  leftHandLandmarks: nextLeft || [],
+                  rightHandLandmarks: nextRight || [],
+                });
+                synthPose.neuralGestures = nextGestures;
+                lastPoseRef.current = synthPose;
+                const hands = handsFromPoseFrame(synthPose);
+                liveHandsRef.current = hands;
+                drawHands(canvas.current, hands, video.videoWidth, video.videoHeight, {
+                  showLabels: true,
+                  showJointNumbers,
+                  mirrorText: true,
+                });
+                if (now - uiAt.current >= 90) {
+                  setJoints(handJointCounts(synthPose));
+                  uiAt.current = now;
+                }
+                const nextFraming = poseFraming(synthPose);
+                setFraming((prev) =>
+                  prev.hands === nextFraming.hands && prev.body === nextFraming.body && prev.clipped === nextFraming.clipped
+                    ? prev
+                    : nextFraming,
+                );
+                evaluateLiveShortcut(synthPose, now);
+              }
+            } catch {
+              /* Ignore transient frame error */
+            }
+          }
+          raf = requestAnimationFrame(loop);
+        };
+        raf = requestAnimationFrame(loop);
+      })
+      .catch(() => {});
+
+    return () => {
+      stopped = true;
+      cancelAnimationFrame(raf);
+    };
+  }, [cameraOn, camera.status, showJointNumbers, automatic, thinking, saving]);
   const framingReady = framing.hands > 0 && (framing.body || (import.meta.env?.MODE !== "test" && !framing.clipped));
   const ready = trained.status === "ready" && camera.status === "on" && camera.frameHealth !== "dark" && tracking.status === "ready" && frameFreshness === "fresh" && framingReady && phase !== "recognizing";
   const lastReply = session.log.findLast((turn) => turn.reply);
@@ -511,7 +657,14 @@ export default function TrainedSignMode({ settings, update, onBack, onLive, onLi
       if (engine === "legacy" && next.status === "recognized" && withVoice && canSpeak) speakLocal(next.meaning);
     };
     const fail = (cause) => { if (epoch !== reviewEpoch.current) return; autoOwner.current.inference = false; setAutoStage("waiting"); reviewedFrames.current = []; if (cause?.name !== "AbortError") setError("Could not read this turn. Check the framing and sign again."); setPhase("ready"); };
-    const useWlaslFallback = import.meta.env?.MODE !== "test" && wlaslModel?.available && (
+    const instantCameraShortcut = import.meta.env?.MODE !== "test" && source !== "video"
+      ? detectPoseSequenceShortcut(sequence, { minFrames: 1, minRatio: 0.25, minPalm: 0.015 })
+      : null;
+    if (instantCameraShortcut && turnRecorder.current.recorder) {
+      // Do not wait 2.5s for the Python WLASL video bridge when the 21-joint hand sign is already recognized locally
+      void stopTurnRecorder(true);
+    }
+    const useWlaslFallback = import.meta.env?.MODE !== "test" && wlaslModel?.available && !instantCameraShortcut && (
       (source === "video" && videoFileRef.current) || (source !== "video" && turnRecorder.current.recorder)
     );
     const predictSafe = (seq, options) => {

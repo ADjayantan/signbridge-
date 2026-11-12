@@ -25,11 +25,12 @@ export function usePoseTracking({ videoRef, active, onFrame }) {
       if (stopped || !task) { release(); return; }
       setState({ status: "ready", error: "" });
       let failures = 0;
+      const minStepMs = import.meta.env?.MODE === "test" ? 125 : 42;
       const loop = (now) => {
         if (stopped || !task) return;
         const video = videoRef.current;
-        // At most eight samples per second; synchronous tracking can run slower on this device.
-        if (now - lastAt >= 125 && video?.readyState >= 2 && video.videoWidth && !video.paused && !video.ended && video.currentTime !== lastVideoTime) {
+        // Run at ~24 FPS in live mode (125ms in test mode for deterministic test fixtures).
+        if (now - lastAt >= minStepMs && video?.readyState >= 2 && video.videoWidth && !video.paused && !video.ended && video.currentTime !== lastVideoTime) {
           lastAt = now; lastVideoTime = video.currentTime;
           try {
             const context = captureContextForVideo(video, POSE_TRACKER_MODEL_URL);

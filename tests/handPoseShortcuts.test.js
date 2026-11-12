@@ -6,6 +6,7 @@ import {
   detectPoseFrameShortcut,
   detectPoseSequenceShortcut,
   parseSentenceToSignSteps,
+  smoothHandLandmarks,
 } from "../src/lib/handPoseShortcuts.js";
 
 function makeOpenPalmLandmarks(offsetX = 0) {
@@ -120,4 +121,19 @@ test("parseSentenceToSignSteps matches multi-word phrases, conversational synony
   assert.equal(parsed.tokens.filter((t) => t.type === "sign").length, 6);
   assert.equal(parsed.tokens.filter((t) => t.type === "uncovered").length, 3);
 });
+
+test("smoothHandLandmarks dampens 1-frame jitter and neuralGesture fusion boosts accuracy", () => {
+  const base = makeOpenPalmLandmarks();
+  const jittered = base.map((pt, i) => (i === 8 ? { ...pt, x: pt.x + 0.02, y: pt.y - 0.02 } : pt));
+  const smoothed = smoothHandLandmarks(base, jittered, 0.5);
+  assert.ok(Math.abs(smoothed[8].x - (base[8].x + 0.01)) < 1e-6);
+
+  // Closed fist with neural Thumb_Up / Thumb_Down disambiguates YES vs NO accurately
+  const fist = base.map((pt, i) => (i >= 5 ? { x: 0.5, y: 0.68, z: 0 } : pt));
+  const yesMatch = detectHandLandmarkShortcut(fist, { neuralGesture: "Thumb_Up", neuralScore: 0.88 });
+  assert.equal(yesMatch?.meaning, "YES");
+  const noMatch = detectHandLandmarkShortcut(fist, { neuralGesture: "Thumb_Down", neuralScore: 0.88 });
+  assert.equal(noMatch?.meaning, "NO");
+});
+
 

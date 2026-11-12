@@ -830,7 +830,7 @@ export default function InteractiveSign3D({
           outVec.z += fkOrigin[2];
         };
 
-        const updateHandSlot = (slot, targetPts, dt, showOverlay) => {
+        const updateHandSlot = (slot, targetPts, dt, showOverlay, isLive = false) => {
           if (!targetPts) {
             slot.group.visible = false;
             return;
@@ -838,7 +838,7 @@ export default function InteractiveSign3D({
           slot.group.visible = true;
           slot.overlayPins.visible = Boolean(showOverlay);
 
-          const alpha = Math.min(1, dt * 13);
+          const alpha = Math.min(1, dt * (isLive ? 24 : 15));
 
           curPalmUp.set(
             targetPts[9][0] - targetPts[0][0],
@@ -1049,7 +1049,8 @@ export default function InteractiveSign3D({
           const liveHands = liveHandsRef?.current;
           let targetPrimary = null;
           let targetSecondary = null;
-          if (Array.isArray(liveHands) && liveHands.length > 0) {
+          const hasLiveHands = Array.isArray(liveHands) && liveHands.length > 0;
+          if (hasLiveHands) {
             targetPrimary = normalizeLiveHandTo3D(liveHands[0].landmarks, 0, liveHands.length);
             if (liveHands.length > 1) {
               targetSecondary = normalizeLiveHandTo3D(liveHands[1].landmarks, 1, liveHands.length);
@@ -1060,8 +1061,8 @@ export default function InteractiveSign3D({
             targetSecondary = pose3d.secondary;
           }
 
-          updateHandSlot(handA, targetPrimary, dt, st.showJointOverlay);
-          updateHandSlot(handB, targetSecondary, dt, st.showJointOverlay);
+          updateHandSlot(handA, targetPrimary, dt, st.showJointOverlay, hasLiveHands);
+          updateHandSlot(handB, targetSecondary, dt, st.showJointOverlay, hasLiveHands);
 
           // Rotate / float smoothly
           if (!st.dragging && st.viewPreset === "orbit") {

@@ -2,7 +2,37 @@ import { handsFromPoseFrame } from "./handJoints.js";
 import { cameraFramesForModel } from "./cameraCoordinateContract.js";
 import { predictFeatureProbabilities, preprocessPoseSequence } from "./trainedSignModel.js";
 
-const dist = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
+const dist = (a, b) => Math.hypot((a?.x ?? 0) - (b?.x ?? 0), (a?.y ?? 0) - (b?.y ?? 0));
+const dist3D = (a, b) =>
+  Math.hypot(
+    (a?.x ?? 0) - (b?.x ?? 0),
+    (a?.y ?? 0) - (b?.y ?? 0),
+    ((a?.z ?? 0) - (b?.z ?? 0)) * 0.65,
+  );
+
+/**
+ * Exponential Moving Average (EMA) landmark smoother to remove 1-frame webcam jitter
+ * while preserving fast finger transitions.
+ */
+export function smoothHandLandmarks(prevLandmarks, nextLandmarks, alpha = 0.65) {
+  if (!Array.isArray(nextLandmarks) || nextLandmarks.length !== 21) return nextLandmarks;
+  if (!Array.isArray(prevLandmarks) || prevLandmarks.length !== 21) {
+    return nextLandmarks.map((pt) => ({ ...pt }));
+  }
+  // If the hand jumped a large distance, reset smoothing to avoid lag
+  const wristJump = dist(prevLandmarks[0], nextLandmarks[0]);
+  const a = wristJump > 0.14 ? 0.92 : alpha;
+  const inv = 1 - a;
+  return nextLandmarks.map((pt, i) => {
+    const prev = prevLandmarks[i] || pt;
+    return {
+      ...pt,
+      x: prev.x * inv + pt.x * a,
+      y: prev.y * inv + pt.y * a,
+      z: (prev.z ?? 0) * inv + (pt.z ?? 0) * a,
+    };
+  });
+}
 
 /**
  * 20 Daily Conversation Words & Phrases supported via instant 21-landmark hand recognition.
@@ -35,23 +65,40 @@ export const DAILY_CONVERSATION_SIGNS = Object.freeze([
 ]);
 
 /**
- * Geometric 21-landmark hand-shape classifier for a single real webcam hand.
+ * Hybrid Geometric (3D segment collinearity + palm-normalized distances) & Neural Gesture
+ * 21-landmark hand-shape classifier for a single real webcam hand.
  * Returns null for synthetic/tiny fixtures or ambiguous hand positions.
  */
-export function detectHandLandmarkShortcut(landmarks, { minPalm = 0.028 } = {}) {
+export function detectHandLandmarkShortcut(landmarks, { minPalm = 0.024, neuralGesture = null, neuralScore = 0 } = {}) {
   if (!Array.isArray(landmarks) || landmarks.length !== 21) return null;
   const p = landmarks;
   const palm = dist(p[0], p[9]);
-  // Real webcam hands have palm size >= 0.028 of normalized frame; synthetic test fixtures are <= 0.015.
+  // Real webcam hands have palm size >= 0.024 of normalized frame; synthetic test fixtures are <= 0.015.
   if (!Number.isFinite(palm) || palm < minPalm) return null;
 
+  // Measure both 2D/3D wrist extension AND chain straightness ratio (invariant to hand tilt toward camera)
   const isExtended = (mcp, pip, dip, tip) => {
     const tipWrist = dist(p[tip], p[0]);
     const pipWrist = dist(p[pip], p[0]);
     const dipWrist = dist(p[dip], p[0]);
     const mcpWrist = dist(p[mcp], p[0]);
-    const tipMcp = dist(p[tip], p[mcp]);
-    return tipWrist > pipWrist * 1.03 && tipWrist >= dipWrist * 0.95 && tipWrist > mcpWrist * 1.12 && tipMcp > palm * 0.36;
+    const tipMcp = dist3D(p[tip], p[mcp]);
+    const chainLen = Math.max(
+      1e-5,
+      dist3D(p[mcp], p[pip]) + dist3D(p[pip], p[dip]) + dist3D(p[dip], p[tip]),
+    );
+    const straightness = tipMcp / chainLen; // ~0.88-1.0 when straight, <0.68 when curled
+    const radialExtended =
+      tipWrist > pipWrist * 1.015 &&
+      tipWrist >= dipWrist * 0.94 &&
+      tipWrist > mcpWrist * 1.10 &&
+      dist(p[tip], p[mcp]) > palm * 0.34;
+    const angleExtended =
+      straightness >= 0.77 &&
+      tipWrist > mcpWrist * 1.06 &&
+      tipWrist >= pipWrist * 0.98 &&
+      dist(p[tip], p[mcp]) > palm * 0.32;
+    return radialExtended || angleExtended;
   };
 
   const indexExt = isExtended(5, 6, 7, 8);
@@ -68,95 +115,128 @@ export function detectHandLandmarkShortcut(landmarks, { minPalm = 0.028 } = {}) 
   const thumbTipMcp = dist(p[4], p[2]);
   const thumbPinkyMcp = dist(p[4], p[17]);
   const thumbMiddleMcp = dist(p[4], p[9]);
+  const thumbRingMcp = dist(p[4], p[13]);
+  const thumbIndexMcp = dist(p[4], p[5]);
   const thumbIndexTip = dist(p[4], p[8]);
   const palmWidth = Math.max(dist(p[5], p[17]), palm * 0.5);
+  const thumbChain = Math.max(1e-5, dist3D(p[1], p[2]) + dist3D(p[2], p[3]) + dist3D(p[3], p[4]));
+  const thumbStraightness = dist3D(p[1], p[4]) / thumbChain;
 
-  const thumbOpen = thumbTipMcp > palm * 0.30 && thumbPinkyMcp > palmWidth * 0.80;
-  const thumbFoldedIn = thumbPinkyMcp < palmWidth * 0.75 || thumbMiddleMcp < palm * 0.45;
+  // Thumb is open/abducted when extended away from index & middle knuckles
+  const thumbOpen =
+    thumbTipMcp > palm * 0.28 &&
+    thumbIndexMcp > palm * 0.34 &&
+    thumbMiddleMcp > palm * 0.44 &&
+    thumbPinkyMcp > palmWidth * 0.76 &&
+    thumbStraightness > 0.74;
 
-  // 1. OK Circle (👌): Thumb tip touching Index tip (or index curled), while Middle + Ring + Pinky are extended
-  if ((thumbIndexTip < palm * 0.45 || indexCurled) && middleExt && ringExt && pinkyExt) {
-    return { meaning: "OK", gesture: "OK_Sign", gestureLabel: "OK circle 👌", confidence: 0.95, palm };
+  // Thumb is tucked across the palm only when its tip is pulled close to the middle/ring MCPs
+  const thumbFoldedIn =
+    (thumbMiddleMcp < palm * 0.38 || thumbRingMcp < palm * 0.44 || thumbPinkyMcp < palmWidth * 0.66) &&
+    thumbIndexMcp < palm * 0.36;
+
+  const hasNeural = typeof neuralGesture === "string" && neuralScore >= 0.55;
+
+  // 1. OK Circle (👌): Thumb tip and Index tip pinching a circle while Middle + Ring (+ Pinky) are extended
+  if (thumbIndexTip < palm * 0.44 && middleExt && ringExt && (pinkyExt || !indexExt)) {
+    return { meaning: "OK", gesture: "OK_Sign", gestureLabel: "OK circle 👌", confidence: 0.96, palm };
   }
 
   // 2. All 4 fingers extended: Open Palm (✋ HELLO) vs Thumb Tucked (🤚 THANK YOU)
   if (indexExt && middleExt && ringExt && pinkyExt) {
-    if (thumbFoldedIn) {
-      return { meaning: "THANK YOU", gesture: "Four_Up", gestureLabel: "4 fingers up 🤚", confidence: 0.93, palm };
+    if (thumbFoldedIn && (!hasNeural || neuralGesture !== "Open_Palm" || neuralScore < 0.82)) {
+      return { meaning: "THANK YOU", gesture: "Four_Up", gestureLabel: "4 fingers up 🤚", confidence: 0.94, palm };
     }
-    return { meaning: "HELLO", gesture: "Open_Palm", gestureLabel: "Open palm ✋", confidence: 0.96, palm };
+    return { meaning: "HELLO", gesture: "Open_Palm", gestureLabel: "Open palm ✋", confidence: 0.97, palm };
   }
 
   // 3. W-Sign (3 fingers: Index + Middle + Ring extended, Pinky curled) -> WATER
   if (indexExt && middleExt && ringExt && pinkyCurled) {
-    return { meaning: "WATER", gesture: "Three_Up", gestureLabel: "W-sign (3 fingers) 3️⃣", confidence: 0.93, palm };
+    return { meaning: "WATER", gesture: "Three_Up", gestureLabel: "W-sign (3 fingers) 3️⃣", confidence: 0.95, palm };
   }
 
-  // 4. Other 3-finger extended combinations -> HELLO / I LOVE YOU
+  // 4. Index + Pinky extended, Middle + Ring curled: I LOVE YOU (🤟) vs GOOD (🤘)
+  if (indexExt && pinkyExt && middleCurled && ringCurled) {
+    if (thumbOpen || (hasNeural && neuralGesture === "ILoveYou")) {
+      return { meaning: "I LOVE YOU", gesture: "ILoveYou", gestureLabel: "I Love You 🤟", confidence: 0.96, palm };
+    }
+    return { meaning: "GOOD", gesture: "Rock_On", gestureLabel: "Index & pinky up 🤘", confidence: 0.93, palm };
+  }
+
+  // 5. Neural ILoveYou boost when 1 of middle/ring is slightly noisy
+  if (hasNeural && neuralGesture === "ILoveYou" && indexExt && pinkyExt && (!middleExt || !ringExt)) {
+    return { meaning: "I LOVE YOU", gesture: "ILoveYou", gestureLabel: "I Love You 🤟", confidence: 0.95, palm };
+  }
+
+  // 6. Other 3-finger extended combinations -> HELLO / I LOVE YOU / OK
   if ((indexExt && middleExt && pinkyExt && ringCurled) || (indexExt && ringExt && pinkyExt && middleCurled)) {
     if (thumbOpen) {
-      return { meaning: "I LOVE YOU", gesture: "ILoveYou", gestureLabel: "I Love You 🤟", confidence: 0.92, palm };
+      return { meaning: "I LOVE YOU", gesture: "ILoveYou", gestureLabel: "I Love You 🤟", confidence: 0.93, palm };
     }
     return { meaning: "HELLO", gesture: "Open_Palm", gestureLabel: "Open palm ✋", confidence: 0.92, palm };
   }
+  if (middleExt && ringExt && pinkyExt && indexCurled) {
+    return { meaning: "OK", gesture: "OK_Sign", gestureLabel: "OK circle 👌", confidence: 0.93, palm };
+  }
 
-  // 5. Index + Middle extended, Ring + Pinky curled: PLEASE (with thumb open) vs BYE (Victory ✌️)
+  // 7. Index + Middle extended, Ring + Pinky curled: PLEASE (with thumb clearly open) vs BYE (Victory ✌️)
   if (indexExt && middleExt && ringCurled && pinkyCurled) {
-    if (thumbOpen && dist(p[4], p[5]) > palm * 0.40) {
-      return { meaning: "PLEASE", gesture: "Thumb_Index_Middle", gestureLabel: "Thumb + 2 fingers 🖐️", confidence: 0.92, palm };
+    if (thumbOpen && thumbIndexMcp > palm * 0.42 && (!hasNeural || neuralGesture !== "Victory")) {
+      return { meaning: "PLEASE", gesture: "Thumb_Index_Middle", gestureLabel: "Thumb + 2 fingers 🖐️", confidence: 0.93, palm };
     }
-    return { meaning: "BYE", gesture: "Victory", gestureLabel: "Victory ✌️", confidence: 0.93, palm };
+    return { meaning: "BYE", gesture: "Victory", gestureLabel: "Victory ✌️", confidence: 0.95, palm };
   }
 
-  // 6. Index + Pinky extended, Middle + Ring curled: I LOVE YOU (🤟) vs GOOD (🤘)
-  if (indexExt && pinkyExt && middleCurled && ringCurled) {
-    if (thumbOpen) {
-      return { meaning: "I LOVE YOU", gesture: "ILoveYou", gestureLabel: "I Love You 🤟", confidence: 0.95, palm };
-    }
-    return { meaning: "GOOD", gesture: "Rock_On", gestureLabel: "Index & pinky up 🤘", confidence: 0.91, palm };
-  }
-
-  // 7. Other 2-finger combinations -> BYE / GOOD
+  // 8. Other 2-finger combinations -> BYE / GOOD
   if ((middleExt && ringExt && indexCurled && pinkyCurled) || (indexExt && ringExt && middleCurled && pinkyCurled)) {
-    return { meaning: "BYE", gesture: "Victory", gestureLabel: "Victory ✌️", confidence: 0.89, palm };
+    return { meaning: "BYE", gesture: "Victory", gestureLabel: "Victory ✌️", confidence: 0.90, palm };
   }
   if ((ringExt && pinkyExt && indexCurled && middleCurled) || (middleExt && pinkyExt && indexCurled && ringCurled)) {
-    return { meaning: "GOOD", gesture: "Rock_On", gestureLabel: "Index & pinky up 🤘", confidence: 0.89, palm };
+    return { meaning: "GOOD", gesture: "Rock_On", gestureLabel: "Index & pinky up 🤘", confidence: 0.90, palm };
   }
 
-  // 8. Only Index extended (Middle + Ring + Pinky curled): COME HERE (👆 L-shape) vs WAIT (☝️)
+  // 9. Only Index extended (Middle + Ring + Pinky curled): COME HERE (👆 L-shape) vs WAIT (☝️)
   if (indexExt && middleCurled && ringCurled && pinkyCurled) {
-    if (thumbOpen && dist(p[4], p[5]) > palm * 0.38) {
-      return { meaning: "COME HERE", gesture: "L_Shape", gestureLabel: "L-shape hand 👆", confidence: 0.92, palm };
+    if (thumbOpen && thumbIndexMcp > palm * 0.40 && (!hasNeural || neuralGesture !== "Pointing_Up")) {
+      return { meaning: "COME HERE", gesture: "L_Shape", gestureLabel: "L-shape hand 👆", confidence: 0.93, palm };
     }
-    return { meaning: "WAIT", gesture: "Pointing_Up", gestureLabel: "Pointing up ☝️", confidence: 0.92, palm };
+    return { meaning: "WAIT", gesture: "Pointing_Up", gestureLabel: "Pointing up ☝️", confidence: 0.95, palm };
   }
 
-  // 9. Only Pinky extended (Index + Middle + Ring curled): CALL ME (🤙) vs FOOD (Pinky only)
+  // 10. Only Pinky extended (Index + Middle + Ring curled): CALL ME (🤙) vs FOOD (Pinky only)
   if (pinkyExt && indexCurled && middleCurled && ringCurled) {
     if (thumbOpen) {
-      return { meaning: "CALL ME", gesture: "Call_Me", gestureLabel: "Call me 🤙", confidence: 0.93, palm };
+      return { meaning: "CALL ME", gesture: "Call_Me", gestureLabel: "Call me 🤙", confidence: 0.95, palm };
     }
-    return { meaning: "FOOD", gesture: "Pinky_Up", gestureLabel: "Pinky finger up", confidence: 0.90, palm };
+    return { meaning: "FOOD", gesture: "Pinky_Up", gestureLabel: "Pinky finger up", confidence: 0.92, palm };
   }
 
-  // 10. Single middle or ring finger extended -> WAIT
+  // 11. Single middle or ring finger extended -> WAIT
   if ((middleExt || ringExt) && indexCurled && pinkyCurled) {
-    return { meaning: "WAIT", gesture: "Pointing_Up", gestureLabel: "Pointing up ☝️", confidence: 0.88, palm };
+    return { meaning: "WAIT", gesture: "Pointing_Up", gestureLabel: "Pointing up ☝️", confidence: 0.89, palm };
   }
 
-  // 11. All 4 fingers curled: YES (👍), NO (👎), or STOP/SORRY (✊)
+  // 12. All 4 fingers curled: YES (👍), NO (👎), or SORRY/STOP (✊)
   if (indexCurled && middleCurled && ringCurled && pinkyCurled) {
-    if (p[2].y - p[4].y > palm * 0.16 && p[5].y - p[4].y > palm * 0.05) {
-      return { meaning: "YES", gesture: "Thumb_Up", gestureLabel: "Thumbs up 👍", confidence: 0.94, palm };
+    if (hasNeural && neuralGesture === "Thumb_Up") {
+      return { meaning: "YES", gesture: "Thumb_Up", gestureLabel: "Thumbs up 👍", confidence: 0.97, palm };
     }
-    if (p[4].y - p[2].y > palm * 0.16 && p[4].y - p[5].y > palm * 0.05) {
-      return { meaning: "NO", gesture: "Thumb_Down", gestureLabel: "Thumbs down 👎", confidence: 0.94, palm };
+    if (hasNeural && neuralGesture === "Thumb_Down") {
+      return { meaning: "NO", gesture: "Thumb_Down", gestureLabel: "Thumbs down 👎", confidence: 0.97, palm };
     }
-    if (thumbOpen) {
-      return { meaning: "YES", gesture: "Thumb_Up", gestureLabel: "Thumbs up 👍", confidence: 0.90, palm };
+    if (hasNeural && neuralGesture === "Closed_Fist") {
+      return { meaning: "SORRY", gesture: "Closed_Fist", gestureLabel: "Closed fist ✊", confidence: 0.95, palm };
     }
-    return { meaning: "SORRY", gesture: "Closed_Fist", gestureLabel: "Closed fist ✊", confidence: 0.90, palm };
+    // Geometric thumb up vs thumb down vs closed fist
+    const thumbPointingUp = p[2].y - p[4].y > palm * 0.15 && p[5].y - p[4].y > palm * 0.04 && thumbTipMcp > palm * 0.25;
+    const thumbPointingDown = p[4].y - p[2].y > palm * 0.15 && p[4].y - p[5].y > palm * 0.04 && thumbTipMcp > palm * 0.25;
+    if (thumbPointingUp) {
+      return { meaning: "YES", gesture: "Thumb_Up", gestureLabel: "Thumbs up 👍", confidence: 0.95, palm };
+    }
+    if (thumbPointingDown) {
+      return { meaning: "NO", gesture: "Thumb_Down", gestureLabel: "Thumbs down 👎", confidence: 0.95, palm };
+    }
+    return { meaning: "SORRY", gesture: "Closed_Fist", gestureLabel: "Closed fist ✊", confidence: 0.91, palm };
   }
 
   return null;
@@ -166,13 +246,21 @@ export function detectHandLandmarkShortcut(landmarks, { minPalm = 0.028 } = {}) 
  * Inspects a single holistic pose frame (body33 + left21 + right21) for 1-hand or 2-hand daily conversation signs.
  */
 export function detectPoseFrameShortcut(pose, options = {}) {
-  const minPalm = options.minPalm ?? 0.028;
+  const minPalm = options.minPalm ?? 0.024;
   const hands = handsFromPoseFrame(pose);
   if (!hands.length) return null;
 
+  const neuralByHand = pose?.neuralGestures || options.neuralGestures || null;
+
   const detected = [];
-  for (const hand of hands) {
-    const match = detectHandLandmarkShortcut(hand.landmarks, { minPalm });
+  for (let i = 0; i < hands.length; i++) {
+    const hand = hands[i];
+    const neuralInfo = neuralByHand?.[hand.handedness] || neuralByHand?.[i] || null;
+    const match = detectHandLandmarkShortcut(hand.landmarks, {
+      minPalm,
+      neuralGesture: neuralInfo?.categoryName || null,
+      neuralScore: neuralInfo?.score || 0,
+    });
     if (match) {
       detected.push({ ...match, handedness: hand.handedness, landmarks: hand.landmarks });
     }
@@ -231,29 +319,38 @@ export function detectPoseFrameShortcut(pose, options = {}) {
 
 /**
  * Inspects a sequence of pose frames and returns a consensus hand gesture if held/waved consistently.
+ * Uses confidence + recency weighting so settled end-of-hold frames outweigh early transition frames.
  */
-export function detectPoseSequenceShortcut(sequence, { minFrames = 1, minRatio = 0.25, minPalm = 0.028 } = {}) {
+export function detectPoseSequenceShortcut(sequence, { minFrames = 1, minRatio = 0.25, minPalm = 0.024 } = {}) {
   if (!Array.isArray(sequence) || sequence.length < minFrames) return null;
   const counts = new Map();
+  const weightedScores = new Map();
   const matchesByMeaning = new Map();
   let handFrames = 0;
 
-  for (const frame of sequence) {
+  for (let idx = 0; idx < sequence.length; idx++) {
+    const frame = sequence[idx];
     const hands = handsFromPoseFrame(frame);
     if (hands.length > 0) handFrames += 1;
     const match = detectPoseFrameShortcut(frame, { minPalm });
     if (!match) continue;
+    // Later frames (where the hand has settled into its target sign) receive higher weight (1.0 -> 1.45)
+    const recencyWeight = 1 + (idx / Math.max(1, sequence.length - 1)) * 0.45;
+    const weight = (match.confidence || 0.9) * recencyWeight;
     counts.set(match.meaning, (counts.get(match.meaning) || 0) + 1);
+    weightedScores.set(match.meaning, (weightedScores.get(match.meaning) || 0) + weight);
     matchesByMeaning.set(match.meaning, match);
   }
 
   if (handFrames < minFrames) return null;
   let bestMeaning = null;
+  let bestScore = 0;
   let bestCount = 0;
-  for (const [meaning, count] of counts.entries()) {
-    if (count > bestCount) {
+  for (const [meaning, score] of weightedScores.entries()) {
+    if (score > bestScore) {
       bestMeaning = meaning;
-      bestCount = count;
+      bestScore = score;
+      bestCount = counts.get(meaning) || 0;
     }
   }
 
