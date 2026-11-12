@@ -301,3 +301,156 @@ export function predictFallbackGruCandidate(model, sequence) {
     return null;
   }
 }
+
+const SIGN_BY_MEANING = new Map(DAILY_CONVERSATION_SIGNS.map((s) => [s.meaning, s]));
+
+const PHRASE_SYNONYM_MAP = new Map([
+  // Exact 20 meanings
+  ...DAILY_CONVERSATION_SIGNS.map((s) => [s.meaning, s.meaning]),
+  // Natural conversational aliases & synonyms
+  ["HI", "HELLO"],
+  ["HEY", "HELLO"],
+  ["GREETINGS", "HELLO"],
+  ["NAMASTE", "HELLO"],
+  ["HOWS IT GOING", "HOW ARE YOU"],
+  ["HOW DO YOU DO", "HOW ARE YOU"],
+  ["IM FINE", "I AM FINE"],
+  ["I M FINE", "I AM FINE"],
+  ["FINE", "I AM FINE"],
+  ["DOING WELL", "I AM FINE"],
+  ["IM GOOD", "I AM FINE"],
+  ["MORNING", "GOOD MORNING"],
+  ["NICE MEETING YOU", "NICE TO MEET YOU"],
+  ["MEET YOU", "NICE TO MEET YOU"],
+  ["THANKS", "THANK YOU"],
+  ["THANK", "THANK YOU"],
+  ["PLS", "PLEASE"],
+  ["PLZ", "PLEASE"],
+  ["APOLOGIES", "SORRY"],
+  ["EXCUSE ME", "SORRY"],
+  ["GOODBYE", "BYE"],
+  ["SEE YOU", "BYE"],
+  ["LATER", "BYE"],
+  ["LOVE YOU", "I LOVE YOU"],
+  ["LOVE", "I LOVE YOU"],
+  ["ILY", "I LOVE YOU"],
+  ["YEAH", "YES"],
+  ["YEP", "YES"],
+  ["SURE", "YES"],
+  ["AGREE", "YES"],
+  ["NOPE", "NO"],
+  ["NAH", "NO"],
+  ["DONT", "NO"],
+  ["DO NOT", "NO"],
+  ["OKAY", "OK"],
+  ["ALRIGHT", "OK"],
+  ["GREAT", "GOOD"],
+  ["WELL", "GOOD"],
+  ["AWESOME", "GOOD"],
+  ["NICE", "GOOD"],
+  ["HOLD ON", "WAIT"],
+  ["ONE MINUTE", "WAIT"],
+  ["PAUSE", "WAIT"],
+  ["ASSIST", "HELP"],
+  ["AID", "HELP"],
+  ["SUPPORT", "HELP"],
+  ["DRINK", "WATER"],
+  ["THIRSTY", "WATER"],
+  ["EAT", "FOOD"],
+  ["HUNGRY", "FOOD"],
+  ["MEAL", "FOOD"],
+  ["LUNCH", "FOOD"],
+  ["DINNER", "FOOD"],
+  ["BREAKFAST", "FOOD"],
+  ["COME", "COME HERE"],
+  ["CALL", "CALL ME"],
+  ["PHONE", "CALL ME"],
+  ["HALT", "STOP"],
+  ["ENOUGH", "STOP"],
+]);
+
+/**
+ * Parses an English sentence or phrase into an ordered sequence of 3D Hand Sign steps
+ * while explicitly reporting uncovered words so nothing is silently omitted.
+ */
+export function parseSentenceToSignSteps(text) {
+  const input = String(text ?? "").trim();
+  if (!input) {
+    return { input: "", tokens: [], matchedSigns: [], uncoveredWords: [] };
+  }
+
+  const rawWords = input
+    .split(/\s+/)
+    .map((raw) => {
+      const cleaned = raw.replace(/^[^a-zA-Z0-9']+|[^a-zA-Z0-9']+$/g, "").replace(/'/g, "");
+      return { raw, upper: cleaned.toUpperCase() };
+    })
+    .filter((item) => item.upper.length > 0);
+
+  const tokens = [];
+  const matchedSigns = [];
+  const uncoveredWords = [];
+
+  let i = 0;
+  while (i < rawWords.length) {
+    let matchedLen = 0;
+    let matchedMeaning = null;
+
+    // Greedy longest-phrase match (from 4 words down to 1 word)
+    for (let len = Math.min(4, rawWords.length - i); len >= 1; len--) {
+      const candidatePhrase = rawWords
+        .slice(i, i + len)
+        .map((w) => w.upper)
+        .join(" ");
+      if (PHRASE_SYNONYM_MAP.has(candidatePhrase)) {
+        matchedLen = len;
+        matchedMeaning = PHRASE_SYNONYM_MAP.get(candidatePhrase);
+        break;
+      }
+    }
+
+    if (matchedMeaning && SIGN_BY_MEANING.has(matchedMeaning)) {
+      const sign = SIGN_BY_MEANING.get(matchedMeaning);
+      const rawText = rawWords
+        .slice(i, i + matchedLen)
+        .map((w) => w.raw)
+        .join(" ");
+      const stepIndex = matchedSigns.length;
+      const stepObj = {
+        stepIndex,
+        rawText,
+        meaning: sign.meaning,
+        icon: sign.icon,
+        category: sign.category,
+        hands: sign.hands,
+        howTo: sign.howTo,
+        gestureLabel: sign.gestureLabel,
+      };
+      matchedSigns.push(stepObj);
+      tokens.push({
+        type: "sign",
+        rawText,
+        meaning: sign.meaning,
+        stepIndex,
+        sign,
+      });
+      i += matchedLen;
+    } else {
+      const rawWord = rawWords[i].raw.replace(/^[,.;:!?]+|[,.;:!?]+$/g, "") || rawWords[i].raw;
+      uncoveredWords.push(rawWord);
+      tokens.push({
+        type: "uncovered",
+        rawText: rawWord,
+      });
+      i += 1;
+    }
+  }
+
+  return {
+    input,
+    tokens,
+    matchedSigns,
+    uncoveredWords,
+  };
+}
+

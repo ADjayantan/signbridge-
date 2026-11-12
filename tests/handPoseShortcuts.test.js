@@ -1,6 +1,12 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { DAILY_CONVERSATION_SIGNS, detectHandLandmarkShortcut, detectPoseFrameShortcut, detectPoseSequenceShortcut } from "../src/lib/handPoseShortcuts.js";
+import {
+  DAILY_CONVERSATION_SIGNS,
+  detectHandLandmarkShortcut,
+  detectPoseFrameShortcut,
+  detectPoseSequenceShortcut,
+  parseSentenceToSignSteps,
+} from "../src/lib/handPoseShortcuts.js";
 
 function makeOpenPalmLandmarks(offsetX = 0) {
   return [
@@ -94,3 +100,24 @@ test("detectPoseSequenceShortcut finds HELLO across a close-up webcam sequence a
   assert.equal(detectPoseFrameShortcut(syntheticFrames[0]), null);
   assert.equal(detectPoseSequenceShortcut(syntheticFrames), null);
 });
+
+test("parseSentenceToSignSteps matches multi-word phrases, conversational synonyms, and reports uncovered words", () => {
+  const empty = parseSentenceToSignSteps("   ");
+  assert.deepEqual(empty, {
+    input: "",
+    tokens: [],
+    matchedSigns: [],
+    uncoveredWords: [],
+  });
+
+  const parsed = parseSentenceToSignSteps("Hi! How are you today? Please help me get water, thanks!");
+  assert.deepEqual(
+    parsed.matchedSigns.map((s) => s.meaning),
+    ["HELLO", "HOW ARE YOU", "PLEASE", "HELP", "WATER", "THANK YOU"],
+  );
+  // "today", "me", "get" are not in the 20-sign vocabulary and must be reported in uncoveredWords
+  assert.deepEqual(parsed.uncoveredWords, ["today", "me", "get"]);
+  assert.equal(parsed.tokens.filter((t) => t.type === "sign").length, 6);
+  assert.equal(parsed.tokens.filter((t) => t.type === "uncovered").length, 3);
+});
+

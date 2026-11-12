@@ -422,6 +422,9 @@ export default function InteractiveSign3D({
   liveHandsRef = null,
   cameraOn = false,
   onSelectSign = null,
+  sentencePlan = null,
+  sentencePlayToken = 0,
+  onCloseSentencePlayer = null,
 }) {
   const hostRef = useRef(null);
   const [viewPreset, setViewPreset] = useState("orbit"); // "orbit" | "front" | "side"
@@ -429,6 +432,9 @@ export default function InteractiveSign3D({
   const [showJointOverlay, setShowJointOverlay] = useState(false);
   const [autoTour, setAutoTour] = useState(false);
   const [selectedMeaning, setSelectedMeaning] = useState(activeMeaning || "HELLO");
+  const [seqPlaying, setSeqPlaying] = useState(false);
+  const [seqStepIdx, setSeqStepIdx] = useState(0);
+  const [seqSpeed, setSeqSpeed] = useState(1);
   const stateRef = useRef({
     targetMeaning: activeMeaning || "HELLO",
     viewPreset: "orbit",
@@ -451,6 +457,49 @@ export default function InteractiveSign3D({
     stateRef.current.recognized = Boolean(recognized);
     stateRef.current.holding = Boolean(holdingMeaning);
   }, [activeMeaning, holdingMeaning, recognized]);
+
+  // When a sentence sequence play is triggered from Step 3, start playing from step 0
+  useEffect(() => {
+    if (!sentencePlan?.matchedSigns?.length || sentencePlayToken <= 0) return;
+    setAutoTour(false);
+    setSeqStepIdx(0);
+    const firstSign = sentencePlan.matchedSigns[0];
+    setSelectedMeaning(firstSign.meaning);
+    stateRef.current.targetMeaning = firstSign.meaning;
+    setSeqPlaying(sentencePlan.matchedSigns.length > 1);
+  }, [sentencePlan, sentencePlayToken]);
+
+  // Advance through sentence sequence steps on timer
+  useEffect(() => {
+    if (!seqPlaying || !sentencePlan?.matchedSigns?.length || import.meta.env?.MODE === "test") return undefined;
+    const steps = sentencePlan.matchedSigns;
+    const intervalMs = Math.max(700, Math.round(1600 / seqSpeed));
+    const timer = window.setInterval(() => {
+      setSeqStepIdx((prev) => {
+        const nextIdx = prev + 1;
+        if (nextIdx >= steps.length) {
+          setSeqPlaying(false);
+          return prev;
+        }
+        const nextSign = steps[nextIdx];
+        setSelectedMeaning(nextSign.meaning);
+        stateRef.current.targetMeaning = nextSign.meaning;
+        return nextIdx;
+      });
+    }, intervalMs);
+    return () => window.clearInterval(timer);
+  }, [seqPlaying, sentencePlan, seqSpeed]);
+
+  const jumpToSentenceStep = (idx) => {
+    const steps = sentencePlan?.matchedSigns || [];
+    if (idx < 0 || idx >= steps.length) return;
+    setAutoTour(false);
+    setSeqPlaying(false);
+    setSeqStepIdx(idx);
+    const step = steps[idx];
+    setSelectedMeaning(step.meaning);
+    stateRef.current.targetMeaning = step.meaning;
+  };
 
   useEffect(() => {
     stateRef.current.viewPreset = viewPreset;
@@ -1149,6 +1198,107 @@ export default function InteractiveSign3D({
           </div>
         </div>
       </div>
+      {sentencePlan && (sentencePlan.matchedSigns?.length > 0 || sentencePlan.uncoveredWords?.length > 0) && (
+        <div className="sign3d-sequence-bar" role="region" aria-label="3D sentence sign sequence player">
+          <div className="sign3d-sequence-top">
+            <div className="sign3d-sequence-title">
+              <span className="sign3d-sequence-badge">3D SENTENCE PLAYER</span>
+              <strong>
+                {sentencePlan.matchedSigns.length > 0
+                  ? `Sign ${Math.min(seqStepIdx + 1, sentencePlan.matchedSigns.length)} of ${sentencePlan.matchedSigns.length}: ${sentencePlan.matchedSigns[seqStepIdx]?.meaning || ""}`
+                  : "No matching 3D signs in sentence"}
+              </strong>
+            </div>
+            <div className="sign3d-sequence-controls">
+              {sentencePlan.matchedSigns.length > 0 && (
+                <>
+                  <button
+                    type="button"
+                    className="sign3d-seq-btn"
+                    disabled={seqStepIdx <= 0}
+                    onClick={() => jumpToSentenceStep(seqStepIdx - 1)}
+                    title="Previous sign in sentence"
+                  >
+                    ⏮
+                  </button>
+                  <button
+                    type="button"
+                    className="sign3d-seq-btn is-primary"
+                    onClick={() => {
+                      if (seqPlaying) {
+                        setSeqPlaying(false);
+                      } else {
+                        setAutoTour(false);
+                        if (seqStepIdx >= sentencePlan.matchedSigns.length - 1) {
+                          setSeqStepIdx(0);
+                          const first = sentencePlan.matchedSigns[0];
+                          setSelectedMeaning(first.meaning);
+                          stateRef.current.targetMeaning = first.meaning;
+                        }
+                        setSeqPlaying(true);
+                      }
+                    }}
+                  >
+                    {seqPlaying ? "⏸ Pause" : "▶ Play"}
+                  </button>
+                  <button
+                    type="button"
+                    className="sign3d-seq-btn"
+                    disabled={seqStepIdx >= sentencePlan.matchedSigns.length - 1}
+                    onClick={() => jumpToSentenceStep(seqStepIdx + 1)}
+                    title="Next sign in sentence"
+                  >
+                    ⏭
+                  </button>
+                  {[0.75, 1, 1.5].map((spd) => (
+                    <button
+                      key={spd}
+                      type="button"
+                      className={"sign3d-seq-btn" + (seqSpeed === spd ? " is-active" : "")}
+                      onClick={() => setSeqSpeed(spd)}
+                    >
+                      {spd}x
+                    </button>
+                  ))}
+                </>
+              )}
+              {onCloseSentencePlayer && (
+                <button
+                  type="button"
+                  className="sign3d-seq-btn"
+                  onClick={() => {
+                    setSeqPlaying(false);
+                    onCloseSentencePlayer();
+                  }}
+                  title="Close sentence player"
+                >
+                  ✕
+                </button>
+              )}
+            </div>
+          </div>
+          <div className="sign3d-sequence-tokens">
+            {sentencePlan.tokens.map((tok, i) =>
+              tok.type === "sign" ? (
+                <button
+                  key={`tok-${i}-${tok.meaning}`}
+                  type="button"
+                  className={"sign3d-seq-token is-sign" + (tok.stepIndex === seqStepIdx ? " is-current" : "")}
+                  onClick={() => jumpToSentenceStep(tok.stepIndex)}
+                >
+                  <span>{tok.sign.icon}</span>
+                  <strong>{tok.meaning}</strong>
+                  {tok.rawText.toUpperCase() !== tok.meaning && <small>({tok.rawText})</small>}
+                </button>
+              ) : (
+                <span key={`tok-unc-${i}`} className="sign3d-seq-token is-uncovered" title="No 3D sign in vocabulary for this word">
+                  No sign: “{tok.rawText}”
+                </span>
+              )
+            )}
+          </div>
+        </div>
+      )}
       <div className="sign3d-footer">
         <span className="sign3d-hint">Drag 3D hand to inspect any angle · Tap any of the 20 signs below to morph 3D hand + speak aloud:</span>
         <div className="sign3d-quick-strip">

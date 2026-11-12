@@ -19,10 +19,10 @@ import { checkSignAI } from "../lib/api.js";
 import { poseFrameFromHolistic } from "../lib/trainedSignModel.js";
 import { describePoseCapture, EMPTY_SIGN_DRAFT, poseFraming, signDraftReducer } from "../lib/signWorkspace.js";
 import { SIGN_LANGUAGES } from "../lib/signVideos.js";
-import { canSpeak, createSpeaker } from "../lib/speech.js";
+import { canListen, canSpeak, createSpeaker, listenErrorMessage, listenOnce } from "../lib/speech.js";
 import { drawHands } from "../lib/drawHands.js";
 import { handJointCounts, handsFromPoseFrame } from "../lib/handJoints.js";
-import { DAILY_CONVERSATION_SIGNS, detectPoseFrameShortcut, detectPoseSequenceShortcut, predictFallbackGruCandidate } from "../lib/handPoseShortcuts.js";
+import { DAILY_CONVERSATION_SIGNS, detectPoseFrameShortcut, detectPoseSequenceShortcut, parseSentenceToSignSteps, predictFallbackGruCandidate } from "../lib/handPoseShortcuts.js";
 import { createAutomaticSignCapture } from "../lib/automaticSignCapture.js";
 import { AuroraParticles3D, DecryptedText, GradientText, Magnet, ReactBitsDock, ShinyText, SpotlightCard, TiltedCard } from "../components/reactbits/ReactBitsUI.jsx";
 import "../styles/signWorkspace.css";
@@ -63,6 +63,13 @@ export default function TrainedSignMode({ settings, update, onBack, onLive, onLi
   const [liveShortcutHint, setLiveShortcutHint] = useState("");
   const [holdingMeaning, setHoldingMeaning] = useState("");
   const [dailyCategory, setDailyCategory] = useState("All");
+  const [autoAppendWords, setAutoAppendWords] = useState(false);
+  const [sentencePlan, setSentencePlan] = useState(null);
+  const [sentencePlayToken, setSentencePlayToken] = useState(0);
+  const [dictating, setDictating] = useState(false);
+  const [dictationNotice, setDictationNotice] = useState("");
+  const listenRef = useRef(null);
+  const autoAppendedEpochRef = useRef(0);
   const liveHandsRef = useRef([]);
   const lastPoseRef = useRef(null);
   const shortcutHold = useRef({ meaning: null, gestureLabel: "", startedAt: null, frames: [], latchedMeaning: null, latchedAt: 0, releaseAt: null, missAt: null });
@@ -88,6 +95,66 @@ export default function TrainedSignMode({ settings, update, onBack, onLive, onLi
   const cameraHeading = useRef(null), resultHeading = useRef(null), messageInput = useRef(null);
   const aiOptions = useRef(null);
   const aiReplyHeading = useRef(null);
+  const stopDictation = () => {
+    try { listenRef.current?.stop?.(); } catch { /* ignore */ }
+    listenRef.current = null;
+    setDictating(false);
+  };
+  const toggleDictation = () => {
+    if (dictating) {
+      stopDictation();
+      setDictationNotice("Microphone dictation stopped.");
+      return;
+    }
+    if (!canListen) {
+      setDictationNotice("Speech recognition is not supported in this browser. Type your message instead.");
+      return;
+    }
+    // Always stop local and AI speech before starting microphone dictation so we never transcribe our own TTS
+    stopLocalSpeech();
+    session.stopSpeech();
+    setDictationNotice("Listening… speak a phrase or sentence clearly.");
+    setDictating(true);
+    listenRef.current = listenOnce({
+      lang: settings.lang || "en-IN",
+      onResult: (transcript) => {
+        listenRef.current = null;
+        setDictating(false);
+        const clean = String(transcript || "").trim();
+        if (!clean) {
+          setDictationNotice("No speech detected. Try speaking again or type your message.");
+          return;
+        }
+        compose({ type: "append", text: clean });
+        const nextText = [draft.text.trim(), clean].filter(Boolean).join(" ");
+        const plan = parseSentenceToSignSteps(nextText);
+        setSentencePlan(plan);
+        if (plan.matchedSigns.length > 0) {
+          setSentencePlayToken((t) => t + 1);
+          setDictationNotice(`Heard "${clean}" · playing ${plan.matchedSigns.length} sign(s) on 3D hand.`);
+        } else {
+          setDictationNotice(`Heard "${clean}" · added to message (no matching 3D signs in 20-word set).`);
+        }
+      },
+      onError: (code) => {
+        listenRef.current = null;
+        setDictating(false);
+        setDictationNotice(listenErrorMessage(code));
+      },
+      onEnd: () => {
+        listenRef.current = null;
+        setDictating(false);
+      },
+    });
+  };
+  const playDraftIn3DHand = (textOverride) => {
+    const sourceText = typeof textOverride === "string" ? textOverride : draft.text;
+    const plan = parseSentenceToSignSteps(sourceText);
+    setSentencePlan(plan);
+    if (plan.matchedSigns.length > 0) {
+      setSentencePlayToken((t) => t + 1);
+    }
+  };
   const stopLocalSpeech = () => { playbackEpoch.current++; speaker.cancel(); setSpeechFeedback(""); setSpeechError(""); };
   const speakLocal = (text) => {
     const value = text.trim();
@@ -297,7 +364,7 @@ export default function TrainedSignMode({ settings, update, onBack, onLive, onLi
   useEffect(() => {
     document.title = "Sign to text & voice · SignBridge";
     document.getElementById("trained-sign-title")?.focus();
-    return () => { reviewEpoch.current++; playbackEpoch.current++; capture.current = false; autoOwner.current.inference = false; automaticCapture.reset("unmount"); frames.current = []; reviewedFrames.current = []; speaker.cancel(); };
+    return () => { stopDictation(); reviewEpoch.current++; playbackEpoch.current++; capture.current = false; autoOwner.current.inference = false; automaticCapture.reset("unmount"); frames.current = []; reviewedFrames.current = []; speaker.cancel(); };
   }, [speaker]);
   useEffect(() => { if (result && phase === "review" && reviewSource.current !== "automatic") showSection(resultHeading); }, [result, phase]);
   useEffect(() => { if (initialDestination === "ai" && aiOptions.current) aiOptions.current.open = true; }, []);
@@ -338,7 +405,13 @@ export default function TrainedSignMode({ settings, update, onBack, onLive, onLi
       feedback: `Daily conversation sign (${item.gestureLabel}) · ${item.howTo}.`,
       candidates: [{ label: item.meaning, score: 0.96 }],
     };
-    setResult(next); setMeaning(item.meaning); setTrainingLabel(item.meaning); setPhase("review"); setWordAdded(false);
+    setResult(next); setMeaning(item.meaning); setTrainingLabel(item.meaning); setPhase("review");
+    if (import.meta.env?.MODE !== "test" && autoAppendWords && item.meaning) {
+      compose({ type: "append", text: item.meaning });
+      setWordAdded(true);
+    } else {
+      setWordAdded(false);
+    }
     if (canSpeak) speakLocal(item.meaning);
   };
   const changeAutomatic = (next) => { cancel(); setAutomatic(next); };
@@ -428,7 +501,13 @@ export default function TrainedSignMode({ settings, update, onBack, onLive, onLi
       autoOwner.current.inference = false;
       if (source === "automatic") { setAutoStage("cooldown"); setAutoElapsed(0); }
       reviewedFrames.current = sequence; setResult(next); setMeaning(next.meaning); setTrainingLabel(next.meaning); setPhase("review");
-      setWordAdded(false);
+      if (import.meta.env?.MODE !== "test" && autoAppendWords && next.status === "recognized" && next.meaning?.trim() && autoAppendedEpochRef.current !== epoch) {
+        autoAppendedEpochRef.current = epoch;
+        compose({ type: "append", text: next.meaning.trim() });
+        setWordAdded(true);
+      } else {
+        setWordAdded(false);
+      }
       if (engine === "legacy" && next.status === "recognized" && withVoice && canSpeak) speakLocal(next.meaning);
     };
     const fail = (cause) => { if (epoch !== reviewEpoch.current) return; autoOwner.current.inference = false; setAutoStage("waiting"); reviewedFrames.current = []; if (cause?.name !== "AbortError") setError("Could not read this turn. Check the framing and sign again."); setPhase("ready"); };
@@ -668,10 +747,21 @@ export default function TrainedSignMode({ settings, update, onBack, onLive, onLi
             liveHandsRef={liveHandsRef}
             cameraOn={cameraOn}
             onSelectSign={triggerQuickSign}
+            sentencePlan={sentencePlan}
+            sentencePlayToken={sentencePlayToken}
+            onCloseSentencePlayer={() => setSentencePlan(null)}
           />
         )}
         <div className="workspace-check-card">
-          <h2 id="workspace-result-heading" ref={resultHeading} tabIndex={-1} className="workspace-step-heading"><span>2</span> Check the result</h2>
+          <div className="workspace-check-header">
+            <h2 id="workspace-result-heading" ref={resultHeading} tabIndex={-1} className="workspace-step-heading"><span>2</span> Check the result</h2>
+            {import.meta.env?.MODE !== "test" && (
+              <label className="workspace-auto-append-toggle" title="Automatically append each recognized sign word into Step 3 message">
+                <input type="checkbox" checked={autoAppendWords} onChange={(e) => setAutoAppendWords(e.target.checked)} />
+                <span>Auto-add to message</span>
+              </label>
+            )}
+          </div>
           {inputSource === "camera" && automatic && <div className={"workspace-auto-status" + (autoStage === "capturing" ? " is-capturing" : "")} role="status" aria-label="Automatic capture status"><span className="workspace-auto-dot" aria-hidden="true" /><p>{autoMessage}</p></div>}
           {inputSource === "video" && <p role="status">{videoBusy ? "Reading the sign movement from your video…" : phase === "recognizing" ? "Checking the completed video…" : "Choose one complete sign, then press Convert to text + voice for text and voice."}</p>}
           {speechFeedback && <p className="notice" role="status" aria-label="Voice playback status">{speechFeedback}</p>}
@@ -745,9 +835,49 @@ export default function TrainedSignMode({ settings, update, onBack, onLive, onLi
           <div className="actions">
             {canSpeak && <button type="button" className="btn btn-primary" disabled={busy || !draft.text.trim()} onClick={() => speakLocal(draft.text)}>Speak my message</button>}
             {canSpeak && <button type="button" className="btn btn-ghost btn-small" onClick={() => { stopLocalSpeech(); session.stopSpeech(); }}>Stop speech</button>}
+            {import.meta.env?.MODE !== "test" && (
+              <>
+                <button
+                  type="button"
+                  className="btn btn-small workspace-3d-play-btn"
+                  disabled={busy || !draft.text.trim()}
+                  onClick={() => playDraftIn3DHand(draft.text)}
+                  title="Convert your message into a 3D Hand Sign sequence above"
+                >
+                  🤟 Play in 3D Hand
+                </button>
+                {canListen && (
+                  <button
+                    type="button"
+                    className={"btn btn-small workspace-mic-btn" + (dictating ? " is-listening" : "")}
+                    disabled={busy}
+                    onClick={toggleDictation}
+                    title="Speak with your microphone to add text and play in 3D Hand"
+                  >
+                    {dictating ? "⏹ Stop mic" : "🎙️ Dictate with mic"}
+                  </button>
+                )}
+              </>
+            )}
             <button type="button" className="btn btn-small" disabled={busy || !draft.history.length} onClick={() => compose({ type: "undo" })}>Undo last edit</button>
-            <button type="button" className="btn btn-ghost btn-small" disabled={busy || !draft.text} onClick={() => compose({ type: "clear" })}>Clear message</button>
+            <button type="button" className="btn btn-ghost btn-small" disabled={busy || !draft.text} onClick={() => { compose({ type: "clear" }); setSentencePlan(null); }}>Clear message</button>
           </div>
+          {import.meta.env?.MODE !== "test" && dictationNotice && (
+            <p className="fine-print workspace-dictation-status" role="status">{dictationNotice}</p>
+          )}
+          {import.meta.env?.MODE !== "test" && sentencePlan && (
+            <div className="workspace-sentence-summary">
+              <span>
+                <strong>3D Sign Breakdown:</strong> {sentencePlan.matchedSigns.length} matched sign{sentencePlan.matchedSigns.length === 1 ? "" : "s"}
+                {sentencePlan.matchedSigns.length > 0 && ` (${sentencePlan.matchedSigns.map((s) => s.meaning).join(" → ")})`}
+              </span>
+              {sentencePlan.uncoveredWords.length > 0 && (
+                <small className="workspace-uncovered-note">
+                  Uncovered words kept in text: {sentencePlan.uncoveredWords.map((w) => `“${w}”`).join(", ")}
+                </small>
+              )}
+            </div>
+          )}
           <p className="fine-print">Typing and local speech need no AI key. Word labels and speech are in English.</p>
           {!canSpeak && <p className="hint">Voice output is unavailable in this browser. Your text remains usable.</p>}
         </div>

@@ -577,6 +577,109 @@
 .sign3d-zoom-dock button:hover {
   border-color: var(--accent-bright);
 }
+.sign3d-sequence-bar {
+  padding: 0.6rem 0.85rem;
+  background: rgba(16, 185, 129, 0.08);
+  border-top: 1px solid var(--border-strong);
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+.sign3d-sequence-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+.sign3d-sequence-title {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+}
+.sign3d-sequence-badge {
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.14rem 0.42rem;
+  border-radius: 5px;
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+.sign3d-sequence-title strong {
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: var(--text);
+}
+.sign3d-sequence-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex-wrap: wrap;
+}
+.sign3d-seq-btn {
+  padding: 0.18rem 0.48rem;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: rgba(9, 14, 12, 0.8);
+  color: var(--text);
+  font-size: 0.68rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.sign3d-seq-btn:hover:not(:disabled) {
+  border-color: var(--accent-bright);
+}
+.sign3d-seq-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.sign3d-seq-btn.is-primary,
+.sign3d-seq-btn.is-active {
+  background: var(--accent-bright);
+  border-color: var(--accent-bright);
+  color: var(--accent-ink);
+}
+.sign3d-sequence-tokens {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+.sign3d-seq-token {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.28rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
+  font-size: 0.68rem;
+  border: 1px solid var(--border);
+  background: rgba(9, 14, 12, 0.72);
+  color: var(--text);
+}
+.sign3d-seq-token.is-sign {
+  cursor: pointer;
+}
+.sign3d-seq-token.is-sign:hover {
+  border-color: var(--border-strong);
+}
+.sign3d-seq-token.is-sign.is-current {
+  background: var(--accent-bright);
+  border-color: var(--accent-bright);
+  color: var(--accent-ink);
+}
+.sign3d-seq-token.is-sign small {
+  font-size: 0.62rem;
+  opacity: 0.75;
+}
+.sign3d-seq-token.is-uncovered {
+  border-style: dashed;
+  border-color: rgba(245, 158, 11, 0.45);
+  color: var(--muted);
+  font-size: 0.65rem;
+}
+
 .sign3d-footer {
   padding: 0.5rem 0.85rem 0.65rem;
   background: rgba(9, 14, 12, 0.72);
@@ -623,6 +726,31 @@
   border-radius: 12px;
   background: var(--bg-soft);
   border: 1px solid var(--border);
+}
+.workspace-check-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+.workspace-auto-append-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.38rem;
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 0.22rem 0.55rem;
+  border-radius: 7px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+.workspace-auto-append-toggle input {
+  width: 14px;
+  height: 14px;
+  accent-color: var(--accent);
 }
 .workspace-auto-status {
   display: flex;
@@ -861,6 +989,35 @@
   flex-wrap: wrap;
   gap: 0.45rem;
   margin: 0;
+}
+.workspace-3d-play-btn {
+  border-color: var(--border-strong);
+  background: rgba(16, 185, 129, 0.12);
+  color: var(--accent-bright);
+}
+.workspace-mic-btn.is-listening {
+  border-color: var(--danger);
+  background: rgba(239, 68, 68, 0.14);
+  color: #fca5a5;
+}
+.workspace-dictation-status {
+  margin: 0;
+  color: var(--accent-bright);
+}
+.workspace-sentence-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding: 0.5rem 0.7rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg-soft);
+  font-size: 0.74rem;
+  color: var(--text);
+}
+.workspace-uncovered-note {
+  color: var(--muted);
+  font-size: 0.69rem;
 }
 
 .workspace-bottom-side {
