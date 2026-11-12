@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { DAILY_CONVERSATION_SIGNS } from "../lib/handPoseShortcuts.js";
+import { BONE_COUNT, BONE, FINGER_SPECS, THUMB_SPEC, buildHandSkinGeometry } from "../lib/handSkinMesh.js";
+import { HAND_MODEL_URL, createHandModelBones, createSkinBumpTexture, extractHandModelData, prepareHandModel } from "../lib/handModelRig.js";
 
 const FINGER_COLORS = [
   0xffbe55, // 0: Wrist
@@ -15,7 +17,7 @@ const SKIN_THEMES = [
     id: "warm",
     label: "Real Skin",
     color: 0xe0a382,
-    nailColor: 0xf4cfc0,
+    nailColor: 0xdda492,
     creaseColor: 0xb87658,
     sheen: 0xffc6ad,
     emissive: 0x240f08,
@@ -43,50 +45,6 @@ const SKIN_THEMES = [
     emissive: 0x2e1f08,
     roughness: 0.28,
     metalness: 0.58,
-  },
-];
-
-/**
- * Anatomical specification of the 4 fingers in local hand space.
- * In local hand space:
- *  +Y = Up along extended fingers
- *  +Z = Palm side (facing viewer by default)
- *  -Z = Back of hand (dorsal side, where fingernails sit)
- *  -X = Thumb / Radial side (for right hand, mirrored for left hand)
- *  +X = Pinky / Ulnar side
- */
-const FINGER_SPECS = [
-  {
-    name: "index",
-    jointIndices: [5, 6, 7, 8],
-    mountPos: [-0.36, 0.42, 0.0],
-    baseSplayZ: 0.045,
-    lengths: [0.39, 0.25, 0.19],
-    radii: [0.102, 0.088, 0.076, 0.066],
-  },
-  {
-    name: "middle",
-    jointIndices: [9, 10, 11, 12],
-    mountPos: [-0.11, 0.46, 0.0],
-    baseSplayZ: 0.008,
-    lengths: [0.44, 0.28, 0.20],
-    radii: [0.106, 0.092, 0.079, 0.068],
-  },
-  {
-    name: "ring",
-    jointIndices: [13, 14, 15, 16],
-    mountPos: [0.14, 0.43, -0.01],
-    baseSplayZ: -0.032,
-    lengths: [0.40, 0.26, 0.19],
-    radii: [0.099, 0.085, 0.074, 0.064],
-  },
-  {
-    name: "pinky",
-    jointIndices: [17, 18, 19, 20],
-    mountPos: [0.37, 0.36, -0.02],
-    baseSplayZ: -0.075,
-    lengths: [0.31, 0.20, 0.16],
-    radii: [0.088, 0.076, 0.066, 0.056],
   },
 ];
 
@@ -579,6 +537,25 @@ export function get3DPoseForSign(meaning = "HELLO") {
 }
 
 /**
+ * Converts the on-screen direction of the user's hand (wrist -> middle knuckle, in the mirrored
+ * webcam preview: +dx = toward the right of the screen, +dy = up) into the 3D hand's Z roll.
+ * In Three.js a NEGATIVE Z rotation tilts the top of the hand toward +X (screen right).
+ */
+function liveWristRoll(dxScreen, dyScreen) {
+  // TODO(human): decide how faithfully the 3D hand should follow the user's wrist tilt.
+  // Current behaviour (kept from the original rig): 70% of the real tilt, capped at about 37°,
+  // and hands pointing sideways or downward are treated as upright.
+  const wristTilt = Math.max(-0.65, Math.min(0.65, Math.atan2(dxScreen, Math.max(0.05, dyScreen)) * 0.7));
+  return -wristTilt;
+}
+
+/** Screen-space X of a hand in the mirrored webcam preview (0 = left edge, 1 = right edge). */
+function liveScreenX(hand) {
+  const lm = hand?.landmarks;
+  return Array.isArray(lm) && lm.length === 21 ? 1 - lm[9].x : 0.5;
+}
+
+/**
  * Extracts clean, stable anatomical joint curls and screen-space orientation from 21 MediaPipe landmarks
  * so live webcam mirroring never flips inside-out or bends fingers backwards.
  */
@@ -618,7 +595,9 @@ function extractLiveHandSpec(landmarks, handIndex = 0, totalHands = 1) {
 
   // Determine whether the user's thumb is on the left (-X) or right (+X) side in the mirrored webcam preview
   const thumbOnLeftScreen = (1 - p[4].x) <= (1 - p[17].x);
-  const mirrorX = totalHands > 1 ? (handIndex === 1 ? -1 : 1) : (thumbOnLeftScreen ? 1 : -1);
+  // Chirality follows what is actually on screen for every hand, so each 3D thumb sits on the same
+  // side as the user's thumb in the preview (with two palms facing the camera, thumbs point inward).
+  const mirrorX = thumbOnLeftScreen ? 1 : -1;
 
   if (thumbIndexTip < palm * 0.44 && middleCurl < 0.45 && ringCurl < 0.45) {
     thumbMode = "pinch";
@@ -647,14 +626,17 @@ function extractLiveHandSpec(landmarks, handIndex = 0, totalHands = 1) {
   // Vector from wrist (0) to middle knuckle (9) in screen space:
   const dxScreen = (1 - p[9].x) - (1 - p[0].x); // -(p[9].x - p[0].x)
   const dyScreen = -(p[9].y - p[0].y);
-  // In Three.js (+X right, +Y up), tilting top of hand toward +X (dxScreen > 0) is a negative Z rotation:
-  const wristTilt = Math.max(-0.65, Math.min(0.65, Math.atan2(dxScreen, Math.max(0.05, dyScreen)) * 0.7));
   if (thumbMode !== "up") {
-    rollZ = -wristTilt;
+    rollZ = liveWristRoll(dxScreen, dyScreen);
   }
 
-  const baseOffsetX = totalHands > 1 ? (handIndex === 0 ? -0.82 : 0.82) : 0;
-  const screenOffsetX = Math.max(-0.45, Math.min(0.45, (0.5 - p[9].x) * 0.85));
+  // Position follows the hand on screen: left in the preview = -X, right = +X, up = +Y.
+  // With two hands the stage is wider, and each hand keeps to its own half so they never merge.
+  let stageX = Math.max(-0.45, Math.min(0.45, (0.5 - p[9].x) * 0.85));
+  if (totalHands > 1) {
+    const wideX = Math.max(-1.2, Math.min(1.2, (0.5 - p[9].x) * 2.6));
+    stageX = handIndex === 0 ? Math.min(-0.5, wideX) : Math.max(0.5, wideX);
+  }
   const screenOffsetY = Math.max(-0.35, Math.min(0.35, (0.52 - p[9].y) * 0.65));
 
   return makeHandSpec({
@@ -664,7 +646,7 @@ function extractLiveHandSpec(landmarks, handIndex = 0, totalHands = 1) {
     ring: ringCurl,
     pinky: pinkyCurl,
     splay: 0.045,
-    pos: [baseOffsetX + (totalHands > 1 ? 0 : screenOffsetX), -0.18 + screenOffsetY, 0.04],
+    pos: [stageX, -0.18 + screenOffsetY, 0.04],
     rot: [0.05, mirrorX === -1 ? -0.15 : 0.15, rollZ],
     anim: "none",
     mirrorX,
@@ -700,6 +682,8 @@ export default function InteractiveSign3D({
     showJointOverlay: false,
     mirrorLiveHand: true,
     manualSymbolUntil: 0,
+    clickLockMeaning: "",
+    clickLockUntil: 0,
     recognized: false,
     holding: false,
     yaw: 0,
@@ -713,6 +697,13 @@ export default function InteractiveSign3D({
   });
 
   useEffect(() => {
+    // A sign the user clicked stays locked on the stage; camera recognition cannot replace it until the lock ends.
+    const clickLocked = performance.now() < stateRef.current.clickLockUntil;
+    if (clickLocked) {
+      stateRef.current.recognized = Boolean(recognized) && activeMeaning === stateRef.current.clickLockMeaning;
+      stateRef.current.holding = false;
+      return;
+    }
     const nextMeaning = holdingMeaning || activeMeaning || selectedMeaning || "HELLO";
     const changedMeaning = nextMeaning !== stateRef.current.targetMeaning;
     setSelectedMeaning(nextMeaning);
@@ -834,12 +825,28 @@ export default function InteractiveSign3D({
         const THREE = await import("three");
         if (disposed) return;
 
+        // Sculpted hand model (public/hand3d). If it cannot be loaded, the procedural hand takes over.
+        let handTemplate = null;
+        try {
+          const { GLTFLoader } = await import("three/examples/jsm/loaders/GLTFLoader.js");
+          const gltf = await new GLTFLoader().loadAsync(`${import.meta.env?.BASE_URL || "/"}${HAND_MODEL_URL}`);
+          handTemplate = prepareHandModel(THREE, extractHandModelData(THREE, gltf.scene));
+        } catch (error) {
+          console.warn("[InteractiveSign3D] sculpted hand model unavailable, using the built-in procedural hand", error);
+        }
+        if (disposed) {
+          handTemplate?.geometry.dispose();
+          return;
+        }
+
         renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true, powerPreference: "high-performance" });
         renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
         renderer.setClearColor(0x000000, 0);
         renderer.outputColorSpace = THREE.SRGBColorSpace;
         renderer.toneMapping = THREE.ACESFilmicToneMapping;
-        renderer.toneMappingExposure = 1.12;
+        renderer.toneMappingExposure = 1.06;
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFShadowMap;
         renderer.domElement.className = "sign3d-canvas";
         renderer.domElement.setAttribute("aria-hidden", "true");
         host.appendChild(renderer.domElement);
@@ -849,9 +856,21 @@ export default function InteractiveSign3D({
         camera.position.set(0, 0.08, 4.75);
 
         // Warm 3-point studio lighting for realistic human skin & clear finger depth
-        scene.add(new THREE.HemisphereLight(0xfff7f0, 0x181412, 1.9));
+        scene.add(new THREE.HemisphereLight(0xfff7f0, 0x2a1c16, 1.55));
         const keyLight = new THREE.DirectionalLight(0xfff9f4, 2.8);
         keyLight.position.set(3.4, 4.8, 5.8);
+        // Soft self-shadowing: fingers shade the palm and each other, which is what gives the hand depth
+        keyLight.castShadow = true;
+        keyLight.shadow.mapSize.set(1024, 1024);
+        keyLight.shadow.camera.left = -2.6;
+        keyLight.shadow.camera.right = 2.6;
+        keyLight.shadow.camera.top = 2.2;
+        keyLight.shadow.camera.bottom = -2.2;
+        keyLight.shadow.camera.near = 2;
+        keyLight.shadow.camera.far = 16;
+        keyLight.shadow.bias = -0.0006;
+        keyLight.shadow.normalBias = 0.022;
+        keyLight.shadow.radius = 5;
         scene.add(keyLight);
 
         const fillLight = new THREE.DirectionalLight(0xdff7ef, 1.25);
@@ -908,6 +927,7 @@ export default function InteractiveSign3D({
             color: SKIN_THEMES[0].color,
             roughness: SKIN_THEMES[0].roughness,
             metalness: SKIN_THEMES[0].metalness,
+            vertexColors: true, // per-vertex tint: pinker palm and fingertips, redder knuckles, darker creases
             ...(THREE.MeshPhysicalMaterial
               ? {
                   clearcoat: 0.14,
@@ -925,17 +945,9 @@ export default function InteractiveSign3D({
         const nailMat = own(
           new SkinMatClass({
             color: SKIN_THEMES[0].nailColor,
-            roughness: 0.22,
-            metalness: 0.04,
-            ...(THREE.MeshPhysicalMaterial ? { clearcoat: 0.55, clearcoatRoughness: 0.18 } : {}),
-          })
-        );
-
-        const creaseMat = own(
-          new THREE.MeshStandardMaterial({
-            color: SKIN_THEMES[0].creaseColor,
-            roughness: 0.55,
+            roughness: 0.3,
             metalness: 0.02,
+            ...(THREE.MeshPhysicalMaterial ? { clearcoat: 0.35, clearcoatRoughness: 0.22 } : {}),
           })
         );
 
@@ -958,46 +970,138 @@ export default function InteractiveSign3D({
           })
         );
 
-        // Shared unit geometries
-        const unitSphereGeo = own(new THREE.SphereGeometry(1, 24, 18));
-        const unitCylGeo = own(new THREE.CylinderGeometry(1, 1, 1, 24, 1));
+        // Shared geometries: one continuous skinned hand surface + rigid nails, cuff and joint pins.
+        // The sculpted model is preferred; the procedural hand is the offline / missing-asset fallback.
+        const handSkinGeo = own(handTemplate ? handTemplate.geometry : buildHandSkinGeometry(THREE));
+        const nailGeo = own(new THREE.SphereGeometry(1, 20, 14));
         const pinSphereGeo = own(new THREE.SphereGeometry(1, 14, 12));
+        const cuffGeo = own(new THREE.CylinderGeometry(1, 1.07, 1, 40, 1));
+        const trimGeo = own(new THREE.TorusGeometry(1, 0.045, 10, 48));
+        if (handTemplate) {
+          skinMat.bumpMap = own(createSkinBumpTexture(THREE));
+          skinMat.bumpScale = 0.38;
+        }
 
-        /**
-         * Helper to create a smooth tapered anatomical bone segment along +Y from y=0 to y=len.
-         */
-        const createPhalanxMesh = (rBase, rTip, len, addNail = false) => {
-          const segGroup = new THREE.Group();
-          const cylGeo = own(new THREE.CylinderGeometry(rTip, rBase, len, 22, 1));
-          const cyl = new THREE.Mesh(cylGeo, skinMat);
-          cyl.position.y = len * 0.5;
-          cyl.scale.set(1.0, 1.0, 0.90); // slightly oval anatomical finger cross-section
-          segGroup.add(cyl);
-
-          const tipSphere = new THREE.Mesh(unitSphereGeo, skinMat);
-          tipSphere.position.y = len;
-          tipSphere.scale.set(rTip, rTip * 1.04, rTip * 0.90);
-          segGroup.add(tipSphere);
-
-          if (addNail) {
-            // Subtle anatomical fingernail plate on the dorsal (-Z) side AND palmar pad on (+Z)
-            const nail = new THREE.Mesh(unitSphereGeo, nailMat);
-            nail.position.set(0, len * 0.68, -rTip * 0.76);
-            nail.scale.set(rTip * 0.72, len * 0.34, rTip * 0.22);
-            nail.rotation.x = 0.08;
-            segGroup.add(nail);
-          } else {
-            // Subtle knuckle crease band at the joint top
-            const crease = new THREE.Mesh(unitCylGeo, creaseMat);
-            crease.position.set(0, len * 0.96, 0);
-            crease.scale.set(rTip * 1.01, 0.012, rTip * 0.92);
-            segGroup.add(crease);
+        /** Bones for the sculpted model: the 25 model joints rebuilt as a posable hierarchy. */
+        const buildModelRig = () => {
+          const bones = createHandModelBones(THREE, handTemplate);
+          const fingers = {};
+          for (const spec of FINGER_SPECS) {
+            const ids = handTemplate.fingers[spec.name];
+            fingers[spec.name] = {
+              spec,
+              mcpPivot: bones[ids.mcp],
+              pipPivot: bones[ids.pip],
+              dipPivot: bones[ids.dip],
+              curCurl: 0,
+              curSplay: spec.baseSplayZ,
+            };
           }
-          return { segGroup, tipAnchor: tipSphere };
+          const rim = handTemplate.cuff;
+          return {
+            root: bones[handTemplate.wrist],
+            bones,
+            thumbCmcPivot: bones[handTemplate.thumb.cmc],
+            thumbMcpPivot: bones[handTemplate.thumb.mcp],
+            thumbIpPivot: bones[handTemplate.thumb.ip],
+            fingers,
+            jointAnchors: handTemplate.landmarkJoints.map((id) => bones[id]),
+            nails: handTemplate.nails.map((nail) => ({ ...nail, bone: bones[nail.joint] })),
+            // The model ends in an open wrist; the sleeve starts just above that edge and hides it.
+            cuff: { x: rim.x, z: rim.z, top: rim.y + 0.1, height: 0.36, radiusX: rim.radiusX * 1.17, radiusZ: rim.radiusZ * 1.2 },
+          };
+        };
+
+        /** Bones for the procedural fallback hand (16 bones, see handSkinMesh.js). */
+        const buildProceduralRig = () => {
+          const bones = new Array(BONE_COUNT);
+          const jointAnchors = new Array(21);
+          const nails = [];
+          const nailTilt = new THREE.Quaternion().setFromEuler(new THREE.Euler(0.07, 0, 0));
+          const addNail = (bone, len, rTip, widthScale = 1) =>
+            nails.push({
+              bone,
+              quaternion: nailTilt,
+              position: new THREE.Vector3(0, len * 0.74, -rTip * 0.69),
+              scale: [rTip * 0.74 * widthScale, len * 0.37, rTip * 0.2],
+            });
+
+          const palmBone = new THREE.Bone();
+          bones[BONE.palm] = palmBone;
+          const wristAnchor = new THREE.Object3D();
+          wristAnchor.position.set(0, -0.42, 0);
+          palmBone.add(wristAnchor);
+          jointAnchors[0] = wristAnchor;
+
+          // Thumb chain (Joints 1: CMC -> 2: MCP -> 3: IP -> 4: Tip)
+          const [tLen1, tLen2, tLen3] = THUMB_SPEC.lengths;
+          const thumbCmcPivot = new THREE.Bone();
+          thumbCmcPivot.position.set(...THUMB_SPEC.mountPos);
+          thumbCmcPivot.rotation.set(...THUMB_SPEC.bindRotation);
+          palmBone.add(thumbCmcPivot);
+          const thumbMcpPivot = new THREE.Bone();
+          thumbMcpPivot.position.set(0, tLen1, 0);
+          thumbCmcPivot.add(thumbMcpPivot);
+          const thumbIpPivot = new THREE.Bone();
+          thumbIpPivot.position.set(0, tLen2, 0);
+          thumbMcpPivot.add(thumbIpPivot);
+          const thumbTip = new THREE.Object3D();
+          thumbTip.position.set(0, tLen3, 0);
+          thumbIpPivot.add(thumbTip);
+          jointAnchors[1] = thumbCmcPivot;
+          jointAnchors[2] = thumbMcpPivot;
+          jointAnchors[3] = thumbIpPivot;
+          jointAnchors[4] = thumbTip;
+          addNail(thumbIpPivot, tLen3, THUMB_SPEC.radii[3], 1.06);
+          bones[BONE.thumb[0]] = thumbCmcPivot;
+          bones[BONE.thumb[1]] = thumbMcpPivot;
+          bones[BONE.thumb[2]] = thumbIpPivot;
+
+          // Four fingers (Index, Middle, Ring, Pinky)
+          const fingers = {};
+          for (const spec of FINGER_SPECS) {
+            const [jMcp, jPip, jDip, jTip] = spec.jointIndices;
+            const [len1, len2, len3] = spec.lengths;
+            const mcpPivot = new THREE.Bone();
+            mcpPivot.position.set(...spec.mountPos);
+            palmBone.add(mcpPivot);
+            const pipPivot = new THREE.Bone();
+            pipPivot.position.set(0, len1, 0);
+            mcpPivot.add(pipPivot);
+            const dipPivot = new THREE.Bone();
+            dipPivot.position.set(0, len2, 0);
+            pipPivot.add(dipPivot);
+            const tipAnchor = new THREE.Object3D();
+            tipAnchor.position.set(0, len3, 0);
+            dipPivot.add(tipAnchor);
+            jointAnchors[jMcp] = mcpPivot;
+            jointAnchors[jPip] = pipPivot;
+            jointAnchors[jDip] = dipPivot;
+            jointAnchors[jTip] = tipAnchor;
+            addNail(dipPivot, len3, spec.radii[3]);
+            const [b0, b1, b2] = BONE[spec.name];
+            bones[b0] = mcpPivot;
+            bones[b1] = pipPivot;
+            bones[b2] = dipPivot;
+            fingers[spec.name] = { spec, mcpPivot, pipPivot, dipPivot, curCurl: 0, curSplay: spec.baseSplayZ };
+          }
+
+          return {
+            root: palmBone,
+            bones,
+            thumbCmcPivot,
+            thumbMcpPivot,
+            thumbIpPivot,
+            fingers,
+            jointAnchors,
+            nails,
+            cuff: { x: 0, z: 0, top: -0.7, height: 0.26, radiusX: 0.39, radiusZ: 0.29 },
+          };
         };
 
         /**
-         * Builds a complete, anatomically sculpted hierarchical 3D Hand + Wrist + Forearm rig.
+         * Builds a complete hierarchical 3D Hand + Wrist rig: bones driving one continuous skinned
+         * skin surface, with fingernails and a studio sleeve cuff.
          * mirrorX = 1 (Right hand: thumb on -X left side when palm faces viewer)
          * mirrorX = -1 (Left hand: thumb on +X right side when palm faces viewer)
          */
@@ -1007,173 +1111,42 @@ export default function InteractiveSign3D({
           mirrorGroup.scale.x = mirrorX;
           handRoot.add(mirrorGroup);
 
-          const jointAnchors = new Array(21);
+          const rig = handTemplate ? buildModelRig() : buildProceduralRig();
+          mirrorGroup.add(rig.root);
 
-          // 0. Wrist & Forearm Base
-          const wristAnchor = new THREE.Object3D();
-          wristAnchor.position.set(0, -0.42, 0);
-          mirrorGroup.add(wristAnchor);
-          jointAnchors[0] = wristAnchor;
+          // Rigid fingernail plates on the dorsal side of each distal phalanx
+          for (const nail of rig.nails) {
+            const plate = new THREE.Mesh(nailGeo, nailMat);
+            plate.position.copy(nail.position);
+            plate.quaternion.copy(nail.quaternion);
+            plate.scale.set(...nail.scale);
+            plate.castShadow = true;
+            nail.bone.add(plate);
+          }
 
-          // Sculpted wrist joint & forearm cylinder + cyber sleeve cuff
-          const wristJoint = new THREE.Mesh(unitSphereGeo, skinMat);
-          wristJoint.position.set(0, -0.36, -0.01);
-          wristJoint.scale.set(0.36, 0.22, 0.21);
-          mirrorGroup.add(wristJoint);
-
-          const forearmGeo = own(new THREE.CylinderGeometry(0.34, 0.38, 0.42, 28, 1));
-          const forearmMesh = new THREE.Mesh(forearmGeo, skinMat);
-          forearmMesh.position.set(0, -0.60, -0.01);
-          forearmMesh.scale.set(1.0, 1.0, 0.72);
-          mirrorGroup.add(forearmMesh);
-
-          const cuffGeo = own(new THREE.CylinderGeometry(0.39, 0.42, 0.24, 32, 1));
+          // Studio sleeve cuff around the wrist / lower forearm
+          const { cuff } = rig;
           const cuffMesh = new THREE.Mesh(cuffGeo, cuffMat);
-          cuffMesh.position.set(0, -0.76, -0.01);
-          cuffMesh.scale.set(1.0, 1.0, 0.74);
+          cuffMesh.position.set(cuff.x, cuff.top - cuff.height / 2, cuff.z);
+          cuffMesh.scale.set(cuff.radiusX, cuff.height, cuff.radiusZ);
+          cuffMesh.castShadow = true;
           mirrorGroup.add(cuffMesh);
 
-          const trimGeo = own(new THREE.CylinderGeometry(0.398, 0.398, 0.032, 32, 1));
           const trimMesh = new THREE.Mesh(trimGeo, cuffTrimMat);
-          trimMesh.position.set(0, -0.64, -0.01);
-          trimMesh.scale.set(1.0, 1.0, 0.75);
+          trimMesh.position.set(cuff.x, cuff.top, cuff.z);
+          trimMesh.rotation.x = Math.PI / 2;
+          trimMesh.scale.set(cuff.radiusX, cuff.radiusZ, cuff.radiusX);
           mirrorGroup.add(trimMesh);
 
-          // 1. Sculpted Multi-Part Anatomical Palm (Metacarpal body + arched knuckle bridge + rounded sides + thenar/hypothenar pads)
-          const palmGroup = new THREE.Group();
-          mirrorGroup.add(palmGroup);
-
-          // Four overlapping metacarpal columns forming a smooth, organic palm with natural arch
-          const metaColumns = [
-            { x: -0.33, yTop: 0.41, yBot: -0.34, rTop: 0.135, rBot: 0.145, z: 0.0 },
-            { x: -0.11, yTop: 0.45, yBot: -0.36, rTop: 0.145, rBot: 0.155, z: 0.01 },
-            { x: 0.12, yTop: 0.42, yBot: -0.35, rTop: 0.140, rBot: 0.150, z: 0.0 },
-            { x: 0.34, yTop: 0.35, yBot: -0.32, rTop: 0.130, rBot: 0.135, z: -0.01 },
-          ];
-          for (const mc of metaColumns) {
-            const h = mc.yTop - mc.yBot;
-            const mcGeo = own(new THREE.CylinderGeometry(mc.rTop, mc.rBot, h, 20, 1));
-            const mcMesh = new THREE.Mesh(mcGeo, skinMat);
-            mcMesh.position.set(mc.x, (mc.yTop + mc.yBot) * 0.5, mc.z);
-            mcMesh.scale.set(1.18, 1.0, 0.82);
-            palmGroup.add(mcMesh);
-          }
-
-          // Central palmar cushion & dorsal bridge
-          const palmCore = new THREE.Mesh(unitSphereGeo, skinMat);
-          palmCore.position.set(0.01, 0.04, 0.01);
-          palmCore.scale.set(0.49, 0.44, 0.175);
-          palmGroup.add(palmCore);
-
-          // Upper knuckle bridge connecting Index..Pinky MCPs smoothly
-          const knuckleBridge = new THREE.Mesh(unitCylGeo, skinMat);
-          knuckleBridge.position.set(0.01, 0.39, -0.005);
-          knuckleBridge.rotation.z = Math.PI * 0.5 + 0.07;
-          knuckleBridge.scale.set(0.125, 0.78, 0.115);
-          palmGroup.add(knuckleBridge);
-
-          // Muscular Thenar Eminence (thumb base pad on the radial palm side)
-          const thenarPad = new THREE.Mesh(unitSphereGeo, skinMat);
-          thenarPad.position.set(-0.27, -0.10, 0.075);
-          thenarPad.rotation.z = -0.38;
-          thenarPad.scale.set(0.22, 0.30, 0.165);
-          palmGroup.add(thenarPad);
-
-          // Hypothenar Pad (ulnar pinky side of the palm)
-          const hypothenarPad = new THREE.Mesh(unitSphereGeo, skinMat);
-          hypothenarPad.position.set(0.32, -0.05, 0.045);
-          hypothenarPad.rotation.z = 0.18;
-          hypothenarPad.scale.set(0.16, 0.32, 0.145);
-          palmGroup.add(hypothenarPad);
-
-          // Subtle palmar life-line crease on the front (+Z) of the palm
-          const palmCrease = new THREE.Mesh(unitCylGeo, creaseMat);
-          palmCrease.position.set(-0.08, 0.08, 0.168);
-          palmCrease.rotation.z = 0.92;
-          palmCrease.scale.set(0.008, 0.36, 0.008);
-          palmGroup.add(palmCrease);
-
-          // 2. Articulated Thumb Chain (Joints 1: CMC -> 2: MCP -> 3: IP -> 4: Tip)
-          const thumbCmcMount = new THREE.Group();
-          thumbCmcMount.position.set(-0.34, -0.18, 0.06);
-          palmGroup.add(thumbCmcMount);
-
-          const thumbCmcPivot = new THREE.Group();
-          thumbCmcMount.add(thumbCmcPivot);
-          jointAnchors[1] = thumbCmcPivot;
-
-          const cmcKnuckle = new THREE.Mesh(unitSphereGeo, skinMat);
-          cmcKnuckle.scale.set(0.135, 0.135, 0.125);
-          thumbCmcPivot.add(cmcKnuckle);
-
-          const thumbSeg1 = createPhalanxMesh(0.125, 0.106, 0.34, false);
-          thumbCmcPivot.add(thumbSeg1.segGroup);
-
-          const thumbMcpPivot = new THREE.Group();
-          thumbMcpPivot.position.set(0, 0.34, 0);
-          thumbCmcPivot.add(thumbMcpPivot);
-          jointAnchors[2] = thumbMcpPivot;
-
-          const thumbSeg2 = createPhalanxMesh(0.104, 0.090, 0.27, false);
-          thumbMcpPivot.add(thumbSeg2.segGroup);
-
-          const thumbIpPivot = new THREE.Group();
-          thumbIpPivot.position.set(0, 0.27, 0);
-          thumbMcpPivot.add(thumbIpPivot);
-          jointAnchors[3] = thumbIpPivot;
-
-          const thumbSeg3 = createPhalanxMesh(0.088, 0.074, 0.22, true);
-          thumbIpPivot.add(thumbSeg3.segGroup);
-          jointAnchors[4] = thumbSeg3.tipAnchor;
-
-          // 3. Four Articulated Fingers (Index, Middle, Ring, Pinky)
-          const fingers = {};
-          for (const spec of FINGER_SPECS) {
-            const [jMcp, jPip, jDip, jTip] = spec.jointIndices;
-            const [len1, len2, len3] = spec.lengths;
-            const [r0, r1, r2, r3] = spec.radii;
-
-            const mount = new THREE.Group();
-            mount.position.set(...spec.mountPos);
-            palmGroup.add(mount);
-
-            const mcpKnuckle = new THREE.Mesh(unitSphereGeo, skinMat);
-            mcpKnuckle.scale.set(r0 * 1.06, r0 * 1.06, r0 * 0.96);
-            mount.add(mcpKnuckle);
-
-            const mcpPivot = new THREE.Group();
-            mount.add(mcpPivot);
-            jointAnchors[jMcp] = mcpPivot;
-
-            const seg1 = createPhalanxMesh(r0, r1, len1, false);
-            mcpPivot.add(seg1.segGroup);
-
-            const pipPivot = new THREE.Group();
-            pipPivot.position.set(0, len1, 0);
-            mcpPivot.add(pipPivot);
-            jointAnchors[jPip] = pipPivot;
-
-            const seg2 = createPhalanxMesh(r1, r2, len2, false);
-            pipPivot.add(seg2.segGroup);
-
-            const dipPivot = new THREE.Group();
-            dipPivot.position.set(0, len2, 0);
-            pipPivot.add(dipPivot);
-            jointAnchors[jDip] = dipPivot;
-
-            const seg3 = createPhalanxMesh(r2, r3, len3, true);
-            dipPivot.add(seg3.segGroup);
-            jointAnchors[jTip] = seg3.tipAnchor;
-
-            fingers[spec.name] = {
-              spec,
-              mcpPivot,
-              pipPivot,
-              dipPivot,
-              curCurl: 0,
-              curSplay: spec.baseSplayZ,
-            };
-          }
+          // Bind the continuous skin surface to the bones in the rest pose
+          const skinMesh = new THREE.SkinnedMesh(handSkinGeo, skinMat);
+          skinMesh.castShadow = true;
+          skinMesh.receiveShadow = true;
+          skinMesh.frustumCulled = false;
+          mirrorGroup.add(skinMesh);
+          handRoot.updateMatrixWorld(true);
+          const skeleton = own(new THREE.Skeleton(rig.bones));
+          skinMesh.bind(skeleton);
 
           // 21 Joint Marker Overlay Pins
           const overlayPins = own(new THREE.InstancedMesh(pinSphereGeo, overlayJointMat, 21));
@@ -1189,17 +1162,17 @@ export default function InteractiveSign3D({
           return {
             handRoot,
             mirrorGroup,
-            thumbCmcPivot,
-            thumbMcpPivot,
-            thumbIpPivot,
-            fingers,
-            jointAnchors,
+            thumbCmcPivot: rig.thumbCmcPivot,
+            thumbMcpPivot: rig.thumbMcpPivot,
+            thumbIpPivot: rig.thumbIpPivot,
+            fingers: rig.fingers,
+            jointAnchors: rig.jointAnchors,
             overlayPins,
             curPos: new THREE.Vector3(0, -0.18, 0),
             curRot: new THREE.Vector3(0, 0, 0),
-            curThumbCmc: new THREE.Vector3(0.18, 0.25, 0.58),
-            curThumbMcp: new THREE.Vector3(0.08, 0, -0.12),
-            curThumbIp: new THREE.Vector3(0.06, 0, -0.08),
+            curThumbCmc: new THREE.Vector3(...THUMB_SPEC.bindRotation),
+            curThumbMcp: new THREE.Vector3(0, 0, 0),
+            curThumbIp: new THREE.Vector3(0, 0, 0),
             initialized: false,
           };
         };
@@ -1384,9 +1357,11 @@ export default function InteractiveSign3D({
               fObj.pipPivot.rotation.set(1.25 * pScale, 0, 0);
               fObj.dipPivot.rotation.set(0.85 * pScale, 0, 0);
             } else {
-              fObj.mcpPivot.rotation.set(fObj.curCurl * 1.42, 0, fObj.curSplay);
-              fObj.pipPivot.rotation.set(fObj.curCurl * 1.68, 0, 0);
-              fObj.dipPivot.rotation.set(fObj.curCurl * 1.12, 0, 0);
+              // A living hand is never ruler-straight: extended fingers keep a slight natural bend.
+              const relax = 1 - fObj.curCurl;
+              fObj.mcpPivot.rotation.set(fObj.curCurl * 1.42 + relax * 0.02, 0, fObj.curSplay);
+              fObj.pipPivot.rotation.set(fObj.curCurl * 1.68 + relax * 0.06, 0, 0);
+              fObj.dipPivot.rotation.set(fObj.curCurl * 1.12 + relax * 0.04, 0, 0);
             }
           }
 
@@ -1444,7 +1419,6 @@ export default function InteractiveSign3D({
             skinMat.emissive.setHex(themeObj.emissive);
             if (skinMat.sheenColor) skinMat.sheenColor.setHex(themeObj.sheen);
             nailMat.color.setHex(themeObj.nailColor);
-            creaseMat.color.setHex(themeObj.creaseColor);
           }
 
           // Determine whether to mirror raw webcam fingers or show the clean 3D Sign Symbol
@@ -1456,9 +1430,18 @@ export default function InteractiveSign3D({
           let targetSecondary = null;
 
           if (useLiveMirror) {
-            targetPrimary = extractLiveHandSpec(liveHands[0].landmarks, 0, liveHands.length);
-            if (liveHands.length > 1) {
-              targetSecondary = extractLiveHandSpec(liveHands[1].landmarks, 1, liveHands.length);
+            // Slot A is always the hand on the LEFT of the mirrored preview, slot B the one on the right,
+            // regardless of the order the tracker reports them in.
+            const ordered = liveHands.length > 1
+              ? [...liveHands].slice(0, 2).sort((a, b) => liveScreenX(a) - liveScreenX(b))
+              : liveHands;
+            targetPrimary = extractLiveHandSpec(ordered[0].landmarks, 0, ordered.length);
+            if (ordered.length > 1) {
+              targetSecondary = extractLiveHandSpec(ordered[1].landmarks, 1, ordered.length);
+              if (!targetPrimary) {
+                targetPrimary = targetSecondary;
+                targetSecondary = null;
+              }
             }
           } else {
             const pose3d = get3DPoseForSign(st.targetMeaning);
@@ -1502,8 +1485,9 @@ export default function InteractiveSign3D({
           frameId = window.requestAnimationFrame(tick);
         };
         frameId = window.requestAnimationFrame(tick);
-      } catch {
-        // Fallback peacefully if WebGL fails
+      } catch (error) {
+        // Fall back peacefully if WebGL fails, but leave a trace so a broken stage is diagnosable
+        console.warn("[InteractiveSign3D] 3D stage failed to start", error);
       }
     };
 
@@ -1540,7 +1524,7 @@ export default function InteractiveSign3D({
     const dy = e.clientY - stateRef.current.lastY;
     stateRef.current.lastX = e.clientX;
     stateRef.current.lastY = e.clientY;
-    const nextYaw = Math.max(-Math.PI, Math.min(Math.PI, stateRef.current.baseYaw + dx * 0.011));
+    const nextYaw = stateRef.current.baseYaw + dx * 0.011; // unclamped: keeps spinning past 360°
     const nextPitch = Math.max(-0.9, Math.min(0.9, stateRef.current.basePitch + dy * 0.009));
     stateRef.current.baseYaw = nextYaw;
     stateRef.current.basePitch = nextPitch;
@@ -1769,6 +1753,9 @@ export default function InteractiveSign3D({
                 setSelectedMeaning(item.meaning);
                 stateRef.current.targetMeaning = item.meaning;
                 stateRef.current.manualSymbolUntil = performance.now() + 6000;
+                stateRef.current.clickLockMeaning = item.meaning;
+                stateRef.current.clickLockUntil = performance.now() + 6000;
+                stateRef.current.holding = false;
                 onSelectSign?.(item);
               }}
             >

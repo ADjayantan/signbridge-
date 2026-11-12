@@ -55,7 +55,7 @@ const pwa = (mode) => VitePWA({
     ],
   },
   workbox: {
-    globPatterns: ["**/*.{js,css,html,png,svg,webmanifest}"],
+    globPatterns: ["**/*.{js,css,html,png,svg,webmanifest,glb}"],
     globIgnores: ["**/vision_wasm*", "**/onnx/**", "**/models/**"], // Runtime assets load on demand; research weights never precache.
     navigateFallback: "/index.html",
     navigateFallbackDenylist: [/^\/api\//],
