@@ -1,7 +1,16 @@
 import { useEffect, useRef, useState } from "react";
 import { DAILY_CONVERSATION_SIGNS } from "../lib/handPoseShortcuts.js";
 import { BONE_COUNT, BONE, FINGER_SPECS, THUMB_SPEC, buildHandSkinGeometry } from "../lib/handSkinMesh.js";
-import { HAND_MODEL_URL, createHandModelBones, createSkinBumpTexture, extractHandModelData, prepareHandModel } from "../lib/handModelRig.js";
+import {
+  HAND_MODEL_URL,
+  MODEL_PINCH_POSE,
+  createHandModelBones,
+  createSkinBumpTexture,
+  extractHandModelData,
+  prepareHandModel,
+} from "../lib/handModelRig.js";
+import { FINGER_CURL_GAINS, makeHandSpec, thumbAnglesFor } from "../lib/handPoseSpec.js";
+import { liveHandSpecs } from "../lib/liveHandMirror.js";
 
 const FINGER_COLORS = [
   0xffbe55, // 0: Wrist
@@ -47,44 +56,6 @@ const SKIN_THEMES = [
     metalness: 0.58,
   },
 ];
-
-/**
- * Exact articulated bone pose specification for a single hand.
- * - finger curls: 0 = straight up (+Y), 1 = curled forward (+Z) into a tight fist
- * - finger splays: extra Z spread angle in radians
- * - thumbMode:
- *    "open"   = abducted outward in natural open-palm salute
- *    "wide"   = abducted wide at ~85° (for I LOVE YOU 🤟, COME HERE 👆, CALL ME 🤙, PLEASE 🖐️)
- *    "tucked" = folded flat across the palm (for THANK YOU 🤚, BYE ✌️, GOOD 🤘, WAIT ☝️, WATER 3️⃣, FOOD 🍽️)
- *    "fist"   = wrapped securely across the curled fingers (for SORRY / STOP ✊)
- *    "up"     = extended straight along the radial side for Thumbs Up 👍 / Thumbs Down 👎
- *    "pinch"  = curved forward to touch the index fingertip in a clean round O-circle (for OK 👌)
- */
-function makeHandSpec({
-  thumb = "open",
-  index = 0,
-  middle = 0,
-  ring = 0,
-  pinky = 0,
-  splay = 0.03,
-  pos = [0, -0.18, 0],
-  rot = [0, 0, 0], // [pitchX, yawY, rollZ] of the whole hand
-  anim = "idle",
-  mirrorX = 1,
-} = {}) {
-  return {
-    thumb,
-    index,
-    middle,
-    ring,
-    pinky,
-    splay,
-    pos,
-    rot,
-    anim,
-    mirrorX,
-  };
-}
 
 /**
  * Returns the exact 1-hand or 2-hand articulated pose configuration for all 20 Daily Conversation Signs.
@@ -355,7 +326,9 @@ export function get3DPoseForSign(meaning = "HELLO") {
       };
 
     case "OK":
-      // Thumb + Index form a clean circle, Middle + Ring + Pinky extended & fanned out (👌)
+      // Thumb + Index form a clean circle, Middle + Ring + Pinky extended & fanned out (👌).
+      // The ring lies almost edge-on to the palm, so the hand turns its thumb side toward the
+      // viewer; from straight ahead the "O" would be hidden behind the index finger.
       return {
         primary: makeHandSpec({
           thumb: "pinch",
@@ -365,7 +338,7 @@ export function get3DPoseForSign(meaning = "HELLO") {
           pinky: 0,
           splay: 0.08,
           pos: [0.04, -0.18, 0.04],
-          rot: [0.05, -0.22, 0],
+          rot: [0.05, 0.95, 0],
           anim: "pulse",
         }),
         secondary: null,
@@ -536,129 +509,13 @@ export function get3DPoseForSign(meaning = "HELLO") {
   }
 }
 
-/**
- * Converts the on-screen direction of the user's hand (wrist -> middle knuckle, in the mirrored
- * webcam preview: +dx = toward the right of the screen, +dy = up) into the 3D hand's Z roll.
- * In Three.js a NEGATIVE Z rotation tilts the top of the hand toward +X (screen right).
- */
-function liveWristRoll(dxScreen, dyScreen) {
-  // TODO(human): decide how faithfully the 3D hand should follow the user's wrist tilt.
-  // Current behaviour (kept from the original rig): 70% of the real tilt, capped at about 37°,
-  // and hands pointing sideways or downward are treated as upright.
-  const wristTilt = Math.max(-0.65, Math.min(0.65, Math.atan2(dxScreen, Math.max(0.05, dyScreen)) * 0.7));
-  return -wristTilt;
-}
-
-/** Screen-space X of a hand in the mirrored webcam preview (0 = left edge, 1 = right edge). */
-function liveScreenX(hand) {
-  const lm = hand?.landmarks;
-  return Array.isArray(lm) && lm.length === 21 ? 1 - lm[9].x : 0.5;
-}
-
-/**
- * Extracts clean, stable anatomical joint curls and screen-space orientation from 21 MediaPipe landmarks
- * so live webcam mirroring never flips inside-out or bends fingers backwards.
- */
-function extractLiveHandSpec(landmarks, handIndex = 0, totalHands = 1) {
-  if (!Array.isArray(landmarks) || landmarks.length !== 21) return null;
-  const p = landmarks;
-  const d2 = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
-  const d3 = (a, b) => Math.hypot(a.x - b.x, a.y - b.y, ((a.z || 0) - (b.z || 0)) * 0.6);
-  const palm = Math.max(0.04, d2(p[0], p[9]));
-
-  const computeFingerCurl = (mcp, pip, dip, tip) => {
-    const chain = Math.max(1e-4, d3(p[mcp], p[pip]) + d3(p[pip], p[dip]) + d3(p[dip], p[tip]));
-    const direct = d3(p[mcp], p[tip]);
-    const straightness = direct / chain; // ~0.92 when straight, ~0.45 when curled
-    const tipWrist = d2(p[tip], p[0]);
-    const pipWrist = Math.max(1e-4, d2(p[pip], p[0]));
-    const ratio = tipWrist / pipWrist; // ~1.30 when straight, <0.95 when curled
-    const curlFromStraightness = 1 - Math.max(0, Math.min(1, (straightness - 0.50) / 0.38));
-    const curlFromRatio = 1 - Math.max(0, Math.min(1, (ratio - 0.88) / 0.36));
-    return Math.max(0, Math.min(1, curlFromStraightness * 0.55 + curlFromRatio * 0.45));
-  };
-
-  const indexCurl = computeFingerCurl(5, 6, 7, 8);
-  const middleCurl = computeFingerCurl(9, 10, 11, 12);
-  const ringCurl = computeFingerCurl(13, 14, 15, 16);
-  const pinkyCurl = computeFingerCurl(17, 18, 19, 20);
-
-  const thumbIndexTip = d2(p[4], p[8]);
-  const thumbIndexMcp = d2(p[4], p[5]);
-  const thumbMiddleMcp = d2(p[4], p[9]);
-  const thumbPinkyMcp = d2(p[4], p[17]);
-  const palmWidth = Math.max(d2(p[5], p[17]), palm * 0.5);
-
-  const allCurled = indexCurl > 0.62 && middleCurl > 0.62 && ringCurl > 0.62 && pinkyCurl > 0.62;
-  let thumbMode = "open";
-  let rollZ = 0;
-
-  // Determine whether the user's thumb is on the left (-X) or right (+X) side in the mirrored webcam preview
-  const thumbOnLeftScreen = (1 - p[4].x) <= (1 - p[17].x);
-  // Chirality follows what is actually on screen for every hand, so each 3D thumb sits on the same
-  // side as the user's thumb in the preview (with two palms facing the camera, thumbs point inward).
-  const mirrorX = thumbOnLeftScreen ? 1 : -1;
-
-  if (thumbIndexTip < palm * 0.44 && middleCurl < 0.45 && ringCurl < 0.45) {
-    thumbMode = "pinch";
-  } else if (allCurled) {
-    const thumbUp = p[2].y - p[4].y > palm * 0.14 && p[5].y - p[4].y > palm * 0.04;
-    const thumbDown = p[4].y - p[2].y > palm * 0.14 && p[4].y - p[5].y > palm * 0.04;
-    if (thumbUp) {
-      thumbMode = "up";
-      rollZ = -1.15 * mirrorX;
-    } else if (thumbDown) {
-      thumbMode = "up";
-      rollZ = 1.95 * mirrorX;
-    } else {
-      thumbMode = "fist";
-    }
-  } else if (thumbMiddleMcp < palm * 0.38 || thumbPinkyMcp < palmWidth * 0.68) {
-    thumbMode = "tucked";
-  } else if (thumbIndexMcp > palm * 0.42) {
-    thumbMode = "wide";
-  } else {
-    thumbMode = "open";
-  }
-
-  // Screen-space orientation matching the mirrored webcam preview:
-  // In mirrored webcam view, screenX = 1 - x, screenY = -y.
-  // Vector from wrist (0) to middle knuckle (9) in screen space:
-  const dxScreen = (1 - p[9].x) - (1 - p[0].x); // -(p[9].x - p[0].x)
-  const dyScreen = -(p[9].y - p[0].y);
-  if (thumbMode !== "up") {
-    rollZ = liveWristRoll(dxScreen, dyScreen);
-  }
-
-  // Position follows the hand on screen: left in the preview = -X, right = +X, up = +Y.
-  // With two hands the stage is wider, and each hand keeps to its own half so they never merge.
-  let stageX = Math.max(-0.45, Math.min(0.45, (0.5 - p[9].x) * 0.85));
-  if (totalHands > 1) {
-    const wideX = Math.max(-1.2, Math.min(1.2, (0.5 - p[9].x) * 2.6));
-    stageX = handIndex === 0 ? Math.min(-0.5, wideX) : Math.max(0.5, wideX);
-  }
-  const screenOffsetY = Math.max(-0.35, Math.min(0.35, (0.52 - p[9].y) * 0.65));
-
-  return makeHandSpec({
-    thumb: thumbMode,
-    index: thumbMode === "pinch" ? 0.68 : indexCurl,
-    middle: middleCurl,
-    ring: ringCurl,
-    pinky: pinkyCurl,
-    splay: 0.045,
-    pos: [stageX, -0.18 + screenOffsetY, 0.04],
-    rot: [0.05, mirrorX === -1 ? -0.15 : 0.15, rollZ],
-    anim: "none",
-    mirrorX,
-  });
-}
-
 export default function InteractiveSign3D({
   activeMeaning = "HELLO",
   holdingMeaning = "",
   recognized = false,
   liveHandsRef = null,
   cameraOn = false,
+  cameraAspect = null, // camera frame width / height, so the live mirror measures in square units
   onSelectSign = null,
   sentencePlan = null,
   sentencePlayToken = 0,
@@ -681,6 +538,7 @@ export default function InteractiveSign3D({
     skinTheme: "warm",
     showJointOverlay: false,
     mirrorLiveHand: true,
+    cameraAspect: 1,
     manualSymbolUntil: 0,
     clickLockMeaning: "",
     clickLockUntil: 0,
@@ -718,6 +576,10 @@ export default function InteractiveSign3D({
   useEffect(() => {
     stateRef.current.mirrorLiveHand = mirrorLiveHand;
   }, [mirrorLiveHand]);
+
+  useEffect(() => {
+    stateRef.current.cameraAspect = Number.isFinite(cameraAspect) && cameraAspect > 0 ? cameraAspect : 1;
+  }, [cameraAspect]);
 
   // When a sentence sequence play is triggered from Step 3, start playing from step 0
   useEffect(() => {
@@ -1007,6 +869,7 @@ export default function InteractiveSign3D({
             fingers,
             jointAnchors: handTemplate.landmarkJoints.map((id) => bones[id]),
             nails: handTemplate.nails.map((nail) => ({ ...nail, bone: bones[nail.joint] })),
+            pinchPose: MODEL_PINCH_POSE,
             // The model ends in an open wrist; the sleeve starts just above that edge and hides it.
             cuff: { x: rim.x, z: rim.z, top: rim.y + 0.1, height: 0.36, radiusX: rim.radiusX * 1.17, radiusZ: rim.radiusZ * 1.2 },
           };
@@ -1095,6 +958,7 @@ export default function InteractiveSign3D({
             fingers,
             jointAnchors,
             nails,
+            pinchPose: null, // the generic pinch angles below were made for this rig
             cuff: { x: 0, z: 0, top: -0.7, height: 0.26, radiusX: 0.39, radiusZ: 0.29 },
           };
         };
@@ -1167,6 +1031,7 @@ export default function InteractiveSign3D({
             thumbIpPivot: rig.thumbIpPivot,
             fingers: rig.fingers,
             jointAnchors: rig.jointAnchors,
+            pinchPose: rig.pinchPose,
             overlayPins,
             curPos: new THREE.Vector3(0, -0.18, 0),
             curRot: new THREE.Vector3(0, 0, 0),
@@ -1184,62 +1049,6 @@ export default function InteractiveSign3D({
 
         const dummy = new THREE.Object3D();
         const vWorld = new THREE.Vector3();
-
-        /**
-         * Returns target Euler angles [rx, ry, rz] for the 3 thumb joints (CMC, MCP, IP)
-         * for each anatomical thumb mode.
-         * Note: In local right-hand space, thumb starts at (-0.34, -0.18, +0.06).
-         *  +rz tilts the thumb outward to the left (-X).
-         *  -rz folds the thumb inward across the palm (+X).
-         *  +rx tilts the thumb forward toward the viewer (+Z).
-         */
-        const getThumbTargetAngles = (mode) => {
-          switch (mode) {
-            case "wide":
-              // Abducted wide (~72° outward) for I LOVE YOU 🤟, COME HERE 👆, CALL ME 🤙, PLEASE 🖐️
-              return {
-                cmc: [0.14, 0.16, 0.94],
-                mcp: [0.04, 0, 0.14],
-                ip: [0.02, 0, 0.06],
-              };
-            case "up":
-              // Abducted at 70° in the palm plane so when hand rolls -66° (YES 👍) or +112° (NO 👎), thumb points straight UP (+Y) or DOWN (-Y)
-              return {
-                cmc: [0.06, 0.08, 0.92],
-                mcp: [0.02, 0, 0.18],
-                ip: [0.0, 0, 0.08],
-              };
-            case "tucked":
-              // Folded neatly across the front of the palm (+Z) without intersecting the palm mesh
-              return {
-                cmc: [0.46, -0.18, -0.20],
-                mcp: [0.22, 0, -0.64],
-                ip: [0.16, 0, -0.46],
-              };
-            case "fist":
-              // Wrapped securely in front of (+Z) the curled fingers for SORRY / STOP ✊
-              return {
-                cmc: [0.74, -0.16, 0.04],
-                mcp: [0.28, 0, -0.76],
-                ip: [0.22, 0, -0.56],
-              };
-            case "pinch":
-              // Exact forward-kinematic angle so Thumb Tip meets Index Tip at (-0.33, +0.27, +0.51) for OK 👌
-              return {
-                cmc: [0.50, -0.10, 0.12],
-                mcp: [0.24, 0, -0.18],
-                ip: [0.38, 0, -0.15],
-              };
-            case "open":
-            default:
-              // Natural relaxed open-palm thumb for HELLO ✋, HOW ARE YOU 👐
-              return {
-                cmc: [0.16, 0.14, 0.56],
-                mcp: [0.05, 0, -0.06],
-                ip: [0.03, 0, -0.04],
-              };
-          }
-        };
 
         /**
          * Updates one articulated hand slot toward its target specification with smooth animation.
@@ -1325,7 +1134,8 @@ export default function InteractiveSign3D({
           slot.handRoot.rotation.set(slot.curRot.x, slot.curRot.y, slot.curRot.z);
 
           // Update Thumb Joints
-          const thumbTarget = getThumbTargetAngles(spec.thumb);
+          const pinching = spec.thumb === "pinch";
+          const thumbTarget = (pinching && slot.pinchPose?.thumb) || thumbAnglesFor(spec.thumb);
           vWorld.set(...thumbTarget.cmc);
           slot.curThumbCmc.lerp(vWorld, alpha);
           slot.thumbCmcPivot.rotation.set(slot.curThumbCmc.x, slot.curThumbCmc.y, slot.curThumbCmc.z);
@@ -1350,18 +1160,23 @@ export default function InteractiveSign3D({
             const targetSplay = fObj.spec.baseSplayZ * (1 - fObj.curCurl * 0.7) + spreadFactor * splayMultipliers[fName];
             fObj.curSplay += (targetSplay - fObj.curSplay) * alpha;
 
-            if (spec.thumb === "pinch" && fName === "index") {
-              // Exact round O-pinch curve so index tip meets thumb tip at (-0.32, +0.26, +0.52) for OK 👌
+            if (pinching && fName === "index") {
+              // Round O-pinch: the index arcs forward so its pad meets the thumb pad (OK 👌).
+              // Each rig brings its own solved angles; the generic ones suit the procedural hand.
+              const solved = slot.pinchPose?.index;
+              const [pinchMcp, pinchPip, pinchDip] = solved || [1.05, 1.25, 0.85];
+              const sideways = solved ? solved[3] : fObj.curSplay - 0.05;
               const pScale = fObj.curCurl / 0.68;
-              fObj.mcpPivot.rotation.set(1.05 * pScale, 0, fObj.curSplay - 0.05);
-              fObj.pipPivot.rotation.set(1.25 * pScale, 0, 0);
-              fObj.dipPivot.rotation.set(0.85 * pScale, 0, 0);
+              fObj.mcpPivot.rotation.set(pinchMcp * pScale, 0, sideways);
+              fObj.pipPivot.rotation.set(pinchPip * pScale, 0, 0);
+              fObj.dipPivot.rotation.set(pinchDip * pScale, 0, 0);
             } else {
               // A living hand is never ruler-straight: extended fingers keep a slight natural bend.
               const relax = 1 - fObj.curCurl;
-              fObj.mcpPivot.rotation.set(fObj.curCurl * 1.42 + relax * 0.02, 0, fObj.curSplay);
-              fObj.pipPivot.rotation.set(fObj.curCurl * 1.68 + relax * 0.06, 0, 0);
-              fObj.dipPivot.rotation.set(fObj.curCurl * 1.12 + relax * 0.04, 0, 0);
+              const [gainMcp, gainPip, gainDip] = FINGER_CURL_GAINS;
+              fObj.mcpPivot.rotation.set(fObj.curCurl * gainMcp + relax * 0.02, 0, fObj.curSplay);
+              fObj.pipPivot.rotation.set(fObj.curCurl * gainPip + relax * 0.06, 0, 0);
+              fObj.dipPivot.rotation.set(fObj.curCurl * gainDip + relax * 0.04, 0, 0);
             }
           }
 
@@ -1430,19 +1245,8 @@ export default function InteractiveSign3D({
           let targetSecondary = null;
 
           if (useLiveMirror) {
-            // Slot A is always the hand on the LEFT of the mirrored preview, slot B the one on the right,
-            // regardless of the order the tracker reports them in.
-            const ordered = liveHands.length > 1
-              ? [...liveHands].slice(0, 2).sort((a, b) => liveScreenX(a) - liveScreenX(b))
-              : liveHands;
-            targetPrimary = extractLiveHandSpec(ordered[0].landmarks, 0, ordered.length);
-            if (ordered.length > 1) {
-              targetSecondary = extractLiveHandSpec(ordered[1].landmarks, 1, ordered.length);
-              if (!targetPrimary) {
-                targetPrimary = targetSecondary;
-                targetSecondary = null;
-              }
-            }
+            // Primary = the hand on the LEFT of the mirrored preview, secondary = the one on the right.
+            ({ primary: targetPrimary, secondary: targetSecondary } = liveHandSpecs(liveHands, { aspect: st.cameraAspect }));
           } else {
             const pose3d = get3DPoseForSign(st.targetMeaning);
             targetPrimary = pose3d.primary;

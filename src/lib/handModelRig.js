@@ -29,6 +29,18 @@ const THUMB_JOINTS = ["thumb-metacarpal", "thumb-phalanx-proximal", "thumb-phala
 const HAND_LENGTH = 1.86;
 const WRIST_Y = -0.46;
 
+/**
+ * Thumb-index "O" for the OK sign and the live pinch, solved numerically for this model so the
+ * two fingertip pads actually touch without the thumb passing through the index finger.
+ *   thumb: Euler XYZ per joint (CMC is absolute in hand space, MCP / IP are relative to the parent)
+ *   index: [MCP curl, PIP curl, DIP curl, MCP sideways]
+ * tests/handModelRig.test.js fails if a change to the model or the rig breaks this contact.
+ */
+export const MODEL_PINCH_POSE = {
+  thumb: { cmc: [0.601, 0.555, 0.196], mcp: [0.019, -0.001, -0.117], ip: [0.043, -0.006, -0.29] },
+  index: [0.754, 1.005, 0.559, -0.004],
+};
+
 const smooth = (a, b, v) => {
   const t = Math.max(0, Math.min(1, (v - a) / (b - a)));
   return t * t * (3 - 2 * t);
@@ -294,7 +306,10 @@ export function prepareHandModel(THREE, data, { levels = 1 } = {}) {
   const landmarkJoints = [wristId, tCmc, tMcp, tIp, tTip];
   for (const name of FINGER_NAMES) landmarkJoints.push(fingers[name].mcp, fingers[name].pip, fingers[name].dip, fingers[name].tip);
 
-  // --- 4. Fingernail mounts, measured from the surface itself -----------------------------------
+  // --- 4. Fingertips, measured from the surface itself -----------------------------------------
+  // Each entry describes one end phalanx in its "pad frame" (+Y along the bone, +Z out of the
+  // finger pad, -Z out of the nail): how long it is and how thick on either side. The nails are
+  // placed from it, and the OK-sign test uses it to check that two finger pads really touch.
   const weightOn = (vertex, a, b) => {
     let w = 0;
     for (let k = 0; k < 4; k++) {
@@ -303,21 +318,21 @@ export function prepareHandModel(THREE, data, { levels = 1 } = {}) {
     }
     return w;
   };
-  const nails = [];
-  const digits = [...FINGER_NAMES.map((n) => ({ distal: fingers[n].dip, tip: fingers[n].tip, dorsal: null })), { distal: tIp, tip: tTip, dorsal: "model" }];
+  const fingertips = {};
+  const digits = [...FINGER_NAMES.map((name) => ({ name, distal: fingers[name].dip, tip: fingers[name].tip })), { name: "thumb", distal: tIp, tip: tTip }];
   for (const digit of digits) {
     const boneFrame = joints[digit.distal].frame;
-    let nailFrame = boneFrame;
-    if (digit.dorsal === "model") {
+    let padFrame = boneFrame;
+    if (digit.name === "thumb") {
       // The thumb's nail side comes from the model's own joint orientation (WebXR: local +Y = dorsal).
       const yAxis = new THREE.Vector3(0, 1, 0).applyQuaternion(boneFrame);
       const dorsal = toHandDir(new THREE.Vector3(0, 1, 0).applyQuaternion(new THREE.Quaternion(...data.jointQuaternions[digit.distal])));
-      const zAxis = dorsal.negate(); // palm side of the thumb = opposite its nail side
+      const zAxis = dorsal.negate(); // pad side of the thumb = opposite its nail side
       zAxis.addScaledVector(yAxis, -zAxis.dot(yAxis)).normalize();
       const xAxis = new THREE.Vector3().crossVectors(yAxis, zAxis);
-      nailFrame = new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().makeBasis(xAxis, yAxis, zAxis));
+      padFrame = new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().makeBasis(xAxis, yAxis, zAxis));
     }
-    const inverse = nailFrame.clone().invert();
+    const inverse = padFrame.clone().invert();
     const local = [];
     let length = 0;
     for (let i = 0; i < vertexCount; i++) {
@@ -327,21 +342,30 @@ export function prepareHandModel(THREE, data, { levels = 1 } = {}) {
       length = Math.max(length, tmp.y);
     }
     let dorsalRadius = 0;
+    let palmarRadius = 0;
     let halfWidth = 0;
     for (const [x, y, z] of local) {
       if (y < length * 0.4 || y > length * 0.85) continue;
       dorsalRadius = Math.max(dorsalRadius, -z);
+      palmarRadius = Math.max(palmarRadius, z);
       halfWidth = Math.max(halfWidth, Math.abs(x));
     }
-    const toBone = boneFrame.clone().invert().multiply(nailFrame);
-    nails.push({
+    fingertips[digit.name] = {
       joint: digit.distal,
-      quaternion: toBone,
-      // Sunk into the fingertip so only a thin plate shows above the skin.
-      position: new THREE.Vector3(0, length * 0.62, -dorsalRadius * 0.78).applyQuaternion(toBone),
-      scale: [halfWidth * 0.66, length * 0.29, dorsalRadius * 0.2],
-    });
+      toBone: boneFrame.clone().invert().multiply(padFrame), // pad frame -> the bone's own frame
+      length,
+      dorsalRadius,
+      palmarRadius,
+      halfWidth,
+    };
   }
+  const nails = Object.values(fingertips).map((tip) => ({
+    joint: tip.joint,
+    quaternion: tip.toBone,
+    // Sunk into the fingertip so only a thin plate shows above the skin.
+    position: new THREE.Vector3(0, tip.length * 0.62, -tip.dorsalRadius * 0.78).applyQuaternion(tip.toBone),
+    scale: [tip.halfWidth * 0.66, tip.length * 0.29, tip.dorsalRadius * 0.2],
+  }));
 
   // --- 5. Skin tone variation (multiplies the theme colour) --------------------------------------
   const bendJoints = [];
@@ -407,7 +431,7 @@ export function prepareHandModel(THREE, data, { levels = 1 } = {}) {
   geometry.setAttribute("skinWeight", new THREE.BufferAttribute(mesh.skinWeight, 4));
   geometry.setIndex(mesh.index);
 
-  return { geometry, joints, wrist: wristId, thumb, fingers, landmarkJoints, nails, cuff, reflected, scale };
+  return { geometry, joints, wrist: wristId, thumb, fingers, landmarkJoints, fingertips, nails, cuff, reflected, scale };
 }
 
 /** Instantiates the bone hierarchy for one hand from a prepared template (rest pose). */

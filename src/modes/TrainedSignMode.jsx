@@ -899,6 +899,7 @@ export default function TrainedSignMode({ settings, update, onBack, onLive, onLi
             recognized={result?.status === "recognized"}
             liveHandsRef={liveHandsRef}
             cameraOn={cameraOn}
+            cameraAspect={cameraGeometry ? cameraGeometry.width / cameraGeometry.height : null}
             onSelectSign={triggerQuickSign}
             sentencePlan={sentencePlan}
             sentencePlayToken={sentencePlayToken}
