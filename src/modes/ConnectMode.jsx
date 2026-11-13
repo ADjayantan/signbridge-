@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { LanguageSelect, Switch, TopBar } from "../components/Controls.jsx";
 import RoomSignCapture from "../components/RoomSignCapture.jsx";
+import HalftoneField from "../components/HalftoneField.jsx";
 import SignVideoPlayer from "../components/SignVideoPlayer.jsx";
 import { MeetingSection, ReferencesSection, RoomMessage } from "../components/RoomWorkflow.jsx";
 import { useRoom } from "../hooks/useRoom.js";
@@ -246,7 +247,7 @@ export default function ConnectMode({ settings, onBack, onTool, initialReviewedT
 
   return <main className="mode connect-mode" aria-labelledby="connect-title">
     <TopBar title="Connect your way" titleId="connect-title" onBack={back}><span className={`room-connection ${room.status}`} role="status"><span aria-hidden="true" />{statusLabel[room.status] || room.status}</span></TopBar>
-    <div className="connect-intro"><div><p className="eyebrow">One conversation. Your way to communicate.</p><h2>Meet in the middle.</h2><p>Type, speak, or sign to your partner. Choose how you receive their message.</p></div><span className="connect-human-note">People ↔ people</span></div>
+    <div className="connect-intro"><HalftoneField pattern="meet" cell={10} animate={!media.cameraOn} /><div className="ht-print"><p className="eyebrow">One conversation. Your way to communicate.</p><h2>Meet in the <em className="ht-misreg" data-text="middle.">middle.</em></h2><p>Type, speak, or sign to your partner. Choose how you receive their message.</p></div><span className="connect-human-note">People ↔ people</span></div>
     {!activeRoom && <section className="room-quick-setup" aria-labelledby="room-local-sign-heading">
       <h3 id="room-local-sign-heading">Try signs on this device</h3>
       <p>Use the camera, review the word, then choose Speak. No room or AI key needed; recognition needs an available local model.</p>

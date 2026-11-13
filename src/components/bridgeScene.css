@@ -6,7 +6,11 @@
   overflow: hidden;
   isolation: isolate;
   pointer-events: none;
-  color: #2d6656;
+  color: var(--ink, #17182a);
+  --bridge-bone: var(--ink, #17182a);
+  --bridge-node: var(--cobalt, #2e49d6);
+  --bridge-accent: var(--tangerine, #ff6a2c);
+  --bridge-orbit: var(--ink, #17182a);
   contain: layout paint;
 }
 
@@ -37,5 +41,8 @@
   top: 50%;
   transform: translateY(-50%);
   border-radius: 50%;
-  background: radial-gradient(ellipse at center, #d9ddc766 0%, #e6dfcc30 48%, transparent 72%);
+  background: radial-gradient(circle at center, var(--bridge-accent, #ff6a2c) 0 1.2px, transparent 1.8px) 0 0 / 8px 8px;
+  -webkit-mask-image: radial-gradient(closest-side, #000 0%, transparent 100%);
+  mask-image: radial-gradient(closest-side, #000 0%, transparent 100%);
+  opacity: 0.45;
 }

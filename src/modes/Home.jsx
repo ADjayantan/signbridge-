@@ -1,6 +1,8 @@
 import { useEffect } from "react";
 import BridgeScene from "../components/BridgeScene.jsx";
-import { AuroraParticles3D, ShinyText, GradientText, TiltedCard, ReactBitsDock } from "../components/reactbits/ReactBitsUI.jsx";
+import HalftoneField from "../components/HalftoneField.jsx";
+import ThemeSwitch from "../components/ThemeSwitch.jsx";
+import { TiltedCard, ReactBitsDock } from "../components/reactbits/ReactBitsUI.jsx";
 import "../styles/connect.css";
 
 function HomeIcon({ kind, className = "" }) {
@@ -18,36 +20,37 @@ export default function Home({ onPick, shell }) {
   useEffect(() => { document.title = "SignBridge — connect your way"; }, []);
   const join = () => { onPick("connect"); window.history.replaceState(null, "", "#connect?action=join"); };
   const signWithAI = () => { onPick("trained-sign"); window.history.replaceState(null, "", "#trained-sign?with=ai"); };
-  return <main className="home connect-home rb-theme" aria-labelledby="home-title">
-    <AuroraParticles3D active />
+  return <main className="home connect-home rb-theme ht-enter" aria-labelledby="home-title">
     <header className="home-masthead">
       <div className="home-wordmark"><span className="home-brand-mark"><HomeIcon kind="bridge" /></span><span>SignBridge<span className="home-wordmark-dot" aria-hidden="true">.</span></span></div>
       <p className="home-masthead-note">A shared space for conversation</p>
+      <ThemeSwitch />
       {shell?.canInstall && <button className="btn btn-ghost btn-small" type="button" onClick={shell.install}>Install SignBridge</button>}
     </header>
     <section className="home-hero" aria-labelledby="home-title">
-      <div className="home-hero-copy">
+      <div className="home-hero-copy ht-print">
         <p className="eyebrow home-hero-eyebrow"><span aria-hidden="true" />Signs · Text · Voice</p>
-        <h1 id="home-title">Connect<br /><em>your way.</em></h1>
+        <h1 id="home-title">Connect<br /><em className="ht-misreg" data-text="your way.">your way.</em></h1>
         <p className="lede">Understand each other through signs, text and voice. Choose how you send a message and how you receive your partner’s reply.</p>
         <div className="home-hero-footnote"><span className="home-hero-rule" aria-hidden="true" /><p>Different ways to communicate.<br />One place to meet.</p></div>
       </div>
-      <div className="home-hero-art rb-spotlight-card" aria-hidden="true">
+      <div className="home-hero-art ht-marks" aria-hidden="true">
+        <HalftoneField pattern="sun" cell={11} interactive />
         <BridgeScene />
         <span className="home-art-label home-art-label-top">The space between us</span>
         <span className="home-art-label home-art-label-bottom">A little closer.</span>
       </div>
     </section>
     <section className="home-conversation" aria-labelledby="home-conversation-title">
-      <div className="home-section-heading"><div><p className="eyebrow">01 / Together</p><h2 id="home-conversation-title">Talk to someone</h2></div><p className="home-section-aside">Start here for a conversation with your partner.</p></div>
+      <div className="home-section-heading"><div><p className="eyebrow"><span className="dot-num">01</span>Together</p><h2 id="home-conversation-title">Talk to someone</h2></div><p className="home-section-aside">Start here for a conversation with your partner.</p></div>
       <div className="mode-cards">
-        <TiltedCard as="button" maxTilt={7} className="mode-card mode-sign home-conversation-card" type="button" onClick={() => onPick("connect")}>
+        <TiltedCard as="button" maxTilt={7} className="mode-card mode-sign home-conversation-card ht-shadow" type="button" onClick={() => onPick("connect")}>
           <span className="mode-icon" aria-hidden="true"><HomeIcon kind="start" /></span>
           <span className="mode-title">Start conversation</span>
           <span className="mode-desc">Create an invite and share it with your partner.</span>
           <span className="home-card-arrow" aria-hidden="true">↗</span>
         </TiltedCard>
-        <TiltedCard as="button" maxTilt={7} className="mode-card mode-voice home-conversation-card" type="button" onClick={join}>
+        <TiltedCard as="button" maxTilt={7} className="mode-card mode-voice home-conversation-card ht-shadow" type="button" onClick={join}>
           <span className="mode-icon" aria-hidden="true"><HomeIcon kind="join" /></span>
           <span className="mode-title">Join conversation</span>
           <span className="mode-desc">Use your partner’s invite to join from a phone or laptop.</span>
@@ -57,21 +60,21 @@ export default function Home({ onPick, shell }) {
       <div className="home-conversation-bottom"><p className="fine-print">Review a recognized sign, then send its text. Your partner can read and hear it, and reply by typing or speaking. Matching saved videos can show the reply in signs; unsupported signs and phrases need another way to communicate.</p><button className="btn btn-ghost" type="button" onClick={() => onPick("connect")}>Communication preferences</button></div>
     </section>
     <section className="home-quick-tools" aria-labelledby="home-quick-tools-title">
-      <div className="home-section-heading"><div><p className="eyebrow">02 / Explore</p><h2 id="home-quick-tools-title">Quick tools</h2></div><p className="home-section-aside">Use a tool at your own pace.</p></div>
+      <div className="home-section-heading"><div><p className="eyebrow"><span className="dot-num">02</span>Explore</p><h2 id="home-quick-tools-title">Quick tools</h2></div><p className="home-section-aside">Use a tool at your own pace.</p></div>
       <div className="home-quick-grid">
-        <TiltedCard as="button" maxTilt={8} className="home-quick-tool" type="button" onClick={() => onPick("trained-sign")}>
+        <TiltedCard as="button" maxTilt={8} className="home-quick-tool ht-shadow" type="button" onClick={() => onPick("trained-sign")}>
           <HomeIcon kind="sign" className="home-tool-icon" />
           <span className="home-quick-title">Sign to text &amp; voice <span aria-hidden="true">↗</span></span>
           <span className="mode-desc">Use your camera to capture one sign. Review the text and read it aloud.</span>
           <span className="home-tool-note">Experimental isolated words. Translation is not validated. Review every result.</span>
         </TiltedCard>
-        <TiltedCard as="button" maxTilt={8} className="home-quick-tool" type="button" onClick={signWithAI}>
+        <TiltedCard as="button" maxTilt={8} className="home-quick-tool ht-shadow" type="button" onClick={signWithAI}>
           <HomeIcon kind="ai" className="home-tool-icon" />
           <span className="home-quick-title">Talk to AI with signs <span aria-hidden="true">↗</span></span>
           <span className="mode-desc">Capture a supported word or type, review your message, then ask the AI assistant for a reply.</span>
           <span className="home-tool-note">Experimental word recognition. AI receives your reviewed text only when you send it.</span>
         </TiltedCard>
-        <TiltedCard as="button" maxTilt={8} className="home-quick-tool" type="button" onClick={() => onPick("voice")}>
+        <TiltedCard as="button" maxTilt={8} className="home-quick-tool ht-shadow" type="button" onClick={() => onPick("voice")}>
           <HomeIcon kind="voice" className="home-tool-icon" />
           <span className="home-quick-title">Speak with AI <span aria-hidden="true">↗</span></span>
           <span className="mode-desc">Speak to the AI assistant and hear its reply.</span>

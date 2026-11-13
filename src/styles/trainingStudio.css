@@ -4,7 +4,7 @@
 .nonsigning-capture { padding: 0 1rem 1rem; }
 .nonsigning-capture h3 { font-size: 1.1rem; margin-block: .8rem; }
 .nonsigning-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 1.5rem; margin-top: 1rem; }
-.nonsigning-camera { aspect-ratio: 4 / 3; background: #05080f; }
+.nonsigning-camera { aspect-ratio: 4 / 3; background: var(--plate); }
 .nonsigning-instruction { color: var(--muted); font-size: .85rem; min-height: 3.5rem; }
 .nonsigning-capture .actions { margin-block: .8rem; }
 .nonsigning-capture form { display: grid; gap: .8rem; }
@@ -29,7 +29,7 @@
 .training-metrics > div:first-child { border-left: 0; }
 .training-metrics dt { color: var(--muted); font-size: .74rem; }
 .training-metrics dd { font-size: 2.1rem; font-weight: 650; line-height: 1.1; font-variant-numeric: tabular-nums; margin-top: .55rem; }
-.training-metric-primary { background: rgba(0, 224, 138, .06); }
+.training-metric-primary { background: var(--cobalt-soft); }
 .training-metric-primary dd { color: var(--accent); }
 .training-data-note { border-left: 2px solid var(--accent-2); padding: .85rem 1.15rem; margin: 1.35rem 0 0; background: var(--bg-soft); }
 .training-data-note strong { font-size: .85rem; }
@@ -49,7 +49,7 @@
 .training-sample-name > span { display: block; overflow-wrap: anywhere; font-size: .95rem; }
 .training-sample-tags { display: flex; flex-wrap: wrap; gap: .3rem; margin-top: .4rem; }
 .training-tag { border: 1px solid var(--border); color: var(--muted); font-size: .61rem; padding: .1rem .35rem; border-radius: 5px; font-weight: 500; white-space: nowrap; }
-.training-tag-known { color: var(--accent); border-color: rgba(0, 224, 138, .3); }
+.training-tag-known { color: var(--accent); border-color: var(--cobalt); }
 .training-tag-unknown { color: var(--warning); }
 .training-table td { overflow-wrap: anywhere; }
 .training-table time { display: block; min-width: 145px; }
@@ -85,6 +85,6 @@
   .training-empty { padding: 1.6rem 0; }
 }
 .recognition-replay { min-width: 0; padding: 0 1rem 1rem; overflow-wrap: anywhere; }
-.recognition-replay video { display: block; width: 100%; max-width: 100%; max-height: 420px; background: #101820; object-fit: contain; margin: 1rem 0; }
+.recognition-replay video { display: block; width: 100%; max-width: 100%; max-height: 420px; background: var(--plate); object-fit: contain; margin: 1rem 0; }
 .recognition-replay .field { min-width: 0; grid-template-columns: minmax(0, 1fr); margin: 1rem 0; }
 .recognition-replay input[type="file"], .recognition-replay select { min-width: 0; width: 100%; max-width: 100%; }

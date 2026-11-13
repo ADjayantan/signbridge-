@@ -1,9 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { CameraSelect, LanguageSelect, Switch, TopBar, isTyping } from "../components/Controls.jsx";
+import HalftoneField from "../components/HalftoneField.jsx";
 import { useCamera } from "../hooks/useCamera.js";
 import { useVoiceAssistant } from "../hooks/useVoiceAssistant.js";
 import { language } from "../lib/languages.js";
 import { canListen, canSpeak } from "../lib/speech.js";
+
+/** How lively the halftone rings around the mic are in each state. */
+const RING_ENERGY = { idle: 0.45, listening: 1.7, thinking: 0.8, speaking: 1.25 };
 
 const STATUS_TEXT = {
   idle: { label: "Press Space to talk", hint: "or tap here" },
@@ -139,6 +143,8 @@ export default function VoiceMode({ settings, update, onBack }) {
       </TopBar>
 
       <section className="voice-stage" aria-label="Talk to SignBridge">
+        <div className="mic-wrap">
+        <HalftoneField pattern="ripple" cell={9} energy={RING_ENERGY[status] ?? 0.6} animate={!cameraOn} inks={status === "speaking" ? ["--tangerine", "--sun"] : ["--cobalt", "--tangerine"]} />
         <button
           ref={micRef}
           type="button"
@@ -153,6 +159,7 @@ export default function VoiceMode({ settings, update, onBack }) {
           <span className="mic-label">{canListen ? text.label : "Voice input isn't available"}</span>
           {canListen && <span className="mic-hint">{text.hint}</span>}
         </button>
+        </div>
         <p className="transcript" aria-hidden="true">
           {assistant.interim || " "}
         </p>

@@ -1,31 +1,4 @@
-/* SignBridge: Minimalist Dark Studio Web UI — Clean Typography & Precision Alignment */
-:root {
-  color-scheme: dark;
-  font-size: 15px;
-  --font: "Inter", "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --display-font: "Plus Jakarta Sans", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --bg: #090c0b;
-  --bg-soft: #101513;
-  --surface: #131917;
-  --surface-2: #19211e;
-  --surface-alt: #162620;
-  --border: rgba(255, 255, 255, 0.08);
-  --border-strong: rgba(52, 211, 153, 0.28);
-  --text: #f1f5f3;
-  --muted: #8b9993;
-  --accent: #10b981;
-  --accent-bright: #34d399;
-  --accent-ink: #041b13;
-  --accent-2: #f59e0b;
-  --accent-2-ink: #1c1102;
-  --danger: #f87171;
-  --danger-bg: rgba(239, 68, 68, 0.12);
-  --warning: #fbbf24;
-  --warning-bg: rgba(245, 158, 11, 0.12);
-  --radius: 14px;
-  --radius-sm: 10px;
-  --shadow: 0 8px 28px rgba(0, 0, 0, 0.36);
-}
+/* SignBridge layout layer. Colours, type and tokens live in halftone.css (the Riso print system). */
 
 html, body {
   background: var(--bg);
@@ -37,7 +10,6 @@ html, body {
   overflow-x: hidden;
 }
 
-::selection { color: #041b13; background: #34d399; }
 
 h1, h2, h3, h4, strong {
   font-family: var(--display-font);
@@ -67,8 +39,8 @@ h1 em, h2 em {
   transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease, transform 0.12s ease;
 }
 .btn:hover:not(:disabled) {
-  border-color: rgba(255, 255, 255, 0.2);
-  background: #202a26;
+  border-color: var(--line-strong);
+  background: var(--surface-2);
   transform: translateY(-1px);
 }
 .btn-primary {
@@ -81,7 +53,7 @@ h1 em, h2 em {
 .btn-primary:hover:not(:disabled) {
   background: var(--accent-bright);
   border-color: var(--accent-bright);
-  color: #02140e;
+  color: var(--accent-ink);
 }
 .btn-ghost {
   background: transparent;
@@ -91,7 +63,7 @@ h1 em, h2 em {
 .btn-ghost:hover:not(:disabled) {
   background: var(--surface-2);
   color: var(--text);
-  border-color: rgba(255, 255, 255, 0.16);
+  border-color: var(--line-strong);
 }
 .btn-small {
   min-height: 32px;
@@ -202,7 +174,7 @@ textarea {
   height: 36px;
   border: 1px solid var(--border-strong);
   border-radius: 10px;
-  background: rgba(16, 185, 129, 0.08);
+  background: var(--cobalt-soft);
   color: var(--accent-bright);
 }
 .home-wordmark-dot { color: var(--accent-bright); }
@@ -282,7 +254,7 @@ textarea {
   box-shadow: none;
 }
 .home .home-conversation-card:first-child {
-  background: #132820;
+  background: var(--cobalt-soft);
   border-color: var(--border-strong);
 }
 .home-conversation-card .mode-icon {

@@ -8,11 +8,12 @@ export const HAND_JOINT_NAMES = Object.freeze([
   "Pinky knuckle", "Pinky middle joint", "Pinky outer joint", "Pinky tip",
 ]);
 export const HAND_FINGERS = Object.freeze([
-  { name: "Thumb", color: "#ffbe55", joints: [0, 1, 2, 3, 4] },
-  { name: "Index", color: "#56c8ff", joints: [0, 5, 6, 7, 8] },
-  { name: "Middle", color: "#65e6a5", joints: [0, 9, 10, 11, 12] },
-  { name: "Ring", color: "#c9a3ff", joints: [0, 13, 14, 15, 16] },
-  { name: "Pinky", color: "#ff9ab8", joints: [0, 17, 18, 19, 20] },
+  // Print inks, bright enough to read over any camera image (no green, by design).
+  { name: "Thumb", color: "#ffc23d", joints: [0, 1, 2, 3, 4] },
+  { name: "Index", color: "#7a8cff", joints: [0, 5, 6, 7, 8] },
+  { name: "Middle", color: "#ff7a3d", joints: [0, 9, 10, 11, 12] },
+  { name: "Ring", color: "#ff5c8a", joints: [0, 13, 14, 15, 16] },
+  { name: "Pinky", color: "#c9b8ff", joints: [0, 17, 18, 19, 20] },
 ].map((finger) => Object.freeze({ ...finger, joints: Object.freeze(finger.joints) })));
 export const HAND_CONNECTIONS = Object.freeze([
   [0, 1], [1, 2], [2, 3], [3, 4],

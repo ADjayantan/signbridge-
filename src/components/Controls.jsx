@@ -1,3 +1,4 @@
+import ThemeSwitch from "./ThemeSwitch.jsx";
 import { LANGUAGES } from "../lib/languages.js";
 
 export function CameraSelect({ camera, value, onChange, disabled = false, id = "camera-device" }) {
@@ -46,6 +47,7 @@ export function TopBar({ title, titleId, onBack, children }) {
         {title}
       </h1>
       <div className="topbar-extra">{children}</div>
+      <ThemeSwitch className="topbar-theme" />
     </header>
   );
 }

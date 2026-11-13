@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import './bridgeScene.css';
+import { resolveColor, subscribeTheme } from '../lib/theme.js';
 
 // An abstract sculpture, never a tracked hand, prediction or sign demonstration.
 const LANDMARKS = [
@@ -28,8 +29,8 @@ function SceneFallback() {
         {CONNECTIONS.map(([a, b]) => <line key={`${a}-${b}`} x1={LANDMARKS[a][0]} y1={LANDMARKS[a][1]} x2={LANDMARKS[b][0]} y2={LANDMARKS[b][1]} stroke="currentColor" strokeWidth=".045" />)}
         {LANDMARKS.map(([x, y], i) => <circle key={i} cx={x} cy={y} r={i === 0 ? '.105' : '.065'} fill="currentColor" />)}
       </g>
-      <circle cx="366" cy="145" r="5" fill="#b98563" />
-      <circle cx="112" cy="230" r="3" fill="#b98563" />
+      <circle cx="366" cy="145" r="5" fill="var(--bridge-accent, #ff6a2c)" />
+      <circle cx="112" cy="230" r="3" fill="var(--bridge-accent, #ff6a2c)" />
     </svg>
   );
 }
@@ -59,6 +60,7 @@ export default function BridgeScene({ paused = false, className = '' }) {
     let contextLost = false;
     let resizeObserver;
     let intersectionObserver;
+    let unsubscribeTheme = () => {};
     let draw = () => {};
     let lastFrameAt = 0;
     let elapsed = 0;
@@ -132,7 +134,7 @@ export default function BridgeScene({ paused = false, className = '' }) {
         const scene = new THREE.Scene();
         const camera = new THREE.OrthographicCamera(-3.1, 3.1, 2.5, -2.5, 0.1, 30);
         camera.position.set(0, 0, 9);
-        scene.add(new THREE.HemisphereLight(0xfff4df, 0x163d35, 3.2));
+        scene.add(new THREE.HemisphereLight(0xfff4df, 0x1b1d33, 3.2));
         const keyLight = new THREE.DirectionalLight(0xffeee1, 4);
         keyLight.position.set(-3, 5, 6);
         scene.add(keyLight);
@@ -142,12 +144,14 @@ export default function BridgeScene({ paused = false, className = '' }) {
         const nodeGeometry = own(new THREE.SphereGeometry(1, 12, 10));
         const boneGeometry = own(new THREE.CylinderGeometry(1, 1, 1, 8));
         const nodeMaterial = own(new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.35, metalness: 0.4 }));
-        const boneMaterial = own(new THREE.MeshStandardMaterial({ color: 0x275c50, roughness: 0.55, metalness: 0.2 }));
-        const copperMaterial = own(new THREE.MeshStandardMaterial({ color: 0xc19673, roughness: 0.45, metalness: 0.6 }));
+        const boneMaterial = own(new THREE.MeshStandardMaterial({ color: 0x17182a, roughness: 0.55, metalness: 0.1 }));
+        const copperMaterial = own(new THREE.MeshStandardMaterial({ color: 0xff6a2c, roughness: 0.5, metalness: 0.15 }));
         const transform = new THREE.Object3D();
         const up = new THREE.Vector3(0, 1, 0);
-        const teal = new THREE.Color(0x35705f);
-        const copper = new THREE.Color(0xc19673);
+        // Print inks, read from CSS so the sculpture follows Paper / Ink and dark camera plates.
+        const teal = new THREE.Color(0x2e49d6);
+        const copper = new THREE.Color(0xff6a2c);
+        const handNodes = [];
 
         const makeHand = (secondary) => {
           const hand = new THREE.Group();
@@ -172,6 +176,7 @@ export default function BridgeScene({ paused = false, className = '' }) {
           });
           nodes.instanceMatrix.needsUpdate = true;
           nodes.instanceColor.needsUpdate = true;
+          handNodes.push({ nodes, secondary, count: points.length });
           bones.instanceMatrix.needsUpdate = true;
           // Instancing owns GPU buffers in addition to the shared geometry.
           own(nodes);
@@ -189,7 +194,7 @@ export default function BridgeScene({ paused = false, className = '' }) {
         back.scale.setScalar(0.72);
         sculpture.add(back, front);
 
-        const orbitMaterial = own(new THREE.LineBasicMaterial({ color: 0xaa8b72, transparent: true, opacity: 0.42 }));
+        const orbitMaterial = own(new THREE.LineBasicMaterial({ color: 0x17182a, transparent: true, opacity: 0.32 }));
         const orbit = new THREE.Group();
         [0, 1].forEach((index) => {
           const points = [];
@@ -212,6 +217,20 @@ export default function BridgeScene({ paused = false, className = '' }) {
           satellites.add(node);
         });
         scene.add(satellites);
+
+        const recolor = () => {
+          teal.setStyle(resolveColor(host, '--bridge-node', 'rgb(46, 73, 214)'));
+          copper.setStyle(resolveColor(host, '--bridge-accent', 'rgb(255, 106, 44)'));
+          boneMaterial.color.setStyle(resolveColor(host, '--bridge-bone', 'rgb(23, 24, 42)'));
+          copperMaterial.color.copy(copper);
+          orbitMaterial.color.setStyle(resolveColor(host, '--bridge-orbit', 'rgb(23, 24, 42)'));
+          handNodes.forEach(({ nodes, secondary, count }) => {
+            for (let index = 0; index < count; index += 1) nodes.setColorAt(index, index % 4 === 0 || secondary ? copper : teal);
+            nodes.instanceColor.needsUpdate = true;
+          });
+        };
+        recolor();
+        unsubscribeTheme = subscribeTheme(() => { recolor(); sync(); });
 
         draw = (time) => {
           sculpture.rotation.y = Math.sin(time * 0.23) * 0.11;
@@ -273,6 +292,7 @@ export default function BridgeScene({ paused = false, className = '' }) {
       if (syncRef.current === sync) syncRef.current = null;
       document.removeEventListener('visibilitychange', sync);
       motion?.removeEventListener?.('change', sync);
+      unsubscribeTheme();
       resizeObserver?.disconnect();
       intersectionObserver?.disconnect();
       releaseGraphics();

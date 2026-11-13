@@ -21,7 +21,7 @@ export function drawHands(canvas, hands, width, height, { showLabels = false, sh
     if (!isCompleteHandLandmarks(hand?.landmarks)) continue;
     const pts = hand.landmarks.map((p) => [p.x * width, p.y * height]);
     for (const [a, b] of HAND_CONNECTIONS) {
-      ctx.strokeStyle = fingerFor(a === 0 ? b : a)?.color || "#56c8ff";
+      ctx.strokeStyle = fingerFor(a === 0 ? b : a)?.color || "#7a8cff";
       ctx.beginPath();
       ctx.moveTo(pts[a][0], pts[a][1]);
       ctx.lineTo(pts[b][0], pts[b][1]);
@@ -29,7 +29,7 @@ export function drawHands(canvas, hands, width, height, { showLabels = false, sh
     }
     pts.forEach(([x, y], joint) => {
       const tip = TIP_JOINTS.has(joint);
-      ctx.fillStyle = joint === 0 ? "#ffffff" : fingerFor(joint)?.color || "#00e08a";
+      ctx.fillStyle = joint === 0 ? "#ffffff" : fingerFor(joint)?.color || "#ff7a3d";
       ctx.beginPath();
       ctx.arc(x, y, line * (joint === 0 ? 2.2 : tip ? 1.9 : 1.35), 0, Math.PI * 2);
       ctx.fill();
@@ -44,7 +44,7 @@ export function drawHands(canvas, hands, width, height, { showLabels = false, sh
       const labelY = Math.max(fontSize, Math.min(height - fontSize, y));
       ctx.translate(labelX, labelY);
       if (mirrorText) ctx.scale(-1, 1);
-      ctx.fillStyle = "#ffffff"; ctx.strokeStyle = "#12202e"; ctx.lineWidth = 3;
+      ctx.fillStyle = "#f3ede1"; ctx.strokeStyle = "#12131f"; ctx.lineWidth = 3;
       ctx.strokeText?.(label, 0, 0); ctx.fillText(label, 0, 0);
       ctx.restore();
     });

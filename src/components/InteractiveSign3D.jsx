@@ -11,15 +11,57 @@ import {
 } from "../lib/handModelRig.js";
 import { FINGER_CURL_GAINS, makeHandSpec, thumbAnglesFor } from "../lib/handPoseSpec.js";
 import { liveHandSpecs } from "../lib/liveHandMirror.js";
+import { resolveColor, subscribeTheme } from "../lib/theme.js";
+import HalftoneField from "./HalftoneField.jsx";
 
 const FINGER_COLORS = [
-  0xffbe55, // 0: Wrist
-  0xffbe55, 0xffbe55, 0xffbe55, 0xffbe55, // 1-4: Thumb
-  0x56c8ff, 0x56c8ff, 0x56c8ff, 0x56c8ff, // 5-8: Index
-  0x65e6a5, 0x65e6a5, 0x65e6a5, 0x65e6a5, // 9-12: Middle
-  0xc9a3ff, 0xc9a3ff, 0xc9a3ff, 0xc9a3ff, // 13-16: Ring
-  0xff9ab8, 0xff9ab8, 0xff9ab8, 0xff9ab8, // 17-20: Pinky
+  0xffc23d, // 0: Wrist
+  0xffc23d, 0xffc23d, 0xffc23d, 0xffc23d, // 1-4: Thumb (sun)
+  0x7a8cff, 0x7a8cff, 0x7a8cff, 0x7a8cff, // 5-8: Index (cobalt)
+  0xff7a3d, 0xff7a3d, 0xff7a3d, 0xff7a3d, // 9-12: Middle (tangerine)
+  0xff5c8a, 0xff5c8a, 0xff5c8a, 0xff5c8a, // 13-16: Ring (rose)
+  0xc9b8ff, 0xc9b8ff, 0xc9b8ff, 0xc9b8ff, // 17-20: Pinky (lilac)
 ];
+
+/**
+ * "Halftone" skin: the hand's lit colour is reprinted as two dot screens on paper-white, tangerine
+ * for the half-tones and ink for the deep shadows, sized in screen pixels so dots stay round.
+ * Spliced into the physical material after its final colour (gl_FragColor is sRGB there).
+ */
+const HALFTONE_GLSL_HEAD = `
+uniform float uHalftone;
+uniform float uHtCell;
+uniform vec3 uHtPaper;
+uniform vec3 uHtSpot;
+uniform vec3 uHtInk;
+float htDot(vec2 frag, float angle, float tone) {
+  float c = cos(angle);
+  float s = sin(angle);
+  vec2 cellPos = mat2(c, s, -s, c) * frag / uHtCell;
+  float d = length(fract(cellPos) - 0.5);
+  float r = 0.5 * sqrt(clamp(tone, 0.0, 1.0)) * 1.18;
+  float aa = max(fwidth(d), 0.02);
+  return 1.0 - smoothstep(r - aa, r + aa, d);
+}
+`;
+const HALFTONE_GLSL_BODY = `
+if (uHalftone > 0.5) {
+  // Print shading needs form more than realism: a fixed key light from the upper right (view space)
+  // gives every finger a lit side and a shadow side, and the real lighting adds creases and folds.
+  vec3 n = normalize(normal);
+  float key = clamp(dot(n, normalize(vec3(0.45, 0.55, 0.7))), 0.0, 1.0);
+  float lum = dot(gl_FragColor.rgb, vec3(0.2126, 0.7152, 0.0722));
+  float tone = clamp((1.0 - key) * 0.85 + (1.0 - lum) * 0.7, 0.0, 1.0);
+  // Grazing angles are inked like a drawn outline (normal and vViewPosition are view space here).
+  float rim = 1.0 - abs(dot(n, normalize(vViewPosition)));
+  float spot = htDot(gl_FragCoord.xy, 0.2618, smoothstep(0.1, 0.62, tone));
+  float ink = htDot(gl_FragCoord.xy, 0.7854, max(smoothstep(0.58, 0.95, tone), smoothstep(0.42, 0.8, rim) * 0.9));
+  vec3 printed = uHtPaper;
+  printed = mix(printed, printed * uHtSpot, spot);
+  printed = mix(printed, printed * uHtInk, ink);
+  gl_FragColor.rgb = printed;
+}
+`;
 
 const SKIN_THEMES = [
   {
@@ -34,15 +76,16 @@ const SKIN_THEMES = [
     metalness: 0.02,
   },
   {
-    id: "cyber",
-    label: "Cyber Holo",
-    color: 0x1ee6a8,
-    nailColor: 0x8cf7d8,
-    creaseColor: 0x0d7a58,
-    sheen: 0x56c8ff,
-    emissive: 0x09382c,
-    roughness: 0.22,
-    metalness: 0.48,
+    id: "halftone",
+    label: "Halftone",
+    color: 0xf0e2d3,
+    nailColor: 0xfbf3ea,
+    creaseColor: 0x17182a,
+    sheen: 0xffffff,
+    emissive: 0x000000,
+    roughness: 0.55,
+    metalness: 0,
+    halftone: true,
   },
   {
     id: "gold",
@@ -676,6 +719,7 @@ export default function InteractiveSign3D({
     let renderer;
     let frameId = 0;
     let resizeObserver;
+    let unsubscribeTheme = () => {};
     const resources = new Set();
     const own = (res) => {
       resources.add(res);
@@ -746,41 +790,25 @@ export default function InteractiveSign3D({
         const rootGroup = new THREE.Group();
         scene.add(rootGroup);
 
-        // Glowing stage platform rings beneath the forearm
+        // Stage markings beneath the forearm, printed in the page's inks (re-read on a theme change)
         const ringGeo = own(new THREE.RingGeometry(1.52, 1.60, 72));
-        const ringMat = own(new THREE.MeshBasicMaterial({ color: 0x3ae6a8, side: THREE.DoubleSide, transparent: true, opacity: 0.44 }));
+        const ringMat = own(new THREE.MeshBasicMaterial({ color: 0x2e49d6, side: THREE.DoubleSide, transparent: true, opacity: 0.44 }));
         const ringMesh = new THREE.Mesh(ringGeo, ringMat);
         ringMesh.rotation.x = Math.PI / 2.25;
         ringMesh.position.y = -1.28;
         rootGroup.add(ringMesh);
 
         const outerRingGeo = own(new THREE.RingGeometry(1.88, 1.92, 72));
-        const outerRingMat = own(new THREE.MeshBasicMaterial({ color: 0xffbe55, side: THREE.DoubleSide, transparent: true, opacity: 0.28 }));
+        const outerRingMat = own(new THREE.MeshBasicMaterial({ color: 0x17182a, side: THREE.DoubleSide, transparent: true, opacity: 0.3 }));
         const outerRingMesh = new THREE.Mesh(outerRingGeo, outerRingMat);
         outerRingMesh.rotation.x = Math.PI / 2.25;
         outerRingMesh.position.y = -1.30;
         rootGroup.add(outerRingMesh);
-
-        // Floating 3D energy particles orbiting around the stage
-        const particleCount = 68;
-        const pCoords = new Float32Array(particleCount * 3);
-        for (let i = 0; i < particleCount; i++) {
-          const ang = (i / particleCount) * Math.PI * 2;
-          const rad = 1.62 + (i % 5) * 0.21;
-          pCoords[i * 3] = Math.cos(ang) * rad;
-          pCoords[i * 3 + 1] = -1.05 + ((i * 17) % 24) * 0.095;
-          pCoords[i * 3 + 2] = Math.sin(ang) * rad * 0.65;
-        }
-        const particleGeo = own(new THREE.BufferGeometry());
-        particleGeo.setAttribute("position", new THREE.BufferAttribute(pCoords, 3));
-        const particleMat = own(new THREE.PointsMaterial({
-          color: 0x56f0be,
-          size: 0.045,
-          transparent: true,
-          opacity: 0.62,
-        }));
-        const particleSystem = new THREE.Points(particleGeo, particleMat);
-        rootGroup.add(particleSystem);
+        const stageColors = {
+          ring: new THREE.Color(0x2e49d6),
+          hold: new THREE.Color(0xffc23d),
+          ok: new THREE.Color(0xff6a2c),
+        };
 
         // Materials: Skin, Fingernails, Knuckle Creases, and Studio Sleeve Cuff
         const SkinMatClass = THREE.MeshPhysicalMaterial || THREE.MeshStandardMaterial;
@@ -815,14 +843,42 @@ export default function InteractiveSign3D({
 
         const cuffMat = own(
           new THREE.MeshStandardMaterial({
-            color: 0x112620,
-            roughness: 0.32,
-            metalness: 0.42,
-            emissive: 0x071511,
-            emissiveIntensity: 0.4,
+            color: 0x2e49d6,
+            roughness: 0.78,
+            metalness: 0.0,
           })
         );
-        const cuffTrimMat = own(new THREE.MeshBasicMaterial({ color: 0x45e3b0 }));
+        const cuffTrimMat = own(new THREE.MeshBasicMaterial({ color: 0xff6a2c }));
+
+        const srgb = (hex) => new THREE.Vector3(((hex >> 16) & 255) / 255, ((hex >> 8) & 255) / 255, (hex & 255) / 255);
+        const halftoneUniforms = {
+          uHalftone: { value: 0 },
+          uHtCell: { value: 5.5 * renderer.getPixelRatio() },
+          uHtPaper: { value: srgb(0xfbf6ee) },
+          uHtSpot: { value: srgb(0xff6a2c) },
+          uHtInk: { value: srgb(0x17182a) },
+        };
+        const printAsHalftone = (material) => {
+          material.onBeforeCompile = (shader) => {
+            Object.assign(shader.uniforms, halftoneUniforms);
+            shader.fragmentShader = shader.fragmentShader
+              .replace("void main() {", HALFTONE_GLSL_HEAD + "\nvoid main() {")
+              .replace("#include <dithering_fragment>", "#include <dithering_fragment>\n" + HALFTONE_GLSL_BODY);
+          };
+        };
+        printAsHalftone(skinMat);
+        printAsHalftone(nailMat);
+
+        const readStageColors = () => {
+          stageColors.ring.setStyle(resolveColor(host, "--stage-ring", "rgb(46, 73, 214)"));
+          stageColors.hold.setStyle(resolveColor(host, "--stage-ring-hold", "rgb(255, 194, 61)"));
+          stageColors.ok.setStyle(resolveColor(host, "--stage-ring-ok", "rgb(255, 106, 44)"));
+          outerRingMat.color.setStyle(resolveColor(host, "--stage-outer", "rgb(23, 24, 42)"));
+          cuffMat.color.setStyle(resolveColor(host, "--stage-cuff", "rgb(46, 73, 214)"));
+          cuffTrimMat.color.setStyle(resolveColor(host, "--stage-trim", "rgb(255, 106, 44)"));
+        };
+        readStageColors();
+        unsubscribeTheme = subscribeTheme(readStageColors);
 
         const overlayJointMat = own(
           new THREE.MeshBasicMaterial({
@@ -1234,6 +1290,9 @@ export default function InteractiveSign3D({
             skinMat.emissive.setHex(themeObj.emissive);
             if (skinMat.sheenColor) skinMat.sheenColor.setHex(themeObj.sheen);
             nailMat.color.setHex(themeObj.nailColor);
+            halftoneUniforms.uHalftone.value = themeObj.halftone ? 1 : 0;
+            // Skin grain would speckle the dot screens, so the printed hand is smooth.
+            if (skinMat.bumpMap) skinMat.bumpScale = themeObj.halftone ? 0 : 0.38;
           }
 
           // Determine whether to mirror raw webcam fingers or show the clean 3D Sign Symbol
@@ -1277,11 +1336,10 @@ export default function InteractiveSign3D({
           rootGroup.rotation.x += (st.pitch - rootGroup.rotation.x) * Math.min(1, dt * 10);
           rootGroup.position.y = Math.sin(t * 1.6) * 0.025;
 
-          // Orbiting 3D particles & stage ring
-          particleSystem.rotation.y = t * 0.25;
-          const pulse = st.recognized ? 0.74 + Math.sin(t * 7) * 0.20 : st.holding ? 0.58 : 0.40;
+          // Stage ring: cobalt at rest, sun while a sign is held, tangerine when recognised
+          const pulse = st.recognized ? 0.74 + Math.sin(t * 7) * 0.20 : st.holding ? 0.62 : 0.44;
           ringMat.opacity = pulse;
-          ringMat.color.setHex(st.recognized ? 0x45ffaa : st.holding ? 0xffbe55 : 0x3ae6a8);
+          ringMat.color.copy(st.recognized ? stageColors.ok : st.holding ? stageColors.hold : stageColors.ring);
           outerRingMesh.rotation.z = t * 0.32;
 
           camera.position.z += (4.75 / st.zoom - camera.position.z) * Math.min(1, dt * 12);
@@ -1301,6 +1359,7 @@ export default function InteractiveSign3D({
       disposed = true;
       if (frameId) window.cancelAnimationFrame(frameId);
       resizeObserver?.disconnect?.();
+      unsubscribeTheme();
       resources.forEach((r) => r.dispose?.());
       resources.clear();
       if (renderer) {
@@ -1430,6 +1489,8 @@ export default function InteractiveSign3D({
         onPointerCancel={onPointerUp}
         onWheel={onWheel}
       >
+        {/* Printed spotlight behind the hand; still while the camera runs. */}
+        <HalftoneField pattern="spot" cell={8} fps={24} animate={!cameraOn} />
         <div className="sign3d-hud-overlay" aria-hidden="true">
           <div className="sign3d-hud-badge">
             <span className="sign3d-hud-dot" />

@@ -25,7 +25,8 @@ import { handJointCounts, handsFromPoseFrame } from "../lib/handJoints.js";
 import { loadGestureRecognizer } from "../lib/handTracker.js";
 import { DAILY_CONVERSATION_SIGNS, detectPoseFrameShortcut, detectPoseSequenceShortcut, parseSentenceToSignSteps, predictFallbackGruCandidate, smoothHandLandmarks } from "../lib/handPoseShortcuts.js";
 import { createAutomaticSignCapture } from "../lib/automaticSignCapture.js";
-import { AuroraParticles3D, DecryptedText, GradientText, Magnet, ReactBitsDock, ShinyText, SpotlightCard, TiltedCard } from "../components/reactbits/ReactBitsUI.jsx";
+import { DecryptedText, GradientText, Magnet, ReactBitsDock, ShinyText, SpotlightCard, TiltedCard } from "../components/reactbits/ReactBitsUI.jsx";
+import HalftoneField from "../components/HalftoneField.jsx";
 import "../styles/signWorkspace.css";
 
 const newSessionCode = () => `session-${Date.now().toString(36)}`;
@@ -799,12 +800,13 @@ export default function TrainedSignMode({ settings, update, onBack, onLive, onLi
   const send = (event) => { event.preventDefault(); return sendReviewed(draft.text); };
 
   return <main className="mode live-sign-mode sign-workspace rb-theme" aria-labelledby="trained-sign-title">
-    <AuroraParticles3D active={result?.status === "recognized" || Boolean(holdingMeaning) || cameraOn} />
     <TopBar title="Sign to text & voice" titleId="trained-sign-title" onBack={onBack}>
       {onConnect && <button type="button" className="btn btn-small workspace-partner-button" disabled={saving} onClick={() => onConnect(draft.text)}>Talk to a partner <span aria-hidden="true">↗</span></button>}
     </TopBar>
     <div className="workspace-intro">
-      <div><p className="eyebrow">SignBridge / Studio</p><h2>Your hands. <em>Your words.</em></h2><p>Use your camera or a short sign video. Get the recognized word as text and optional voice. Review every word.</p></div>
+      {/* Decorative print band; it holds still while the camera runs so recognition keeps the CPU. */}
+      <HalftoneField pattern="waves" cell={9} fps={24} animate={!cameraOn} />
+      <div className="ht-print"><p className="eyebrow">SignBridge / Studio</p><h2>Your hands. <em className="ht-misreg" data-text="Your words.">Your words.</em></h2><p>Use your camera or a short sign video. Get the recognized word as text and optional voice. Review every word.</p></div>
       <span className="live-preview-badge">Real 3D Hand · 20 Live Signs</span>
     </div>
     <nav className="workspace-steps" aria-label="Sign workflow">
@@ -845,7 +847,7 @@ export default function TrainedSignMode({ settings, update, onBack, onLive, onLi
         {import.meta.env?.MODE !== "test" && (
           <SpotlightCard
             className={"workspace-live-output-card" + (result?.status === "recognized" ? " is-recognized" : liveShortcutHint ? " is-holding" : "")}
-            spotlightColor={result?.status === "recognized" ? "rgba(16, 185, 129, 0.22)" : liveShortcutHint ? "rgba(245, 158, 11, 0.2)" : "rgba(255, 255, 255, 0.06)"}
+            spotlightColor={result?.status === "recognized" ? "var(--cobalt)" : liveShortcutHint ? "var(--sun)" : ""}
           >
             <div className="workspace-live-output-main">
               <span className="workspace-live-output-badge"><span className="workspace-live-dot" aria-hidden="true" />{result?.status === "recognized" ? `Text & Voice · ${speakResults ? "Auto-Voice ON" : "Text Mode"}` : liveShortcutHint ? "Reading Hand Sign · Hold Steady" : "Live Sign → Text & Voice"}</span>
@@ -939,7 +941,7 @@ export default function TrainedSignMode({ settings, update, onBack, onLive, onLi
           </>}
         </div>
         {import.meta.env?.MODE !== "test" && (
-          <SpotlightCard className="workspace-daily-board" spotlightColor="rgba(16, 185, 129, 0.12)">
+          <SpotlightCard className="workspace-daily-board">
             <div className="workspace-daily-header">
               <div>
                 <strong>20 Daily Conversation Signs</strong>
@@ -964,7 +966,7 @@ export default function TrainedSignMode({ settings, update, onBack, onLive, onLi
                     key={item.id}
                     maxTilt={7}
                     scale={1.02}
-                    className={"workspace-daily-card" + (isRecognized ? " is-recognized" : isHolding ? " is-holding" : "")}
+                    className={"workspace-daily-card ht-shadow" + (isRecognized ? " is-recognized" : isHolding ? " is-holding" : "")}
                     onClick={() => triggerQuickSign(item)}
                   >
                     <span className="workspace-daily-icon" aria-hidden="true">{item.icon}</span>

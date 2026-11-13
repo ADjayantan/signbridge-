@@ -38,7 +38,7 @@
   font-size: 0.72rem;
   font-weight: 500;
   color: var(--accent-bright);
-  background: rgba(16, 185, 129, 0.08);
+  background: var(--cobalt-soft);
   border: 1px solid var(--border-strong);
   padding: 0.38rem 0.75rem;
   border-radius: 999px;
@@ -46,7 +46,7 @@
 }
 .workspace-partner-button {
   border-radius: 999px;
-  background: rgba(16, 185, 129, 0.1);
+  background: var(--cobalt-soft);
   border-color: var(--border-strong);
   color: var(--accent-bright);
 }
@@ -73,7 +73,7 @@
   transition: border-color 0.15s ease, background 0.15s ease;
 }
 .workspace-steps button:hover {
-  border-color: rgba(255, 255, 255, 0.18);
+  border-color: var(--line-strong);
   background: var(--surface-2);
 }
 .workspace-steps button[aria-current="step"] {
@@ -255,7 +255,7 @@
   border: 1px solid var(--border);
   border-radius: 12px;
   overflow: hidden;
-  background: #060908;
+  background: var(--plate);
 }
 .sign-workspace .live-camera.is-recording {
   border-color: var(--danger);
@@ -266,7 +266,7 @@
   padding: 0;
   display: block;
   text-align: center;
-  background: radial-gradient(circle at 50% 42%, #11221c 0%, #070b0a 80%);
+  background: radial-gradient(circle at 50% 42%, var(--plate-2) 0%, var(--plate) 80%);
   color: var(--text);
 }
 .workspace-camera-idle .workspace-idle-scene {
@@ -286,7 +286,7 @@
   font-size: 0.7rem;
   font-weight: 500;
   color: var(--muted);
-  background: rgba(9, 12, 11, 0.8);
+  background: rgba(18, 19, 31, 0.85);
   padding: 0.24rem 0.6rem;
   border-radius: 999px;
   border: 1px solid var(--border);
@@ -328,12 +328,12 @@
   background: var(--bg-soft);
 }
 .workspace-live-output-card.is-holding {
-  border-color: rgba(245, 158, 11, 0.45);
-  background: rgba(245, 158, 11, 0.06);
+  border-color: var(--sun);
+  background: var(--sun-soft);
 }
 .workspace-live-output-card.is-recognized {
   border-color: var(--border-strong);
-  background: rgba(16, 185, 129, 0.08);
+  background: var(--cobalt-soft);
 }
 .workspace-live-output-main { min-width: 0; flex: 1; }
 .workspace-live-output-badge {
@@ -450,7 +450,7 @@
   margin: 0;
   border-radius: 12px;
   border: 1px solid var(--border);
-  background: radial-gradient(120% 120% at 50% 18%, #132a23 0%, #091411 70%, #060b09 100%);
+  background: var(--card-2);
   color: var(--text);
   overflow: hidden;
 }
@@ -462,7 +462,7 @@
   gap: 0.5rem;
   padding: 0.65rem 0.85rem;
   border-bottom: 1px solid var(--border);
-  background: rgba(9, 14, 12, 0.65);
+  background: var(--card);
 }
 .sign3d-title-block { min-width: 0; }
 .sign3d-kicker {
@@ -495,7 +495,7 @@
   padding: 0.24rem 0.55rem;
   border-radius: 7px;
   border: 1px solid var(--border);
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--card);
   color: var(--muted);
   font-size: 0.7rem;
   font-weight: 500;
@@ -503,7 +503,7 @@
   transition: all 0.14s ease;
 }
 .sign3d-pill:hover {
-  border-color: rgba(255, 255, 255, 0.2);
+  border-color: var(--line-strong);
   color: var(--text);
 }
 .sign3d-pill.is-active {
@@ -543,7 +543,7 @@
   gap: 0.35rem;
   padding: 0.2rem 0.55rem;
   border-radius: 999px;
-  background: rgba(9, 13, 12, 0.78);
+  background: var(--card);
   border: 1px solid var(--border);
   color: var(--muted);
   font-size: 0.66rem;
@@ -568,7 +568,7 @@
   height: 1.7rem;
   border-radius: 7px;
   border: 1px solid var(--border);
-  background: rgba(9, 13, 12, 0.82);
+  background: var(--card);
   color: var(--text);
   font-size: 0.76rem;
   font-weight: 600;
@@ -579,7 +579,7 @@
 }
 .sign3d-sequence-bar {
   padding: 0.6rem 0.85rem;
-  background: rgba(16, 185, 129, 0.08);
+  background: var(--cobalt-soft);
   border-top: 1px solid var(--border-strong);
   display: flex;
   flex-direction: column;
@@ -623,7 +623,7 @@
   padding: 0.18rem 0.48rem;
   border-radius: 6px;
   border: 1px solid var(--border);
-  background: rgba(9, 14, 12, 0.8);
+  background: var(--card);
   color: var(--text);
   font-size: 0.68rem;
   font-weight: 600;
@@ -655,7 +655,7 @@
   border-radius: 6px;
   font-size: 0.68rem;
   border: 1px solid var(--border);
-  background: rgba(9, 14, 12, 0.72);
+  background: var(--card);
   color: var(--text);
 }
 .sign3d-seq-token.is-sign {
@@ -675,14 +675,14 @@
 }
 .sign3d-seq-token.is-uncovered {
   border-style: dashed;
-  border-color: rgba(245, 158, 11, 0.45);
+  border-color: var(--sun);
   color: var(--muted);
   font-size: 0.65rem;
 }
 
 .sign3d-footer {
   padding: 0.5rem 0.85rem 0.65rem;
-  background: rgba(9, 14, 12, 0.72);
+  background: var(--card);
   border-top: 1px solid var(--border);
 }
 .sign3d-hint {
@@ -700,7 +700,7 @@
   padding: 0.22rem 0.5rem;
   border-radius: 6px;
   border: 1px solid var(--border);
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--card);
   color: var(--text);
   font-size: 0.69rem;
   font-weight: 500;
@@ -708,7 +708,7 @@
 }
 .sign3d-chip:hover {
   border-color: var(--border-strong);
-  background: rgba(16, 185, 129, 0.12);
+  background: var(--cobalt-soft);
 }
 .sign3d-chip.is-selected {
   background: var(--accent-bright);
@@ -785,7 +785,7 @@
   padding: 0.85rem;
   border: 1px dashed var(--border);
   border-radius: 10px;
-  background: rgba(255, 255, 255, 0.015);
+  background: transparent;
   margin: 0;
 }
 .workspace-empty-mark {
@@ -871,7 +871,7 @@
 }
 .workspace-daily-tab:hover {
   color: var(--text);
-  border-color: rgba(255, 255, 255, 0.18);
+  border-color: var(--line-strong);
 }
 .workspace-daily-tab.is-active {
   background: var(--accent);
@@ -905,11 +905,11 @@
 }
 .workspace-daily-card.is-holding {
   border-color: var(--accent-2);
-  background: rgba(245, 158, 11, 0.1);
+  background: var(--sun-soft);
 }
 .workspace-daily-card.is-recognized {
   border-color: var(--accent-bright);
-  background: rgba(16, 185, 129, 0.14);
+  background: var(--cobalt-soft);
 }
 .workspace-daily-icon {
   font-size: 1.1rem;
@@ -992,13 +992,13 @@
 }
 .workspace-3d-play-btn {
   border-color: var(--border-strong);
-  background: rgba(16, 185, 129, 0.12);
+  background: var(--cobalt-soft);
   color: var(--accent-bright);
 }
 .workspace-mic-btn.is-listening {
   border-color: var(--danger);
-  background: rgba(239, 68, 68, 0.14);
-  color: #fca5a5;
+  background: var(--danger-bg);
+  color: var(--danger);
 }
 .workspace-dictation-status {
   margin: 0;
@@ -1115,24 +1115,6 @@
 /* =========================================================
    SUBTLE REACT BITS INTERACTIVE ENHANCEMENTS
    ========================================================= */
-.rb-aurora-bg {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  overflow: hidden;
-  opacity: 0.45;
-}
-.rb-aurora-canvas {
-  display: block;
-  width: 100%;
-  height: 100%;
-}
-.rb-aurora-vignette {
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(circle at 50% 40%, transparent 30%, rgba(9, 12, 11, 0.85) 100%);
-}
 .rb-decrypted {
   display: inline-block;
   font-variant-numeric: tabular-nums;
@@ -1147,7 +1129,7 @@
   overflow: hidden;
   --mouse-x: 50%;
   --mouse-y: 50%;
-  --spotlight-color: rgba(16, 185, 129, 0.12);
+  --spotlight-color: var(--tangerine);
 }
 .rb-spotlight-card::before {
   content: "";
@@ -1180,9 +1162,9 @@
   gap: 0.38rem;
   padding: 0.38rem 0.6rem;
   border-radius: 999px;
-  background: rgba(15, 21, 19, 0.9);
+  background: var(--card);
   border: 1px solid var(--border);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+  box-shadow: 4px 4px 0 0 var(--ink);
   backdrop-filter: blur(14px);
 }
 .rb-dock-item {
@@ -1204,7 +1186,7 @@
 }
 .rb-dock-item.is-active {
   border-color: var(--accent-bright);
-  background: rgba(16, 185, 129, 0.2);
+  background: var(--cobalt-soft);
 }
 .rb-dock-icon { font-size: 0.98rem; line-height: 1; }
 .rb-dock-badge {
@@ -1225,7 +1207,7 @@
   transform: translateX(-50%);
   padding: 0.22rem 0.5rem;
   border-radius: 6px;
-  background: #0b0f0e;
+  background: var(--ink);
   border: 1px solid var(--border);
   color: var(--text);
   font-size: 0.66rem;

@@ -3,7 +3,7 @@
 .guided-sign-practice > p { margin: .45rem 0 .75rem; }
 .guided-sign-practice-body { display: grid; grid-template-columns: minmax(150px, .85fr) minmax(170px, 1fr); gap: 1rem; align-items: start; }
 .guided-sign-practice-media { position: relative; min-width: 0; }
-.guided-sign-practice-media video { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: contain; border-radius: 9px; background: #183c34; }
+.guided-sign-practice-media video { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: contain; border-radius: 9px; background: var(--plate); }
 .guided-sign-practice-badge { display: block; margin-top: .4rem; font-size: .7rem; font-weight: 600; }
 .guided-sign-practice-copy > p { margin-top: 0; font-size: .82rem; line-height: 1.65; }
 .guided-sign-practice-copy .actions { margin: .65rem 0; }
