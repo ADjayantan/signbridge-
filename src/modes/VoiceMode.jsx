@@ -144,7 +144,7 @@ export default function VoiceMode({ settings, update, onBack }) {
 
       <section className="voice-stage" aria-label="Talk to SignBridge">
         <div className="mic-wrap">
-        <HalftoneField pattern="ripple" cell={9} energy={RING_ENERGY[status] ?? 0.6} animate={!cameraOn} inks={status === "speaking" ? ["--tangerine", "--sun"] : ["--cobalt", "--tangerine"]} />
+        <HalftoneField pattern="ripple" cell={9} energy={RING_ENERGY[status] ?? 0.6} animate={!cameraOn} inks={status === "speaking" ? ["--spot-2", "--spot-3"] : ["--spot-1", "--spot-2"]} />
         <button
           ref={micRef}
           type="button"

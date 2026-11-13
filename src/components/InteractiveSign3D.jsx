@@ -15,17 +15,18 @@ import { resolveColor, subscribeTheme } from "../lib/theme.js";
 import HalftoneField from "./HalftoneField.jsx";
 
 const FINGER_COLORS = [
-  0xffc23d, // 0: Wrist
-  0xffc23d, 0xffc23d, 0xffc23d, 0xffc23d, // 1-4: Thumb (sun)
-  0x7a8cff, 0x7a8cff, 0x7a8cff, 0x7a8cff, // 5-8: Index (cobalt)
-  0xff7a3d, 0xff7a3d, 0xff7a3d, 0xff7a3d, // 9-12: Middle (tangerine)
-  0xff5c8a, 0xff5c8a, 0xff5c8a, 0xff5c8a, // 13-16: Ring (rose)
-  0xc9b8ff, 0xc9b8ff, 0xc9b8ff, 0xc9b8ff, // 17-20: Pinky (lilac)
+  0xffd86b, // 0: Wrist
+  0xffd86b, 0xffd86b, 0xffd86b, 0xffd86b, // 1-4: Thumb (butter)
+  0xb9a6ff, 0xb9a6ff, 0xb9a6ff, 0xb9a6ff, // 5-8: Index (lavender)
+  0xff9e85, 0xff9e85, 0xff9e85, 0xff9e85, // 9-12: Middle (peach)
+  0xff7fa8, 0xff7fa8, 0xff7fa8, 0xff7fa8, // 13-16: Ring (pink)
+  0x8fd3ff, 0x8fd3ff, 0x8fd3ff, 0x8fd3ff, // 17-20: Pinky (sky)
 ];
 
 /**
- * "Halftone" skin: the hand's lit colour is reprinted as two dot screens on paper-white, tangerine
- * for the half-tones and ink for the deep shadows, sized in screen pixels so dots stay round.
+ * "Halftone" skin: the hand's lit colour is reprinted as two dot screens on paper-white, a spot ink
+ * for the half-tones and plum for the deep shadows (all three come from the page's --stage-print-*
+ * tokens), sized in screen pixels so dots stay round.
  * Spliced into the physical material after its final colour (gl_FragColor is sRGB there).
  */
 const HALFTONE_GLSL_HEAD = `
@@ -80,7 +81,7 @@ const SKIN_THEMES = [
     label: "Halftone",
     color: 0xf0e2d3,
     nailColor: 0xfbf3ea,
-    creaseColor: 0x17182a,
+    creaseColor: 0x2b2140,
     sheen: 0xffffff,
     emissive: 0x000000,
     roughness: 0.55,
@@ -792,22 +793,22 @@ export default function InteractiveSign3D({
 
         // Stage markings beneath the forearm, printed in the page's inks (re-read on a theme change)
         const ringGeo = own(new THREE.RingGeometry(1.52, 1.60, 72));
-        const ringMat = own(new THREE.MeshBasicMaterial({ color: 0x2e49d6, side: THREE.DoubleSide, transparent: true, opacity: 0.44 }));
+        const ringMat = own(new THREE.MeshBasicMaterial({ color: 0xa48bff, side: THREE.DoubleSide, transparent: true, opacity: 0.44 }));
         const ringMesh = new THREE.Mesh(ringGeo, ringMat);
         ringMesh.rotation.x = Math.PI / 2.25;
         ringMesh.position.y = -1.28;
         rootGroup.add(ringMesh);
 
         const outerRingGeo = own(new THREE.RingGeometry(1.88, 1.92, 72));
-        const outerRingMat = own(new THREE.MeshBasicMaterial({ color: 0x17182a, side: THREE.DoubleSide, transparent: true, opacity: 0.3 }));
+        const outerRingMat = own(new THREE.MeshBasicMaterial({ color: 0x2b2140, side: THREE.DoubleSide, transparent: true, opacity: 0.3 }));
         const outerRingMesh = new THREE.Mesh(outerRingGeo, outerRingMat);
         outerRingMesh.rotation.x = Math.PI / 2.25;
         outerRingMesh.position.y = -1.30;
         rootGroup.add(outerRingMesh);
         const stageColors = {
-          ring: new THREE.Color(0x2e49d6),
-          hold: new THREE.Color(0xffc23d),
-          ok: new THREE.Color(0xff6a2c),
+          ring: new THREE.Color(0xa48bff),
+          hold: new THREE.Color(0xffd86b),
+          ok: new THREE.Color(0xff9e85),
         };
 
         // Materials: Skin, Fingernails, Knuckle Creases, and Studio Sleeve Cuff
@@ -843,20 +844,20 @@ export default function InteractiveSign3D({
 
         const cuffMat = own(
           new THREE.MeshStandardMaterial({
-            color: 0x2e49d6,
+            color: 0xa48bff,
             roughness: 0.78,
             metalness: 0.0,
           })
         );
-        const cuffTrimMat = own(new THREE.MeshBasicMaterial({ color: 0xff6a2c }));
+        const cuffTrimMat = own(new THREE.MeshBasicMaterial({ color: 0xff9e85 }));
 
         const srgb = (hex) => new THREE.Vector3(((hex >> 16) & 255) / 255, ((hex >> 8) & 255) / 255, (hex & 255) / 255);
         const halftoneUniforms = {
           uHalftone: { value: 0 },
           uHtCell: { value: 5.5 * renderer.getPixelRatio() },
-          uHtPaper: { value: srgb(0xfbf6ee) },
-          uHtSpot: { value: srgb(0xff6a2c) },
-          uHtInk: { value: srgb(0x17182a) },
+          uHtPaper: { value: srgb(0xfdf9f3) },
+          uHtSpot: { value: srgb(0xff9e85) },
+          uHtInk: { value: srgb(0x2b2140) },
         };
         const printAsHalftone = (material) => {
           material.onBeforeCompile = (shader) => {
@@ -869,13 +870,22 @@ export default function InteractiveSign3D({
         printAsHalftone(skinMat);
         printAsHalftone(nailMat);
 
+        // The skin shader runs after the output colour conversion, so its inks go in as sRGB components.
+        const printInk = new THREE.Color();
+        const readPrintInk = (uniform, token, fallback) => {
+          const { r, g, b } = printInk.setStyle(resolveColor(host, token, fallback)).getRGB({ r: 0, g: 0, b: 0 }, THREE.SRGBColorSpace);
+          uniform.value.set(r, g, b);
+        };
         const readStageColors = () => {
-          stageColors.ring.setStyle(resolveColor(host, "--stage-ring", "rgb(46, 73, 214)"));
-          stageColors.hold.setStyle(resolveColor(host, "--stage-ring-hold", "rgb(255, 194, 61)"));
-          stageColors.ok.setStyle(resolveColor(host, "--stage-ring-ok", "rgb(255, 106, 44)"));
-          outerRingMat.color.setStyle(resolveColor(host, "--stage-outer", "rgb(23, 24, 42)"));
-          cuffMat.color.setStyle(resolveColor(host, "--stage-cuff", "rgb(46, 73, 214)"));
-          cuffTrimMat.color.setStyle(resolveColor(host, "--stage-trim", "rgb(255, 106, 44)"));
+          stageColors.ring.setStyle(resolveColor(host, "--stage-ring", "rgb(164, 139, 255)"));
+          stageColors.hold.setStyle(resolveColor(host, "--stage-ring-hold", "rgb(255, 216, 107)"));
+          stageColors.ok.setStyle(resolveColor(host, "--stage-ring-ok", "rgb(255, 158, 133)"));
+          outerRingMat.color.setStyle(resolveColor(host, "--stage-outer", "rgb(43, 33, 64)"));
+          cuffMat.color.setStyle(resolveColor(host, "--stage-cuff", "rgb(164, 139, 255)"));
+          cuffTrimMat.color.setStyle(resolveColor(host, "--stage-trim", "rgb(255, 158, 133)"));
+          readPrintInk(halftoneUniforms.uHtPaper, "--stage-print-paper", "rgb(253, 249, 243)");
+          readPrintInk(halftoneUniforms.uHtSpot, "--stage-print-spot", "rgb(255, 158, 133)");
+          readPrintInk(halftoneUniforms.uHtInk, "--stage-print-ink", "rgb(43, 33, 64)");
         };
         readStageColors();
         unsubscribeTheme = subscribeTheme(readStageColors);
@@ -1336,7 +1346,7 @@ export default function InteractiveSign3D({
           rootGroup.rotation.x += (st.pitch - rootGroup.rotation.x) * Math.min(1, dt * 10);
           rootGroup.position.y = Math.sin(t * 1.6) * 0.025;
 
-          // Stage ring: cobalt at rest, sun while a sign is held, tangerine when recognised
+          // Stage ring: spot 1 at rest, spot 3 while a sign is held, spot 2 when recognised
           const pulse = st.recognized ? 0.74 + Math.sin(t * 7) * 0.20 : st.holding ? 0.62 : 0.44;
           ringMat.opacity = pulse;
           ringMat.color.copy(st.recognized ? stageColors.ok : st.holding ? stageColors.hold : stageColors.ring);

@@ -1,8 +1,13 @@
 /* =====================================================================
    SIGNBRIDGE · RISO PRINT
-   A two-ink risograph look: Paper (light) and Ink (dark) stock, cobalt and
-   tangerine spot inks, real halftone dots. Loads last; the older layers keep
-   their layout and pick up these tokens through their variable names.
+   A two-ink risograph look: Paper (light) and Ink (dark) stock, real halftone
+   dots. Loads last; the older layers keep their layout and pick up these
+   tokens through their variable names.
+
+   Palette "lilac riso": plum ink on warm cream, lavender (spot 1: actions,
+   positive states) and peach (spot 2: halftones, highlights), butter yellow
+   (spot 3: holding a sign, stickers). Tokens are named by role, so a new
+   palette is a change of values in this block only.
    ===================================================================== */
 
 @property --ht-r { syntax: "<length>"; inherits: false; initial-value: 1.3px; }
@@ -13,50 +18,59 @@
   font-size: 15px;
 
   /* stock */
-  --paper: light-dark(#f3ede1, #0f1017);
-  --paper-2: light-dark(#e9e1d1, #0a0b11);
-  --card: light-dark(#fbf8f2, #171925);
-  --card-2: light-dark(#f2ebdd, #1f2232);
-  /* inks */
-  --ink: light-dark(#17182a, #f3ede1);
-  --muted: light-dark(#5b5a6e, #aaa6b8);
-  --line: light-dark(rgba(23, 24, 42, 0.16), rgba(243, 237, 225, 0.14));
-  --line-strong: light-dark(rgba(23, 24, 42, 0.82), rgba(243, 237, 225, 0.66));
-  --cobalt: light-dark(#2e49d6, #8a98ff);
-  --cobalt-hover: light-dark(#2239b4, #a7b1ff);
-  --cobalt-soft: light-dark(#e3e7fb, rgba(138, 152, 255, 0.14));
-  --on-cobalt: light-dark(#fbf8f2, #0f1017);
-  --tangerine: light-dark(#ff6a2c, #ff7f45);
-  --tangerine-soft: light-dark(#ffe3d4, rgba(255, 127, 69, 0.14));
-  --tangerine-text: light-dark(#b2410f, #ff9b6b);
-  --sun: light-dark(#ffc23d, #ffcd57);
-  --sun-soft: light-dark(#fff0c9, rgba(255, 205, 87, 0.12));
-  --rose: light-dark(#e3437a, #ff7ca7);
+  --paper: light-dark(#f6f0e8, #15111c);
+  --paper-2: light-dark(#ece3d7, #0f0c15);
+  --card: light-dark(#fcf9f4, #1d1827);
+  --card-2: light-dark(#f2eae0, #262033);
+  /* text ink */
+  --ink: light-dark(#2b2140, #f4eef9);
+  --muted: light-dark(#6b6178, #b4aabd);
+  --line: light-dark(rgba(43, 33, 64, 0.16), rgba(244, 238, 249, 0.14));
+  --line-strong: light-dark(rgba(43, 33, 64, 0.8), rgba(244, 238, 249, 0.62));
+  /* spot 1 · lavender: actions, positive states (-text is the deep tone that reads as text) */
+  --spot-1: light-dark(#a48bff, #b9a6ff);
+  --spot-1-deep: light-dark(#8a6cf5, #cfc2ff);
+  --spot-1-soft: light-dark(#ece6ff, rgba(185, 166, 255, 0.16));
+  --spot-1-text: light-dark(#5a3fd1, #c9b9ff);
+  --on-spot-1: light-dark(#2b2140, #15111c);
+  /* spot 2 · peach: halftones, highlights */
+  --spot-2: light-dark(#ff9e85, #ffae97);
+  --spot-2-soft: light-dark(#ffe6dd, rgba(255, 174, 151, 0.14));
+  --spot-2-text: light-dark(#a8434b, #ffb8a3);
+  /* spot 3 · butter: holding a sign, stickers */
+  --spot-3: #ffd86b;
+  --spot-3-soft: light-dark(#fff2c4, rgba(255, 216, 107, 0.12));
+  /* fixed inks: sticker text, paper-white, and the two stocks for swatches */
+  --sticker-ink: #2b2140;
+  --paper-white: #fdf9f3;
+  --stock-paper: #f6f0e8;
+  --stock-ink: #15111c;
   /* camera and video plates stay dark in both themes, like photographs on the page */
-  --plate: #12131f;
-  --plate-2: #1b1d2c;
-  --plate-ink: #f3ede1;
-  --plate-muted: #b6b2c3;
-  --plate-line: rgba(243, 237, 225, 0.18);
+  --plate: #17121f;
+  --plate-2: #221a2d;
+  --plate-ink: #f6f0e8;
+  --plate-muted: #bdb3c6;
+  --plate-line: rgba(246, 240, 232, 0.18);
+  --plate-veil: rgba(23, 18, 31, 0.86);
 
   /* the names the older stylesheets use, now pointing at the print inks */
   --bg: var(--paper);
   --bg-soft: var(--paper-2);
   --surface: var(--card);
   --surface-2: var(--card-2);
-  --surface-alt: var(--cobalt-soft);
+  --surface-alt: var(--spot-1-soft);
   --border: var(--line);
   --border-strong: var(--line-strong);
   --text: var(--ink);
-  --accent: var(--cobalt);
-  --accent-bright: var(--cobalt);
-  --accent-ink: var(--on-cobalt);
-  --accent-2: var(--tangerine);
-  --accent-2-ink: #17182a;
-  --danger: light-dark(#bc1c3a, #ff7590);
-  --danger-bg: light-dark(#fbe1e4, rgba(255, 117, 144, 0.12));
-  --warning: light-dark(#835300, #ffd06e);
-  --warning-bg: light-dark(#fff0c6, rgba(255, 208, 110, 0.1));
+  --accent: var(--spot-1-text);
+  --accent-bright: var(--spot-1-text);
+  --accent-ink: light-dark(#fcf9f4, #15111c);
+  --accent-2: var(--spot-2);
+  --accent-2-ink: var(--sticker-ink);
+  --danger: light-dark(#b42345, #ff7a93);
+  --danger-bg: light-dark(#fbe2e7, rgba(255, 122, 147, 0.12));
+  --warning: light-dark(#7a5200, #ffd57a);
+  --warning-bg: light-dark(#fff0c6, rgba(255, 213, 122, 0.1));
   --radius: 14px;
   --radius-sm: 10px;
   --shadow: none;
@@ -73,12 +87,12 @@
 @supports not (color: light-dark(#000, #fff)) {
   :root {
     color-scheme: light;
-    --paper: #f3ede1; --paper-2: #e9e1d1; --card: #fbf8f2; --card-2: #f2ebdd;
-    --ink: #17182a; --muted: #5b5a6e; --line: rgba(23, 24, 42, 0.16); --line-strong: rgba(23, 24, 42, 0.82);
-    --cobalt: #2e49d6; --cobalt-hover: #2239b4; --cobalt-soft: #e3e7fb; --on-cobalt: #fbf8f2;
-    --tangerine: #ff6a2c; --tangerine-soft: #ffe3d4; --tangerine-text: #b2410f;
-    --sun: #ffc23d; --sun-soft: #fff0c9; --rose: #e3437a;
-    --danger: #bc1c3a; --danger-bg: #fbe1e4; --warning: #835300; --warning-bg: #fff0c6;
+    --paper: #f6f0e8; --paper-2: #ece3d7; --card: #fcf9f4; --card-2: #f2eae0;
+    --ink: #2b2140; --muted: #6b6178; --line: rgba(43, 33, 64, 0.16); --line-strong: rgba(43, 33, 64, 0.8);
+    --spot-1: #a48bff; --spot-1-deep: #8a6cf5; --spot-1-soft: #ece6ff; --spot-1-text: #5a3fd1; --on-spot-1: #2b2140;
+    --spot-2: #ff9e85; --spot-2-soft: #ffe6dd; --spot-2-text: #a8434b;
+    --spot-3-soft: #fff2c4; --accent-ink: #fcf9f4;
+    --danger: #b42345; --danger-bg: #fbe2e7; --warning: #7a5200; --warning-bg: #fff0c6;
   }
 }
 
@@ -108,7 +122,7 @@ body::before {
 @media (prefers-color-scheme: dark) { :root:not([data-theme="paper"]) body::before { filter: invert(1); opacity: 0.28; } }
 :root[data-theme="ink"] body::before { filter: invert(1); opacity: 0.28; }
 
-::selection { color: #17182a; background: var(--sun); }
+::selection { color: var(--sticker-ink); background: var(--spot-3); }
 
 h1, h2, h3, h4,
 .topbar-title {
@@ -119,8 +133,8 @@ h1, h2, h3, h4,
   color: var(--ink);
 }
 strong { font-family: inherit; }
-h1 em, h2 em { font-style: normal; color: var(--cobalt); }
-a { color: var(--cobalt); text-underline-offset: 3px; }
+h1 em, h2 em { font-style: normal; color: var(--spot-1-text); }
+a { color: var(--spot-1-text); text-underline-offset: 3px; }
 
 .eyebrow,
 .section-kicker,
@@ -130,7 +144,7 @@ a { color: var(--cobalt); text-underline-offset: 3px; }
   font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--tangerine-text);
+  color: var(--spot-2-text);
 }
 .dot-num {
   font-family: var(--dot-font);
@@ -166,7 +180,7 @@ kbd {
    --ht-under is whatever the ticket sits on; it erases the two corners an offset shadow lacks. */
 .ht-shadow {
   --ht-off: 7px;
-  --ht-dot: var(--tangerine);
+  --ht-dot: var(--spot-2);
   --ht-face: var(--card);
   --ht-under: var(--paper);
   border-style: solid !important;
@@ -184,11 +198,11 @@ kbd {
 .ht-shadow:hover,
 .ht-shadow:focus-visible { --ht-r: 2.05px; }
 
-/* Riso misregistration: the solid cobalt word, with a dotted tangerine pass printed a hair off. */
+/* Riso misregistration: the solid spot-1 word, with a dotted spot-2 pass printed a hair off. */
 .ht-misreg {
   position: relative;
   display: inline-block;
-  color: var(--cobalt);
+  color: var(--spot-1-text);
 }
 .ht-misreg::after {
   content: attr(data-text) / "";
@@ -196,7 +210,7 @@ kbd {
   inset: 0;
   transform: translate(-0.055em, -0.045em);
   color: transparent;
-  background-image: radial-gradient(circle at center, var(--tangerine) 0 var(--ht-r), transparent calc(var(--ht-r) + 0.6px));
+  background-image: radial-gradient(circle at center, var(--spot-2) 0 var(--ht-r), transparent calc(var(--ht-r) + 0.6px));
   background-size: 6px 6px;
   -webkit-background-clip: text;
   background-clip: text;
@@ -288,17 +302,17 @@ kbd {
 .btn:disabled { opacity: 0.5; }
 .btn-primary {
   --ht-r: 0px;
-  color: var(--on-cobalt);
-  background-color: var(--cobalt);
-  background-image: radial-gradient(circle at center, var(--cobalt-hover) 0 var(--ht-r), transparent calc(var(--ht-r) + 0.6px));
+  color: var(--on-spot-1);
+  background-color: var(--spot-1);
+  background-image: radial-gradient(circle at center, var(--spot-1-deep) 0 var(--ht-r), transparent calc(var(--ht-r) + 0.6px));
   background-size: 6px 6px;
   border-color: var(--ink);
   box-shadow: 3px 3px 0 0 var(--ink);
 }
 .btn-primary:hover:not(:disabled) {
   --ht-r: 1.7px;
-  color: var(--on-cobalt);
-  background-color: var(--cobalt);
+  color: var(--on-spot-1);
+  background-color: var(--spot-1);
   border-color: var(--ink);
   transform: translate(-1px, -1px);
   box-shadow: 4px 4px 0 0 var(--ink);
@@ -316,7 +330,7 @@ kbd {
 
 .btn:focus-visible, button:focus-visible, summary:focus-visible, a:focus-visible,
 select:focus-visible, input:focus-visible, textarea:focus-visible {
-  outline: 3px solid var(--cobalt);
+  outline: 3px solid var(--spot-1-text);
   outline-offset: 3px;
 }
 
@@ -337,33 +351,33 @@ textarea {
   transition: border-color 0.15s ease;
 }
 select:hover, input:hover, textarea:hover { border-color: var(--line-strong); }
-input[type="checkbox"], input[type="radio"], input[type="range"] { accent-color: var(--cobalt); }
+input[type="checkbox"], input[type="radio"], input[type="range"] { accent-color: var(--spot-1-text); }
 
-/* Switches read as a printed slider: ink outline, cobalt with dots when on. */
+/* Switches read as a printed slider: ink outline, spot 1 with dots when on. */
 .switch-track {
   background: var(--card-2);
   border: 1.5px solid var(--line-strong);
 }
 .switch-track::after { background: var(--ink); box-shadow: none; }
 .switch input:checked + .switch-track {
-  background-color: var(--cobalt);
-  background-image: radial-gradient(circle at center, var(--cobalt-hover) 0 1.4px, transparent 2px);
+  background-color: var(--spot-1);
+  background-image: radial-gradient(circle at center, var(--spot-1-deep) 0 1.4px, transparent 2px);
   background-size: 5px 5px;
   border-color: var(--ink);
 }
-.switch input:checked + .switch-track::after { background: var(--on-cobalt); }
-.switch input:focus-visible + .switch-track { outline: 3px solid var(--cobalt); outline-offset: 3px; }
+.switch input:checked + .switch-track::after { background: var(--on-spot-1); }
+.switch input:focus-visible + .switch-track { outline: 3px solid var(--spot-1-text); outline-offset: 3px; }
 
 .notice {
   color: var(--ink);
-  background: var(--sun-soft);
+  background: var(--spot-3-soft);
   border: 1.5px solid var(--line);
-  border-left: 5px solid var(--sun);
+  border-left: 5px solid var(--spot-3);
   border-radius: 10px;
 }
 .notice.error { background: var(--danger-bg); border-left-color: var(--danger); }
 .notice.warning { background: var(--warning-bg); border-left-color: var(--warning); }
-.offline-banner { background: var(--sun); color: #17182a; font-weight: 700; }
+.offline-banner { background: var(--spot-3); color: var(--sticker-ink); font-weight: 700; }
 
 /* Paper / Ink / Auto */
 .theme-switch {
@@ -395,9 +409,9 @@ input[type="checkbox"], input[type="radio"], input[type="range"] { accent-color:
   border-radius: 50%;
   border: 1.5px solid currentColor;
 }
-.theme-switch-auto .theme-switch-swatch { background: linear-gradient(90deg, #f3ede1 50%, #17182a 50%); }
-.theme-switch-paper .theme-switch-swatch { background: #f3ede1; }
-.theme-switch-ink .theme-switch-swatch { background: #17182a; }
+.theme-switch-auto .theme-switch-swatch { background: linear-gradient(90deg, var(--stock-paper) 50%, var(--stock-ink) 50%); }
+.theme-switch-paper .theme-switch-swatch { background: var(--stock-paper); }
+.theme-switch-ink .theme-switch-swatch { background: var(--stock-ink); }
 
 /* ---------------------------------------------------------------------
    Shell
@@ -429,13 +443,13 @@ input[type="checkbox"], input[type="radio"], input[type="range"] { accent-color:
   height: 40px;
   border: 1.5px solid var(--ink);
   border-radius: 9px;
-  color: var(--on-cobalt);
-  background-color: var(--cobalt);
-  background-image: radial-gradient(circle at center, var(--tangerine) 0 1.3px, transparent 1.9px);
+  color: var(--on-spot-1);
+  background-color: var(--spot-1);
+  background-image: radial-gradient(circle at center, var(--spot-2) 0 1.3px, transparent 1.9px);
   background-size: 5px 5px;
   box-shadow: 2px 2px 0 0 var(--ink);
 }
-.home-wordmark-dot { color: var(--tangerine); }
+.home-wordmark-dot { color: var(--spot-2-text); }
 .home-masthead-note { font-family: var(--mono); font-size: 0.74rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
 
 .home-hero { grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr); gap: 2.5rem; min-height: 460px; }
@@ -443,8 +457,8 @@ input[type="checkbox"], input[type="radio"], input[type="range"] { accent-color:
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  background: var(--tangerine);
-  box-shadow: 3px -2px 0 0 var(--cobalt);
+  background: var(--spot-2);
+  box-shadow: 3px -2px 0 0 var(--spot-1);
 }
 .home.connect-home h1 {
   font-size: clamp(3.2rem, 7.4vw, 6.4rem);
@@ -458,7 +472,7 @@ input[type="checkbox"], input[type="radio"], input[type="range"] { accent-color:
 .home-hero-rule {
   width: 3rem;
   height: 8px;
-  background: radial-gradient(circle at center, var(--tangerine) 0 2.2px, transparent 2.8px) 0 0 / 8px 8px;
+  background: radial-gradient(circle at center, var(--spot-2) 0 2.2px, transparent 2.8px) 0 0 / 8px 8px;
 }
 .home-hero-footnote p { font-family: var(--mono); font-size: 0.76rem; color: var(--muted); }
 
@@ -467,15 +481,15 @@ input[type="checkbox"], input[type="radio"], input[type="range"] { accent-color:
   background: var(--card);
   border: 1.5px solid var(--line-strong);
   border-radius: 4px;
-  box-shadow: 8px 8px 0 0 var(--cobalt);
+  box-shadow: 8px 8px 0 0 var(--spot-1);
   overflow: hidden;
   isolation: isolate;
 }
 .home-hero-art > .halftone-field { z-index: 0; opacity: 0.95; }
 .home-hero-art > .bridge-scene { z-index: 1; }
 .home-hero-art .bridge-scene__halo { display: none; }
-/* On the tangerine sun the sculpture prints in ink and cobalt with paper-white joints. */
-.home-hero-art .bridge-scene { --bridge-accent: #fbf8f2; --bridge-node: var(--cobalt); }
+/* On the halftone sun the sculpture prints in ink and spot 1 with paper-white joints. */
+.home-hero-art .bridge-scene { --bridge-accent: var(--paper-white); --bridge-node: var(--spot-1); }
 .home-art-label {
   z-index: 4;
   font-family: var(--mono);
@@ -496,30 +510,30 @@ input[type="checkbox"], input[type="radio"], input[type="range"] { accent-color:
   font-weight: 760;
   letter-spacing: -0.01em;
   text-transform: none;
-  color: #17182a;
-  background: var(--sun);
-  border: 1.5px solid #17182a;
+  color: var(--sticker-ink);
+  background: var(--spot-3);
+  border: 1.5px solid var(--sticker-ink);
 }
 
 .home-section-heading { align-items: flex-end; margin-bottom: 1.2rem; }
 .home-section-heading .eyebrow { display: flex; align-items: baseline; gap: 0.6rem; }
-.home-section-heading .eyebrow .dot-num { font-size: 1.5rem; color: var(--cobalt); letter-spacing: 0.02em; }
+.home-section-heading .eyebrow .dot-num { font-size: 1.5rem; color: var(--spot-1-text); letter-spacing: 0.02em; }
 .connect-home .home-conversation h2,
 .connect-home .home-quick-tools h2 { font-size: clamp(1.7rem, 3vw, 2.3rem); font-weight: 780; line-height: 1.05; }
 .home-section-aside { font-size: 0.86rem; color: var(--muted); }
 
 .connect-home .mode-cards { gap: 1.4rem; }
 .home .home-conversation-card { padding: 1.5rem 3rem 1.5rem 1.5rem; gap: 0.35rem 1.1rem; }
-.home .home-conversation-card:first-child { --ht-dot: var(--cobalt); }
+.home .home-conversation-card:first-child { --ht-dot: var(--spot-1); }
 .home-conversation-card .mode-icon {
   width: 48px;
   height: 48px;
   border: 1.5px solid var(--line-strong);
   border-radius: 50%;
-  background: var(--tangerine-soft);
+  background: var(--spot-2-soft);
   color: var(--ink);
 }
-.home .home-conversation-card:first-child .mode-icon { background: var(--cobalt-soft); }
+.home .home-conversation-card:first-child .mode-icon { background: var(--spot-1-soft); }
 .home-conversation-card .mode-title { font-family: var(--display-font); font-size: 1.2rem; font-weight: 760; }
 .home-conversation-card .mode-desc,
 .home-quick-tool .mode-desc { font-size: 0.88rem; color: var(--muted); }
@@ -536,11 +550,11 @@ input[type="checkbox"], input[type="radio"], input[type="range"] { accent-color:
   padding: 8px;
   border-radius: 50%;
   color: var(--ink);
-  background: var(--sun-soft);
+  background: var(--spot-3-soft);
   border: 1.5px solid var(--line-strong);
 }
 .connect-home .home-quick-title { font-family: var(--display-font); font-size: 1.12rem; font-weight: 760; }
-.connect-home .home-quick-title > span { color: var(--tangerine); }
+.connect-home .home-quick-title > span { color: var(--spot-2-text); }
 .connect-home .home-tool-note { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); }
 .connect-home .shortcut-tip { font-size: 0.82rem; }
 
@@ -553,7 +567,7 @@ input[type="checkbox"], input[type="radio"], input[type="range"] { accent-color:
   background: transparent;
   font-size: 0.88rem;
 }
-.home-principle-mark { font-family: var(--dot-font); font-size: 2.1rem; font-weight: 800; line-height: 1; color: var(--tangerine); }
+.home-principle-mark { font-family: var(--dot-font); font-size: 2.1rem; font-weight: 800; line-height: 1; color: var(--spot-2-text); }
 .home-principles strong { font-family: var(--display-font); font-size: 1.05rem; font-weight: 760; }
 .connect-home .home-tools summary { font-family: var(--display-font); font-weight: 760; }
 .home-footer { border-top: 1.5px solid var(--line-strong); font-family: var(--mono); font-size: 0.74rem; }
@@ -571,9 +585,9 @@ input[type="checkbox"], input[type="radio"], input[type="range"] { accent-color:
   backdrop-filter: none;
 }
 .rb-dock-item { background: var(--card-2); border: 1.5px solid var(--line); }
-.rb-dock-item:hover { border-color: var(--ink); background: var(--tangerine-soft); }
-.rb-dock-item.is-active { border-color: var(--ink); background: var(--cobalt-soft); }
-.rb-dock-badge { background: var(--tangerine); color: #17182a; }
+.rb-dock-item:hover { border-color: var(--ink); background: var(--spot-2-soft); }
+.rb-dock-item.is-active { border-color: var(--ink); background: var(--spot-1-soft); }
+.rb-dock-badge { background: var(--spot-2); color: var(--sticker-ink); }
 .rb-dock-tooltip {
   font-family: var(--mono);
   color: var(--paper);
@@ -583,7 +597,7 @@ input[type="checkbox"], input[type="radio"], input[type="range"] { accent-color:
 }
 
 /* React Bits cards: the cursor carries a small halftone spotlight instead of a glow. */
-.rb-spotlight-card { --spotlight-color: var(--tangerine); }
+.rb-spotlight-card { --spotlight-color: var(--spot-2); }
 .rb-spotlight-card::before {
   background-image: radial-gradient(circle at center, var(--spotlight-color) 0 1.2px, transparent 1.8px);
   background-size: 7px 7px;
@@ -591,7 +605,7 @@ input[type="checkbox"], input[type="radio"], input[type="range"] { accent-color:
   mask-image: radial-gradient(150px circle at var(--mouse-x) var(--mouse-y), #000 0%, transparent 72%);
 }
 .rb-spotlight-card:hover::before { opacity: 0.75; }
-.rb-decrypted { color: var(--cobalt); font-variant-numeric: normal; }
+.rb-decrypted { color: var(--spot-1-text); font-variant-numeric: normal; }
 .rb-output-prefix { color: var(--muted); font-family: var(--mono); font-size: 0.85em; }
 
 /* ---------------------------------------------------------------------
@@ -620,13 +634,13 @@ input[type="checkbox"], input[type="radio"], input[type="range"] { accent-color:
   font-family: var(--display-font);
   font-size: 0.86rem;
   font-weight: 760;
-  color: #17182a;
-  background: var(--sun);
-  border: 1.5px solid #17182a;
+  color: var(--sticker-ink);
+  background: var(--spot-3);
+  border: 1.5px solid var(--sticker-ink);
   border-radius: 3px;
   padding: 0.4rem 0.8rem;
   transform: rotate(-2deg);
-  box-shadow: 3px 3px 0 0 #17182a;
+  box-shadow: 3px 3px 0 0 var(--sticker-ink);
 }
 .workspace-partner-button { border-radius: 999px; background-color: var(--card); color: var(--ink); border-color: var(--line-strong); }
 
@@ -639,7 +653,7 @@ input[type="checkbox"], input[type="radio"], input[type="range"] { accent-color:
   background: var(--card);
 }
 .workspace-steps button:hover { border-color: var(--line-strong); background: var(--card); }
-.workspace-steps button[aria-current="step"] { border-color: var(--ink); background: var(--cobalt-soft); box-shadow: 3px 3px 0 0 var(--ink); }
+.workspace-steps button[aria-current="step"] { border-color: var(--ink); background: var(--spot-1-soft); box-shadow: 3px 3px 0 0 var(--ink); }
 .workspace-step-number,
 .workspace-step-heading > span {
   width: 1.85rem;
@@ -652,7 +666,7 @@ input[type="checkbox"], input[type="radio"], input[type="range"] { accent-color:
   background: var(--card-2);
   border: 1.5px solid var(--line-strong);
 }
-.workspace-steps button[aria-current="step"] .workspace-step-number { color: var(--on-cobalt); background: var(--cobalt); border-color: var(--ink); }
+.workspace-steps button[aria-current="step"] .workspace-step-number { color: var(--on-spot-1); background: var(--spot-1); border-color: var(--ink); }
 .workspace-steps strong { font-family: var(--display-font); font-size: 0.95rem; font-weight: 760; }
 .workspace-steps small { font-size: 0.76rem; }
 
@@ -679,7 +693,7 @@ input[type="checkbox"], input[type="radio"], input[type="range"] { accent-color:
   border: 1.5px solid var(--line);
 }
 .workspace-language-row label { font-family: var(--mono); letter-spacing: 0.1em; }
-.sign-workspace .live-clock { font-family: var(--mono); color: var(--tangerine-text); }
+.sign-workspace .live-clock { font-family: var(--mono); color: var(--spot-2-text); }
 
 /* Camera: a dark photographic plate in both themes. */
 .sign-workspace .live-camera,
@@ -695,7 +709,7 @@ input[type="checkbox"], input[type="radio"], input[type="range"] { accent-color:
 .live-camera-idle {
   color: var(--plate-ink);
   background:
-    radial-gradient(circle at center, rgba(243, 237, 225, 0.09) 0 1.1px, transparent 1.6px) 0 0 / 9px 9px,
+    radial-gradient(circle at center, rgba(246, 240, 232, 0.09) 0 1.1px, transparent 1.6px) 0 0 / 9px 9px,
     radial-gradient(circle at 50% 40%, var(--plate-2) 0%, var(--plate) 78%);
 }
 .live-camera-idle p,
@@ -703,20 +717,20 @@ input[type="checkbox"], input[type="radio"], input[type="range"] { accent-color:
 .workspace-camera-idle > .workspace-camera-off {
   font-family: var(--mono);
   color: var(--plate-ink);
-  background: rgba(18, 19, 31, 0.85);
+  background: var(--plate-veil);
   border: 1.5px solid var(--plate-line);
 }
-.workspace-camera-off > span { background: var(--tangerine); }
+.workspace-camera-off > span { background: var(--spot-2); }
 
 .workspace-live-output-card {
   background: var(--card-2);
   border: 1.5px solid var(--line);
   border-radius: 10px;
 }
-.workspace-live-output-card.is-holding { border-color: var(--ink); background: var(--sun-soft); }
-.workspace-live-output-card.is-recognized { border-color: var(--ink); background: var(--cobalt-soft); box-shadow: 3px 3px 0 0 var(--ink); }
-.workspace-live-output-badge { font-family: var(--mono); letter-spacing: 0.1em; color: var(--tangerine-text); }
-.workspace-live-dot { background: var(--tangerine); }
+.workspace-live-output-card.is-holding { border-color: var(--ink); background: var(--spot-3-soft); }
+.workspace-live-output-card.is-recognized { border-color: var(--ink); background: var(--spot-1-soft); box-shadow: 3px 3px 0 0 var(--ink); }
+.workspace-live-output-badge { font-family: var(--mono); letter-spacing: 0.1em; color: var(--spot-2-text); }
+.workspace-live-dot { background: var(--spot-2); }
 .workspace-live-output-word { font-family: var(--display-font); font-size: 1.25rem; font-weight: 780; }
 
 /* 3D stage */
@@ -724,12 +738,16 @@ input[type="checkbox"], input[type="radio"], input[type="range"] { accent-color:
   background: var(--card-2);
   border: 1.5px solid var(--line-strong);
   border-radius: 6px;
-  --stage-ring: var(--cobalt);
-  --stage-ring-hold: var(--sun);
-  --stage-ring-ok: var(--tangerine);
+  --stage-ring: var(--spot-1);
+  --stage-ring-hold: var(--spot-3);
+  --stage-ring-ok: var(--spot-2);
   --stage-outer: var(--ink);
-  --stage-cuff: var(--cobalt);
-  --stage-trim: var(--tangerine);
+  --stage-cuff: var(--spot-1);
+  --stage-trim: var(--spot-2);
+  /* the "Halftone" hand skin is printed: paper-white stock, spot 2 half-tones, plum shadows */
+  --stage-print-paper: var(--paper-white);
+  --stage-print-spot: var(--spot-2);
+  --stage-print-ink: var(--sticker-ink);
 }
 .sign3d-header { background: var(--card); border-bottom: 1.5px solid var(--line); }
 .sign3d-title-block strong { font-family: var(--display-font); font-size: 1.1rem; font-weight: 780; }
@@ -764,14 +782,14 @@ input[type="checkbox"], input[type="radio"], input[type="range"] { accent-color:
   border: 1.5px solid var(--line-strong);
 }
 .sign3d-zoom-dock button { font-family: var(--font); border-radius: 50%; }
-.sign3d-zoom-dock button:hover { background: var(--sun-soft); border-color: var(--ink); }
-.sign3d-hud-dot { background: var(--cobalt); }
-.sign3d-hud-dot.is-live { background: var(--tangerine); }
-.sign3d-sequence-bar { background: var(--sun-soft); border-top: 1.5px solid var(--line-strong); }
-.sign3d-sequence-badge { font-family: var(--mono); color: #17182a; background: var(--sun); border: 1.5px solid #17182a; border-radius: 3px; }
+.sign3d-zoom-dock button:hover { background: var(--spot-3-soft); border-color: var(--ink); }
+.sign3d-hud-dot { background: var(--spot-1); }
+.sign3d-hud-dot.is-live { background: var(--spot-2); }
+.sign3d-sequence-bar { background: var(--spot-3-soft); border-top: 1.5px solid var(--line-strong); }
+.sign3d-sequence-badge { font-family: var(--mono); color: var(--sticker-ink); background: var(--spot-3); border: 1.5px solid var(--sticker-ink); border-radius: 3px; }
 .sign3d-seq-token { background: var(--card); border: 1.5px solid var(--line); color: var(--ink); }
 .sign3d-seq-token.is-sign.is-current { color: var(--paper); background: var(--ink); border-color: var(--ink); }
-.sign3d-seq-token.is-uncovered { border-color: var(--tangerine); color: var(--muted); }
+.sign3d-seq-token.is-uncovered { border-color: var(--spot-2); color: var(--muted); }
 .sign3d-footer { background: var(--card); border-top: 1.5px solid var(--line); }
 .sign3d-hint { font-size: 0.76rem; }
 .sign3d-chip {
@@ -784,41 +802,41 @@ input[type="checkbox"], input[type="radio"], input[type="range"] { accent-color:
   border-radius: 999px;
   transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
 }
-.sign3d-chip:hover { border-color: var(--ink); background: var(--tangerine-soft); transform: translateY(-1px); }
-.sign3d-chip.is-selected { color: #17182a; background: var(--tangerine); border-color: #17182a; box-shadow: 2px 2px 0 0 var(--ink); }
+.sign3d-chip:hover { border-color: var(--ink); background: var(--spot-2-soft); transform: translateY(-1px); }
+.sign3d-chip.is-selected { color: var(--sticker-ink); background: var(--spot-2); border-color: var(--sticker-ink); box-shadow: 2px 2px 0 0 var(--ink); }
 
 /* Step 2 and the 20-sign board */
 .workspace-check-card,
 .workspace-daily-board { background: var(--card-2); border: 1.5px solid var(--line); }
 .workspace-auto-append-toggle,
 .workspace-auto-status { background: var(--card); border: 1.5px solid var(--line); }
-.workspace-auto-dot { background: var(--tangerine); }
-.workspace-auto-status.is-capturing { border-color: var(--ink); color: var(--ink); background: var(--sun-soft); }
+.workspace-auto-dot { background: var(--spot-2); }
+.workspace-auto-status.is-capturing { border-color: var(--ink); color: var(--ink); background: var(--spot-3-soft); }
 .workspace-result-empty { background: transparent; border: 1.5px dashed var(--line-strong); }
 .workspace-main-output .live-interpretation {
   background: var(--card);
   border: 1.5px solid var(--ink);
-  border-left: 6px solid var(--cobalt);
+  border-left: 6px solid var(--spot-1);
   box-shadow: 3px 3px 0 0 var(--ink);
 }
-.workspace-main-output .live-interpretation > strong { font-size: 1.7rem; font-weight: 800; color: var(--cobalt); }
+.workspace-main-output .live-interpretation > strong { font-size: 1.7rem; font-weight: 800; color: var(--spot-1-text); }
 .workspace-daily-header strong { font-family: var(--display-font); font-size: 1rem; font-weight: 760; }
 .workspace-daily-grid { gap: 0.7rem; padding: 0.2rem 0.4rem 0.4rem 0.1rem; }
 .workspace-daily-card { --ht-off: 4px; --ht-under: var(--card-2); padding: 0.5rem 0.65rem; }
-.workspace-daily-card.is-holding { --ht-face: var(--sun-soft); --ht-dot: var(--sun); }
-.workspace-daily-card.is-recognized { --ht-face: var(--cobalt-soft); --ht-dot: var(--cobalt); }
+.workspace-daily-card.is-holding { --ht-face: var(--spot-3-soft); --ht-dot: var(--spot-3); }
+.workspace-daily-card.is-recognized { --ht-face: var(--spot-1-soft); --ht-dot: var(--spot-1); }
 .workspace-daily-copy strong { font-size: 0.8rem; }
 .workspace-daily-copy small { font-size: 0.68rem; }
 
 /* Step 3 */
 .workspace-composer textarea { background: var(--card); border: 1.5px solid var(--line-strong); font-size: 0.95rem; }
-.workspace-3d-play-btn { color: var(--ink); background-color: var(--sun-soft); border-color: var(--ink); }
+.workspace-3d-play-btn { color: var(--ink); background-color: var(--spot-3-soft); border-color: var(--ink); }
 .workspace-mic-btn.is-listening { color: var(--danger); border-color: var(--danger); background-color: var(--danger-bg); }
-.workspace-dictation-status { color: var(--cobalt); }
+.workspace-dictation-status { color: var(--spot-1-text); }
 .workspace-sentence-summary { background: var(--card-2); border: 1.5px solid var(--line); }
 .workspace-bottom-side { border-left: 1.5px dashed var(--line); }
 .workspace-purpose-choices label { background: var(--card-2); border: 1.5px solid var(--line); }
-.workspace-purpose-choices label.selected { background: var(--cobalt-soft); border-color: var(--ink); box-shadow: 3px 3px 0 0 var(--ink); }
+.workspace-purpose-choices label.selected { background: var(--spot-1-soft); border-color: var(--ink); box-shadow: 3px 3px 0 0 var(--ink); }
 .workspace-help,
 .workspace-disclosure { border-top: 1.5px dashed var(--line); }
 .workspace-advanced { background: var(--card); border: 1.5px solid var(--line); }
@@ -848,12 +866,12 @@ input[type="checkbox"], input[type="radio"], input[type="range"] { accent-color:
 .connect-human-note {
   font-family: var(--display-font);
   font-weight: 760;
-  color: #17182a;
-  background: var(--sun);
-  border: 1.5px solid #17182a;
+  color: var(--sticker-ink);
+  background: var(--spot-3);
+  border: 1.5px solid var(--sticker-ink);
   border-radius: 3px;
   transform: rotate(3deg);
-  box-shadow: 3px 3px 0 0 #17182a;
+  box-shadow: 3px 3px 0 0 var(--sticker-ink);
 }
 .room-quick-setup,
 .room-sign-availability,
@@ -867,17 +885,17 @@ input[type="checkbox"], input[type="radio"], input[type="range"] { accent-color:
 .room-quick-setup h3,
 .room-entry h3,
 .room-panel-heading h3 { font-weight: 780; }
-.room-sign-availability { border-left: 6px solid var(--cobalt); }
+.room-sign-availability { border-left: 6px solid var(--spot-1); }
 .room-setup-choice[aria-pressed="true"],
-.room-choice.selected { border-color: var(--ink); background: var(--cobalt-soft); box-shadow: 3px 3px 0 0 var(--ink); }
+.room-choice.selected { border-color: var(--ink); background: var(--spot-1-soft); box-shadow: 3px 3px 0 0 var(--ink); }
 .room-choice { background: var(--card-2); border: 1.5px solid var(--line); }
-.room-connection.connected > span { background: var(--cobalt); box-shadow: 0 0 0 3px var(--cobalt-soft); }
+.room-connection.connected > span { background: var(--spot-1); box-shadow: 0 0 0 3px var(--spot-1-soft); }
 .room-video-stage { background: var(--plate); border: 1.5px solid var(--ink); }
 .room-video-placeholder p { color: var(--plate-muted); }
-.room-video-placeholder > span { color: var(--tangerine); }
+.room-video-placeholder > span { color: var(--spot-2); }
 .room-message { background: var(--card-2); border: 1.5px solid var(--line); }
-.room-message.mine { background: var(--cobalt-soft); border-color: var(--ink); }
-.room-speech-status { border-left-color: var(--cobalt); background: var(--card-2); }
+.room-message.mine { background: var(--spot-1-soft); border-color: var(--ink); }
+.room-speech-status { border-left-color: var(--spot-1); background: var(--card-2); }
 
 /* ---------------------------------------------------------------------
    Voice
@@ -903,13 +921,13 @@ input[type="checkbox"], input[type="radio"], input[type="range"] { accent-color:
 .mic:hover:not(:disabled) { transform: translate(-2px, -2px); box-shadow: 8px 8px 0 0 var(--ink); }
 .mic-label { font-family: var(--display-font); font-size: 1.35rem; font-weight: 780; }
 .mic-hint { font-family: var(--mono); font-size: 0.78rem; }
-.mic-listening { background: var(--cobalt-soft); }
-.mic-thinking { background: var(--sun-soft); }
-.mic-speaking { background: var(--tangerine-soft); }
+.mic-listening { background: var(--spot-1-soft); }
+.mic-thinking { background: var(--spot-3-soft); }
+.mic-speaking { background: var(--spot-2-soft); }
 .mic-listening::after,
 .mic-speaking::after { display: none; }
 .msg { border: 1.5px solid var(--line); background: var(--card); }
-.msg-user { background: var(--cobalt-soft); border-color: var(--ink); }
+.msg-user { background: var(--spot-1-soft); border-color: var(--ink); }
 
 /* ---------------------------------------------------------------------
    Remaining screens (training studio, sign videos, practice)
@@ -925,11 +943,11 @@ input[type="checkbox"], input[type="radio"], input[type="range"] { accent-color:
 .live-chip {
   font-family: var(--mono);
   color: var(--plate-ink);
-  background: rgba(18, 19, 31, 0.86);
+  background: var(--plate-veil);
   border: 1.5px solid var(--plate-line);
 }
-.live-chip.has-sign { border-color: var(--tangerine); }
-.camera-status { color: var(--plate-ink); background: rgba(18, 19, 31, 0.86); }
+.live-chip.has-sign { border-color: var(--spot-2); }
+.camera-status { color: var(--plate-ink); background: var(--plate-veil); }
 .word, .reply { border: 1.5px solid var(--line); background: var(--card-2); }
 
 /* ---------------------------------------------------------------------
@@ -954,7 +972,7 @@ input[type="checkbox"], input[type="radio"], input[type="range"] { accent-color:
   .home-masthead { flex-wrap: wrap; }
   .home-masthead-note { display: none; }
   .home.connect-home h1 { font-size: clamp(2.8rem, 15vw, 4rem); }
-  .home-hero-art { box-shadow: 5px 5px 0 0 var(--cobalt); }
+  .home-hero-art { box-shadow: 5px 5px 0 0 var(--spot-1); }
   /* On a phone the words fill the width, so the print band moves to a strip along the bottom. */
   .workspace-intro { padding: 0.9rem 0.9rem 4rem; }
   .workspace-intro > .halftone-field {
@@ -976,7 +994,7 @@ input[type="checkbox"], input[type="radio"], input[type="range"] { accent-color:
 .live-camera-idle .bridge-scene {
   color: var(--plate-ink);
   --bridge-bone: var(--plate-ink);
-  --bridge-node: #8a98ff;
-  --bridge-accent: #ff7f45;
+  --bridge-node: #b9a6ff;
+  --bridge-accent: #ffae97;
   --bridge-orbit: var(--plate-ink);
 }

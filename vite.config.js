@@ -40,8 +40,8 @@ const pwa = (mode) => VitePWA({
     scope: "/",
     display: "standalone",
     orientation: "any",
-    background_color: "#f3ede1",
-    theme_color: "#f3ede1",
+    background_color: "#f6f0e8",
+    theme_color: "#f6f0e8",
     categories: ["accessibility", "productivity", "education"],
     icons: [
       { src: "/icons/icon-192.png", sizes: "192x192", type: "image/png", purpose: "any" },

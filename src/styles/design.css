@@ -174,7 +174,7 @@ textarea {
   height: 36px;
   border: 1px solid var(--border-strong);
   border-radius: 10px;
-  background: var(--cobalt-soft);
+  background: var(--spot-1-soft);
   color: var(--accent-bright);
 }
 .home-wordmark-dot { color: var(--accent-bright); }
@@ -254,7 +254,7 @@ textarea {
   box-shadow: none;
 }
 .home .home-conversation-card:first-child {
-  background: var(--cobalt-soft);
+  background: var(--spot-1-soft);
   border-color: var(--border-strong);
 }
 .home-conversation-card .mode-icon {

@@ -6,11 +6,11 @@
   overflow: hidden;
   isolation: isolate;
   pointer-events: none;
-  color: var(--ink, #17182a);
-  --bridge-bone: var(--ink, #17182a);
-  --bridge-node: var(--cobalt, #2e49d6);
-  --bridge-accent: var(--tangerine, #ff6a2c);
-  --bridge-orbit: var(--ink, #17182a);
+  color: var(--ink, #2b2140);
+  --bridge-bone: var(--ink, #2b2140);
+  --bridge-node: var(--spot-1, #a48bff);
+  --bridge-accent: var(--spot-2, #ff9e85);
+  --bridge-orbit: var(--ink, #2b2140);
   contain: layout paint;
 }
 
@@ -41,7 +41,7 @@
   top: 50%;
   transform: translateY(-50%);
   border-radius: 50%;
-  background: radial-gradient(circle at center, var(--bridge-accent, #ff6a2c) 0 1.2px, transparent 1.8px) 0 0 / 8px 8px;
+  background: radial-gradient(circle at center, var(--bridge-accent, #ff9e85) 0 1.2px, transparent 1.8px) 0 0 / 8px 8px;
   -webkit-mask-image: radial-gradient(closest-side, #000 0%, transparent 100%);
   mask-image: radial-gradient(closest-side, #000 0%, transparent 100%);
   opacity: 0.45;

@@ -593,7 +593,7 @@ input[type="checkbox"] {
   gap: 0.75rem;
   padding: 1.5rem;
   text-align: center;
-  background: rgba(18, 19, 31, 0.86);
+  background: var(--plate-veil);
   color: var(--plate-ink);
 }
 .camera-status.error p {
@@ -608,7 +608,7 @@ input[type="checkbox"] {
   gap: 0.6rem;
   padding: 0.45rem 0.9rem;
   border-radius: 999px;
-  background: rgba(18, 19, 31, 0.86);
+  background: var(--plate-veil);
   color: var(--plate-ink);
   font-size: 0.9rem;
   border: 1px solid rgba(255, 255, 255, 0.15);
@@ -621,14 +621,14 @@ input[type="checkbox"] {
   color: var(--plate-muted);
 }
 .live-chip.has-sign {
-  border-color: var(--tangerine);
+  border-color: var(--spot-2);
 }
 .ring {
   --p: 0;
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  background: conic-gradient(var(--tangerine) calc(var(--p) * 360deg), rgba(243, 237, 225, 0.22) 0);
+  background: conic-gradient(var(--spot-2) calc(var(--p) * 360deg), rgba(246, 240, 232, 0.22) 0);
   mask: radial-gradient(circle, transparent 45%, #000 46%);
 }
 .auto-send {
@@ -637,7 +637,7 @@ input[type="checkbox"] {
   right: 0;
   top: 0;
   padding: 0.5rem 0.75rem 0.6rem;
-  background: rgba(18, 19, 31, 0.86);
+  background: var(--plate-veil);
   color: var(--plate-ink);
   font-size: 0.85rem;
   display: grid;
@@ -648,7 +648,7 @@ input[type="checkbox"] {
   --p: 0;
   height: 6px;
   border-radius: 999px;
-  background: linear-gradient(90deg, var(--tangerine) calc(var(--p) * 100%), rgba(243, 237, 225, 0.22) 0);
+  background: linear-gradient(90deg, var(--spot-2) calc(var(--p) * 100%), rgba(246, 240, 232, 0.22) 0);
 }
 .progress {
   margin-top: 0.4rem;

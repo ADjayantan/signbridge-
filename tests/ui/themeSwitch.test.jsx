@@ -66,7 +66,7 @@ test("canvases hear about theme changes and get a usable colour even where CSS c
       // jsdom does not compute light-dark() tokens; the fallback keeps canvases drawing.
       const el = document.createElement("canvas");
       document.body.append(el);
-      const resolved = resolveColor(el, "--tangerine", "rgb(255, 106, 44)");
+      const resolved = resolveColor(el, "--spot-2", "rgb(255, 158, 133)");
       expect(resolved).toMatch(/^rgba?\(/);
       expect(el.style.color).toBe("");
       el.remove();

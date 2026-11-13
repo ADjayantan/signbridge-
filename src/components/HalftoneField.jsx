@@ -3,7 +3,7 @@ import { PATTERNS, SCREEN_ANGLES, buildScreen, coverageAt, dotRadius } from "../
 import { resolveColor, resolvedTheme, subscribeTheme } from "../lib/theme.js";
 
 const TAU = Math.PI * 2;
-const FALLBACK_INKS = { "--tangerine": "#ff6a2c", "--cobalt": "#2f4bd8", "--sun": "#ffc23d", "--ink": "#17182a" };
+const FALLBACK_INKS = { "--spot-1": "#a48bff", "--spot-2": "#ff9e85", "--spot-3": "#ffd86b", "--ink": "#2b2140" };
 const easeOut = (t) => 1 - (1 - t) ** 3;
 
 /**
@@ -16,7 +16,7 @@ const easeOut = (t) => 1 - (1 - t) ** 3;
  */
 export default function HalftoneField({
   pattern = "sun",
-  inks = ["--tangerine", "--cobalt"],
+  inks = ["--spot-2", "--spot-1"],
   cell = 10,
   fps = 30,
   energy = 1,
@@ -59,7 +59,7 @@ export default function HalftoneField({
 
     const readInks = () => {
       dark = resolvedTheme() === "ink";
-      colors = settings.current.inks.map((token) => resolveColor(canvas, token, FALLBACK_INKS[token] || "#ff6a2c"));
+      colors = settings.current.inks.map((token) => resolveColor(canvas, token, FALLBACK_INKS[token] || "#ff9e85"));
     };
     const ensureScreens = () => {
       const key = `${width}x${height}@${settings.current.cell}`;

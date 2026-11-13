@@ -13,7 +13,7 @@ const listeners = new Set();
 let current = null;
 
 /** Browser chrome colour per theme (address bar, task switcher). Matches --paper. */
-const BROWSER_CHROME = { paper: "#f3ede1", ink: "#0f1017" };
+const BROWSER_CHROME = { paper: "#f6f0e8", ink: "#15111c" };
 
 export function getThemeChoice() {
   if (current) return current;

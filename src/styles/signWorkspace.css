@@ -38,7 +38,7 @@
   font-size: 0.72rem;
   font-weight: 500;
   color: var(--accent-bright);
-  background: var(--cobalt-soft);
+  background: var(--spot-1-soft);
   border: 1px solid var(--border-strong);
   padding: 0.38rem 0.75rem;
   border-radius: 999px;
@@ -46,7 +46,7 @@
 }
 .workspace-partner-button {
   border-radius: 999px;
-  background: var(--cobalt-soft);
+  background: var(--spot-1-soft);
   border-color: var(--border-strong);
   color: var(--accent-bright);
 }
@@ -286,7 +286,7 @@
   font-size: 0.7rem;
   font-weight: 500;
   color: var(--muted);
-  background: rgba(18, 19, 31, 0.85);
+  background: var(--plate-veil);
   padding: 0.24rem 0.6rem;
   border-radius: 999px;
   border: 1px solid var(--border);
@@ -328,12 +328,12 @@
   background: var(--bg-soft);
 }
 .workspace-live-output-card.is-holding {
-  border-color: var(--sun);
-  background: var(--sun-soft);
+  border-color: var(--spot-3);
+  background: var(--spot-3-soft);
 }
 .workspace-live-output-card.is-recognized {
   border-color: var(--border-strong);
-  background: var(--cobalt-soft);
+  background: var(--spot-1-soft);
 }
 .workspace-live-output-main { min-width: 0; flex: 1; }
 .workspace-live-output-badge {
@@ -579,7 +579,7 @@
 }
 .sign3d-sequence-bar {
   padding: 0.6rem 0.85rem;
-  background: var(--cobalt-soft);
+  background: var(--spot-1-soft);
   border-top: 1px solid var(--border-strong);
   display: flex;
   flex-direction: column;
@@ -675,7 +675,7 @@
 }
 .sign3d-seq-token.is-uncovered {
   border-style: dashed;
-  border-color: var(--sun);
+  border-color: var(--spot-3);
   color: var(--muted);
   font-size: 0.65rem;
 }
@@ -708,7 +708,7 @@
 }
 .sign3d-chip:hover {
   border-color: var(--border-strong);
-  background: var(--cobalt-soft);
+  background: var(--spot-1-soft);
 }
 .sign3d-chip.is-selected {
   background: var(--accent-bright);
@@ -905,11 +905,11 @@
 }
 .workspace-daily-card.is-holding {
   border-color: var(--accent-2);
-  background: var(--sun-soft);
+  background: var(--spot-3-soft);
 }
 .workspace-daily-card.is-recognized {
   border-color: var(--accent-bright);
-  background: var(--cobalt-soft);
+  background: var(--spot-1-soft);
 }
 .workspace-daily-icon {
   font-size: 1.1rem;
@@ -992,7 +992,7 @@
 }
 .workspace-3d-play-btn {
   border-color: var(--border-strong);
-  background: var(--cobalt-soft);
+  background: var(--spot-1-soft);
   color: var(--accent-bright);
 }
 .workspace-mic-btn.is-listening {
@@ -1129,7 +1129,7 @@
   overflow: hidden;
   --mouse-x: 50%;
   --mouse-y: 50%;
-  --spotlight-color: var(--tangerine);
+  --spotlight-color: var(--spot-2);
 }
 .rb-spotlight-card::before {
   content: "";
@@ -1186,7 +1186,7 @@
 }
 .rb-dock-item.is-active {
   border-color: var(--accent-bright);
-  background: var(--cobalt-soft);
+  background: var(--spot-1-soft);
 }
 .rb-dock-icon { font-size: 0.98rem; line-height: 1; }
 .rb-dock-badge {

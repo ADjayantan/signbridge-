@@ -847,7 +847,7 @@ export default function TrainedSignMode({ settings, update, onBack, onLive, onLi
         {import.meta.env?.MODE !== "test" && (
           <SpotlightCard
             className={"workspace-live-output-card" + (result?.status === "recognized" ? " is-recognized" : liveShortcutHint ? " is-holding" : "")}
-            spotlightColor={result?.status === "recognized" ? "var(--cobalt)" : liveShortcutHint ? "var(--sun)" : ""}
+            spotlightColor={result?.status === "recognized" ? "var(--spot-1)" : liveShortcutHint ? "var(--spot-3)" : ""}
           >
             <div className="workspace-live-output-main">
               <span className="workspace-live-output-badge"><span className="workspace-live-dot" aria-hidden="true" />{result?.status === "recognized" ? `Text & Voice · ${speakResults ? "Auto-Voice ON" : "Text Mode"}` : liveShortcutHint ? "Reading Hand Sign · Hold Steady" : "Live Sign → Text & Voice"}</span>
