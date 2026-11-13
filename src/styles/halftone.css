@@ -4,10 +4,11 @@
    dots. Loads last; the older layers keep their layout and pick up these
    tokens through their variable names.
 
-   Palette "lilac riso": plum ink on warm cream, lavender (spot 1: actions,
-   positive states) and peach (spot 2: halftones, highlights), butter yellow
-   (spot 3: holding a sign, stickers). Tokens are named by role, so a new
-   palette is a change of values in this block only.
+   Palette "mocha cafe": espresso ink on latte paper (an espresso stock in
+   Ink mode), coffee (spot 1: actions, positive states), caramel (spot 2:
+   halftones, highlights) and honey (spot 3: holding a sign, stickers), with
+   Fraunces serif headings. Tokens are named by role, so a new palette is a
+   change of values in this block only.
    ===================================================================== */
 
 @property --ht-r { syntax: "<length>"; inherits: false; initial-value: 1.3px; }
@@ -17,41 +18,45 @@
   color-scheme: light dark;
   font-size: 15px;
 
-  /* stock */
-  --paper: light-dark(#f6f0e8, #15111c);
-  --paper-2: light-dark(#ece3d7, #0f0c15);
-  --card: light-dark(#fcf9f4, #1d1827);
-  --card-2: light-dark(#f2eae0, #262033);
+  /* stock: latte paper by day, espresso by night */
+  --paper: light-dark(#f3ebe0, #1c1512);
+  --paper-2: light-dark(#e8dccb, #15100d);
+  --card: light-dark(#fbf7f1, #241b16);
+  --card-2: light-dark(#f2e9dd, #2e231c);
   /* text ink */
-  --ink: light-dark(#2b2140, #f4eef9);
-  --muted: light-dark(#6b6178, #b4aabd);
-  --line: light-dark(rgba(43, 33, 64, 0.16), rgba(244, 238, 249, 0.14));
-  --line-strong: light-dark(rgba(43, 33, 64, 0.8), rgba(244, 238, 249, 0.62));
-  /* spot 1 · lavender: actions, positive states (-text is the deep tone that reads as text) */
-  --spot-1: light-dark(#a48bff, #b9a6ff);
-  --spot-1-deep: light-dark(#8a6cf5, #cfc2ff);
-  --spot-1-soft: light-dark(#ece6ff, rgba(185, 166, 255, 0.16));
-  --spot-1-text: light-dark(#5a3fd1, #c9b9ff);
-  --on-spot-1: light-dark(#2b2140, #15111c);
-  /* spot 2 · peach: halftones, highlights */
-  --spot-2: light-dark(#ff9e85, #ffae97);
-  --spot-2-soft: light-dark(#ffe6dd, rgba(255, 174, 151, 0.14));
-  --spot-2-text: light-dark(#a8434b, #ffb8a3);
-  /* spot 3 · butter: holding a sign, stickers */
-  --spot-3: #ffd86b;
-  --spot-3-soft: light-dark(#fff2c4, rgba(255, 216, 107, 0.12));
-  /* fixed inks: sticker text, paper-white, and the two stocks for swatches */
-  --sticker-ink: #2b2140;
-  --paper-white: #fdf9f3;
-  --stock-paper: #f6f0e8;
-  --stock-ink: #15111c;
+  --ink: light-dark(#3b2a20, #f3e9dc);
+  --muted: light-dark(#6e5848, #bfae9c);
+  --line: light-dark(rgba(59, 42, 32, 0.16), rgba(243, 233, 220, 0.14));
+  --line-strong: light-dark(rgba(59, 42, 32, 0.78), rgba(243, 233, 220, 0.6));
+  /* spot 1 · coffee: actions, positive states (-text is the tone that reads as text) */
+  --spot-1: light-dark(#7b5034, #d2a679);
+  --spot-1-deep: light-dark(#5e3b25, #e6c39d);
+  --spot-1-soft: light-dark(#efe2d3, rgba(210, 166, 121, 0.16));
+  --spot-1-text: light-dark(#7b5034, #e0b88c);
+  --on-spot-1: light-dark(#fbf7f1, #1c1512);
+  /* spot 2 · caramel: halftones, highlights */
+  --spot-2: light-dark(#c89a6e, #c79f78);
+  --spot-2-soft: light-dark(#f3e3d1, rgba(199, 159, 120, 0.14));
+  --spot-2-text: light-dark(#9b4a2c, #e8a27f);
+  /* spot 3 · honey: holding a sign, stickers */
+  --spot-3: #e9c07a;
+  --spot-3-soft: light-dark(#f7e9cc, rgba(233, 192, 122, 0.12));
+  /* fixed inks: sticker text, paper-white, the two stocks for swatches */
+  --sticker-ink: #3b2a20;
+  --paper-white: #fffaf3;
+  --stock-paper: #f3ebe0;
+  --stock-ink: #1c1512;
+  /* the printed 3D hands: paper-white stock, spot 2 half-tones, espresso shadows */
+  --print-paper: var(--paper-white);
+  --print-spot: var(--spot-2);
+  --print-ink: var(--sticker-ink);
   /* camera and video plates stay dark in both themes, like photographs on the page */
-  --plate: #17121f;
-  --plate-2: #221a2d;
-  --plate-ink: #f6f0e8;
-  --plate-muted: #bdb3c6;
-  --plate-line: rgba(246, 240, 232, 0.18);
-  --plate-veil: rgba(23, 18, 31, 0.86);
+  --plate: #1a1310;
+  --plate-2: #261c16;
+  --plate-ink: #f3ebe0;
+  --plate-muted: #c4b3a2;
+  --plate-line: rgba(243, 235, 224, 0.18);
+  --plate-veil: rgba(26, 19, 16, 0.86);
 
   /* the names the older stylesheets use, now pointing at the print inks */
   --bg: var(--paper);
@@ -64,19 +69,19 @@
   --text: var(--ink);
   --accent: var(--spot-1-text);
   --accent-bright: var(--spot-1-text);
-  --accent-ink: light-dark(#fcf9f4, #15111c);
+  --accent-ink: light-dark(#fbf7f1, #1c1512);
   --accent-2: var(--spot-2);
   --accent-2-ink: var(--sticker-ink);
-  --danger: light-dark(#b42345, #ff7a93);
-  --danger-bg: light-dark(#fbe2e7, rgba(255, 122, 147, 0.12));
+  --danger: light-dark(#b3261e, #ff8a7a);
+  --danger-bg: light-dark(#f8dcd5, rgba(255, 138, 122, 0.12));
   --warning: light-dark(#7a5200, #ffd57a);
-  --warning-bg: light-dark(#fff0c6, rgba(255, 213, 122, 0.1));
+  --warning-bg: light-dark(#f9ebc8, rgba(255, 213, 122, 0.1));
   --radius: 14px;
   --radius-sm: 10px;
   --shadow: none;
 
   --font: "Atkinson Hyperlegible Next", "Atkinson Hyperlegible", "Noto Sans Tamil", "Noto Sans Devanagari", "Nirmala UI", system-ui, sans-serif;
-  --display-font: "Bricolage Grotesque", "Atkinson Hyperlegible Next", "Noto Sans Tamil", "Nirmala UI", sans-serif;
+  --display-font: "Fraunces", "Noto Sans Tamil", "Nirmala UI", Georgia, serif;
   --mono: "Atkinson Hyperlegible Mono", ui-monospace, "Cascadia Mono", monospace;
   --dot-font: "Doto", "Atkinson Hyperlegible Mono", ui-monospace, monospace;
 }
@@ -87,12 +92,12 @@
 @supports not (color: light-dark(#000, #fff)) {
   :root {
     color-scheme: light;
-    --paper: #f6f0e8; --paper-2: #ece3d7; --card: #fcf9f4; --card-2: #f2eae0;
-    --ink: #2b2140; --muted: #6b6178; --line: rgba(43, 33, 64, 0.16); --line-strong: rgba(43, 33, 64, 0.8);
-    --spot-1: #a48bff; --spot-1-deep: #8a6cf5; --spot-1-soft: #ece6ff; --spot-1-text: #5a3fd1; --on-spot-1: #2b2140;
-    --spot-2: #ff9e85; --spot-2-soft: #ffe6dd; --spot-2-text: #a8434b;
-    --spot-3-soft: #fff2c4; --accent-ink: #fcf9f4;
-    --danger: #b42345; --danger-bg: #fbe2e7; --warning: #7a5200; --warning-bg: #fff0c6;
+    --paper: #f3ebe0; --paper-2: #e8dccb; --card: #fbf7f1; --card-2: #f2e9dd;
+    --ink: #3b2a20; --muted: #6e5848; --line: rgba(59, 42, 32, 0.16); --line-strong: rgba(59, 42, 32, 0.78);
+    --spot-1: #7b5034; --spot-1-deep: #5e3b25; --spot-1-soft: #efe2d3; --spot-1-text: #7b5034; --on-spot-1: #fbf7f1;
+    --spot-2: #c89a6e; --spot-2-soft: #f3e3d1; --spot-2-text: #9b4a2c;
+    --spot-3-soft: #f7e9cc; --accent-ink: #fbf7f1;
+    --danger: #b3261e; --danger-bg: #f8dcd5; --warning: #7a5200; --warning-bg: #f9ebc8;
   }
 }
 
@@ -117,7 +122,7 @@ body::before {
   z-index: -1;
   pointer-events: none;
   opacity: 0.55;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .09 0 0 0 0 .09 0 0 0 0 .16 0 0 0 .5 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='.38'/></svg>");
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .23 0 0 0 0 .16 0 0 0 0 .12 0 0 0 .5 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='.38'/></svg>");
 }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="paper"]) body::before { filter: invert(1); opacity: 0.28; } }
 :root[data-theme="ink"] body::before { filter: invert(1); opacity: 0.28; }
@@ -127,13 +132,13 @@ body::before {
 h1, h2, h3, h4,
 .topbar-title {
   font-family: var(--display-font);
-  font-weight: 760;
-  font-stretch: 92%;
-  letter-spacing: -0.025em;
+  font-weight: 640;
+  font-variation-settings: "SOFT" 60;
+  letter-spacing: -0.012em;
   color: var(--ink);
 }
 strong { font-family: inherit; }
-h1 em, h2 em { font-style: normal; color: var(--spot-1-text); }
+h1 em, h2 em { font-style: italic; font-weight: 560; color: var(--spot-1-text); }
 a { color: var(--spot-1-text); text-underline-offset: 3px; }
 
 .eyebrow,
@@ -462,10 +467,9 @@ input[type="checkbox"], input[type="radio"], input[type="range"] { accent-color:
 }
 .home.connect-home h1 {
   font-size: clamp(3.2rem, 7.4vw, 6.4rem);
-  font-weight: 800;
-  font-stretch: 80%;
-  line-height: 0.9;
-  letter-spacing: -0.04em;
+  font-weight: 680;
+  line-height: 0.92;
+  letter-spacing: -0.03em;
   margin: 0.2rem 0 1.4rem;
 }
 .home .lede { font-size: 1.08rem; line-height: 1.6; max-width: 30rem; color: var(--ink); opacity: 0.86; }
@@ -488,8 +492,8 @@ input[type="checkbox"], input[type="radio"], input[type="range"] { accent-color:
 .home-hero-art > .halftone-field { z-index: 0; opacity: 0.95; }
 .home-hero-art > .bridge-scene { z-index: 1; }
 .home-hero-art .bridge-scene__halo { display: none; }
-/* On the halftone sun the sculpture prints in ink and spot 1 with paper-white joints. */
-.home-hero-art .bridge-scene { --bridge-accent: var(--paper-white); --bridge-node: var(--spot-1); }
+/* On the halftone sun the satellites are paper-white. */
+.home-hero-art .bridge-scene { --bridge-accent: var(--paper-white); }
 .home-art-label {
   z-index: 4;
   font-family: var(--mono);
@@ -628,7 +632,7 @@ input[type="checkbox"], input[type="radio"], input[type="range"] { accent-color:
   -webkit-mask-image: linear-gradient(90deg, transparent 0%, transparent 38%, #000 78%);
   mask-image: linear-gradient(90deg, transparent 0%, transparent 38%, #000 78%);
 }
-.workspace-intro h2 { font-size: clamp(1.9rem, 3.4vw, 2.8rem); font-weight: 800; font-stretch: 84%; line-height: 0.98; }
+.workspace-intro h2 { font-size: clamp(1.9rem, 3.4vw, 2.8rem); font-weight: 680; line-height: 1; }
 .workspace-intro p:not(.eyebrow) { font-size: 0.9rem; color: var(--ink); opacity: 0.8; }
 .sign-workspace .live-preview-badge {
   font-family: var(--display-font);
@@ -744,10 +748,6 @@ input[type="checkbox"], input[type="radio"], input[type="range"] { accent-color:
   --stage-outer: var(--ink);
   --stage-cuff: var(--spot-1);
   --stage-trim: var(--spot-2);
-  /* the "Halftone" hand skin is printed: paper-white stock, spot 2 half-tones, plum shadows */
-  --stage-print-paper: var(--paper-white);
-  --stage-print-spot: var(--spot-2);
-  --stage-print-ink: var(--sticker-ink);
 }
 .sign3d-header { background: var(--card); border-bottom: 1.5px solid var(--line); }
 .sign3d-title-block strong { font-family: var(--display-font); font-size: 1.1rem; font-weight: 780; }
@@ -862,7 +862,7 @@ input[type="checkbox"], input[type="radio"], input[type="range"] { accent-color:
   height: 5.6rem;
   border-top: 1.5px solid var(--line-strong);
 }
-.connect-intro h2 { font-size: clamp(2.6rem, 6vw, 4.8rem); font-weight: 800; font-stretch: 80%; line-height: 0.92; letter-spacing: -0.04em; }
+.connect-intro h2 { font-size: clamp(2.6rem, 6vw, 4.8rem); font-weight: 680; line-height: 0.95; letter-spacing: -0.03em; }
 .connect-human-note {
   font-family: var(--display-font);
   font-weight: 760;
@@ -993,8 +993,8 @@ input[type="checkbox"], input[type="radio"], input[type="range"] { accent-color:
 .workspace-camera-idle .bridge-scene,
 .live-camera-idle .bridge-scene {
   color: var(--plate-ink);
-  --bridge-bone: var(--plate-ink);
-  --bridge-node: #b9a6ff;
-  --bridge-accent: #ffae97;
+  --bridge-sleeve-a: #d2a679;
+  --bridge-sleeve-b: var(--spot-3);
+  --bridge-accent: #e8a27f;
   --bridge-orbit: var(--plate-ink);
 }

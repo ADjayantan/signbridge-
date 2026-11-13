@@ -6,6 +6,7 @@ import { VitePWA } from "vite-plugin-pwa";
 import { createChatMiddleware } from "./server/nodeChatMiddleware.js";
 import { localReferencePlugin } from "./server/localReferenceMiddleware.js";
 import { localWlaslPlugin } from "./server/localWlaslMiddleware.js";
+import { BROWSER_CHROME } from "./src/lib/printPalette.js";
 
 /**
  * Serves POST /api/chat during `npm run dev` and `npm run preview`, using the same
@@ -40,8 +41,8 @@ const pwa = (mode) => VitePWA({
     scope: "/",
     display: "standalone",
     orientation: "any",
-    background_color: "#f6f0e8",
-    theme_color: "#f6f0e8",
+    background_color: BROWSER_CHROME.paper,
+    theme_color: BROWSER_CHROME.paper,
     categories: ["accessibility", "productivity", "education"],
     icons: [
       { src: "/icons/icon-192.png", sizes: "192x192", type: "image/png", purpose: "any" },

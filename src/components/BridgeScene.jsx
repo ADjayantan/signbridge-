@@ -1,36 +1,31 @@
 import { useEffect, useRef, useState } from 'react';
 import './bridgeScene.css';
+import { PRINT_INKS } from '../lib/printPalette.js';
 import { resolveColor, subscribeTheme } from '../lib/theme.js';
 
-// An abstract sculpture, never a tracked hand, prediction or sign demonstration.
-const LANDMARKS = [
-  [0, -1.18, 0],
-  [-0.42, -0.73, 0.05], [-0.76, -0.33, 0.15], [-1.02, 0.01, 0.31], [-1.23, 0.32, 0.43],
-  [-0.38, -0.08, 0], [-0.44, 0.56, 0.02], [-0.48, 1.07, 0.19], [-0.47, 1.46, 0.35],
-  [0.03, 0, -0.04], [0.06, 0.76, 0.02], [0.08, 1.31, 0.15], [0.09, 1.72, 0.34],
-  [0.4, -0.06, 0], [0.54, 0.61, 0.09], [0.63, 1.11, 0.24], [0.66, 1.48, 0.4],
-  [0.69, -0.24, 0.09], [0.95, 0.25, 0.19], [1.09, 0.67, 0.38], [1.16, 0.96, 0.56],
-];
-const CONNECTIONS = [
-  [0, 1], [1, 2], [2, 3], [3, 4],
-  [0, 5], [5, 6], [6, 7], [7, 8],
-  [0, 9], [9, 10], [10, 11], [11, 12],
-  [0, 13], [13, 14], [14, 15], [15, 16],
-  [0, 17], [17, 18], [18, 19], [19, 20],
-  [5, 9], [9, 13], [13, 17],
-];
+/*
+ * "The space between us": two sculpted hands reaching for each other, printed in the page's inks.
+ * Decorative only, never a tracked hand, a prediction or a sign demonstration.
+ */
+
+// Finger curls from 0 (straight) to 1 (fist). One hand reaches with a straight index finger, the
+// other answers more loosely, like two people meeting halfway.
+const REACHING = { index: 0, middle: 0.55, ring: 0.65, pinky: 0.7 };
+const ANSWERING = { index: 0.14, middle: 0.45, ring: 0.55, pinky: 0.6 };
+const HAND_SCALE = 1.2;
+const SLEEVE_LENGTH = 6;
+// Palm turned down and away from the viewer, so the backs of the hands and the nails show.
+const PALM_DOWN = 2;
+// Where the two index fingertips meet: a little above the middle, clear of the caption below.
+const MEET_Y = 0.2;
 
 function SceneFallback() {
   return (
     <svg className="bridge-scene__fallback" viewBox="0 0 480 360" fill="none" focusable="false">
       <ellipse cx="243" cy="186" rx="143" ry="128" stroke="currentColor" opacity=".2" />
       <ellipse cx="243" cy="186" rx="168" ry="92" stroke="currentColor" opacity=".12" transform="rotate(-28 243 186)" />
-      <g transform="translate(225 205) scale(66 -66) rotate(15)">
-        {CONNECTIONS.map(([a, b]) => <line key={`${a}-${b}`} x1={LANDMARKS[a][0]} y1={LANDMARKS[a][1]} x2={LANDMARKS[b][0]} y2={LANDMARKS[b][1]} stroke="currentColor" strokeWidth=".045" />)}
-        {LANDMARKS.map(([x, y], i) => <circle key={i} cx={x} cy={y} r={i === 0 ? '.105' : '.065'} fill="currentColor" />)}
-      </g>
-      <circle cx="366" cy="145" r="5" fill="var(--bridge-accent, #ff9e85)" />
-      <circle cx="112" cy="230" r="3" fill="var(--bridge-accent, #ff9e85)" />
+      <circle cx="366" cy="145" r="5" fill="var(--bridge-accent, #c89a6e)" />
+      <circle cx="112" cy="230" r="3" fill="var(--bridge-accent, #c89a6e)" />
     </svg>
   );
 }
@@ -118,14 +113,30 @@ export default function BridgeScene({ paused = false, className = '' }) {
 
     const initialize = async () => {
       try {
-        const THREE = await import('three');
+        const [THREE, { loadHandTemplate }, { createHandModelBones }, { FINGER_SPECS }, { FINGER_CURL_GAINS, thumbAnglesFor }, print] = await Promise.all([
+          import('three'),
+          import('../lib/handModelLoader.js'),
+          import('../lib/handModelRig.js'),
+          import('../lib/handSkinMesh.js'),
+          import('../lib/handPoseSpec.js'),
+          import('../lib/halftoneShader.js'),
+        ]);
         if (disposed) return;
+        // Without the hand model there is no sculpture: the SVG stand-in stays.
+        const template = await loadHandTemplate(THREE);
+        if (disposed) {
+          template.geometry.dispose();
+          return;
+        }
+        const handGeometry = own(template.geometry);
+
+        const pixelRatio = Math.min(window.devicePixelRatio || 1, 1.5);
         renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true, powerPreference: 'low-power' });
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
+        renderer.setPixelRatio(pixelRatio);
         renderer.setClearColor(0x000000, 0);
         renderer.outputColorSpace = THREE.SRGBColorSpace;
         renderer.toneMapping = THREE.ACESFilmicToneMapping;
-        renderer.toneMappingExposure = 1.25;
+        renderer.toneMappingExposure = 1.1;
         renderer.domElement.className = 'bridge-scene__canvas';
         renderer.domElement.setAttribute('aria-hidden', 'true');
         renderer.domElement.addEventListener('webglcontextlost', onContextLost);
@@ -134,67 +145,102 @@ export default function BridgeScene({ paused = false, className = '' }) {
         const scene = new THREE.Scene();
         const camera = new THREE.OrthographicCamera(-3.1, 3.1, 2.5, -2.5, 0.1, 30);
         camera.position.set(0, 0, 9);
-        scene.add(new THREE.HemisphereLight(0xfff4df, 0x211a2c, 3.2));
-        const keyLight = new THREE.DirectionalLight(0xffeee1, 4);
+        scene.add(new THREE.HemisphereLight(0xfff6ea, 0x3b2a20, 2.4));
+        const keyLight = new THREE.DirectionalLight(0xfff1e2, 3.2);
         keyLight.position.set(-3, 5, 6);
         scene.add(keyLight);
         const sculpture = new THREE.Group();
         scene.add(sculpture);
 
-        const nodeGeometry = own(new THREE.SphereGeometry(1, 12, 10));
-        const boneGeometry = own(new THREE.CylinderGeometry(1, 1, 1, 8));
-        const nodeMaterial = own(new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.35, metalness: 0.4 }));
-        const boneMaterial = own(new THREE.MeshStandardMaterial({ color: 0x2b2140, roughness: 0.55, metalness: 0.1 }));
-        const copperMaterial = own(new THREE.MeshStandardMaterial({ color: 0xff9e85, roughness: 0.5, metalness: 0.15 }));
-        const transform = new THREE.Object3D();
-        const up = new THREE.Vector3(0, 1, 0);
-        // Print inks, read from CSS so the sculpture follows Paper / Ink and dark camera plates.
-        const teal = new THREE.Color(0xa48bff);
-        const copper = new THREE.Color(0xff9e85);
-        const handNodes = [];
+        // Skin and nails are printed as halftone; sleeves, trims and satellites are flat spot colours.
+        const uniforms = print.createPrintUniforms(THREE, { cell: 5, pixelRatio });
+        const skinMaterial = own(new THREE.MeshStandardMaterial({ color: 0xf0e2d3, vertexColors: true, roughness: 0.55, metalness: 0 }));
+        const nailMaterial = own(new THREE.MeshStandardMaterial({ color: 0xfbf3ea, roughness: 0.3, metalness: 0 }));
+        print.printAsHalftone(skinMaterial, uniforms);
+        print.printAsHalftone(nailMaterial, uniforms);
+        const flat = (options = {}) => own(new THREE.MeshBasicMaterial({ toneMapped: false, ...options }));
+        const sleeveMaterials = [flat({ side: THREE.DoubleSide }), flat({ side: THREE.DoubleSide })];
+        const trimMaterial = flat();
+        const accentMaterial = flat();
+        const sphereGeometry = own(new THREE.SphereGeometry(1, 16, 12));
+        const sleeveGeometry = own(new THREE.CylinderGeometry(1, 1.07, 1, 40, 1, true));
+        const trimGeometry = own(new THREE.TorusGeometry(1, 0.05, 10, 48));
 
-        const makeHand = (secondary) => {
-          const hand = new THREE.Group();
-          const points = LANDMARKS.map(([x, y, z]) => new THREE.Vector3(x, y, z));
-          const nodes = new THREE.InstancedMesh(nodeGeometry, nodeMaterial, points.length);
-          points.forEach((point, index) => {
-            transform.position.copy(point);
-            transform.rotation.set(0, 0, 0);
-            transform.scale.setScalar(index === 0 ? 0.105 : (index % 4 === 0 ? 0.075 : 0.06));
-            transform.updateMatrix();
-            nodes.setMatrixAt(index, transform.matrix);
-            nodes.setColorAt(index, index % 4 === 0 || secondary ? copper : teal);
+        const makeHand = (mirrorX, sleeveMaterial) => {
+          const root = new THREE.Group(); // tilt in the picture plane, and where the hand sits
+          const turn = new THREE.Group(); // palm down, fingers toward the middle
+          const body = new THREE.Group(); // the model is a left hand; a negative X scale makes a right one
+          body.scale.set(mirrorX * HAND_SCALE, HAND_SCALE, HAND_SCALE);
+          root.add(turn);
+          turn.add(body);
+          const bones = createHandModelBones(THREE, template);
+          body.add(bones[template.wrist]);
+          for (const nail of template.nails) {
+            const plate = new THREE.Mesh(sphereGeometry, nailMaterial);
+            plate.position.copy(nail.position);
+            plate.quaternion.copy(nail.quaternion);
+            plate.scale.set(...nail.scale);
+            bones[nail.joint].add(plate);
+          }
+          // The model ends in an open wrist; a long sleeve runs from just above it out of the frame.
+          const { cuff } = template;
+          const top = cuff.y + 0.1;
+          const radiusX = cuff.radiusX * 1.17;
+          const radiusZ = cuff.radiusZ * 1.2;
+          const sleeve = new THREE.Mesh(sleeveGeometry, sleeveMaterial);
+          sleeve.position.set(cuff.x, top - SLEEVE_LENGTH / 2, cuff.z);
+          sleeve.scale.set(radiusX, SLEEVE_LENGTH, radiusZ);
+          const trim = new THREE.Mesh(trimGeometry, trimMaterial);
+          trim.position.set(cuff.x, top, cuff.z);
+          trim.rotation.x = Math.PI / 2;
+          trim.scale.set(radiusX, radiusZ, radiusX);
+          // Both hands share one geometry; each binds it to its own skeleton.
+          const skin = new THREE.SkinnedMesh(handGeometry, skinMaterial);
+          skin.frustumCulled = false;
+          body.add(sleeve, trim, skin);
+          sculpture.add(root);
+          root.updateMatrixWorld(true);
+          skin.bind(own(new THREE.Skeleton(bones)));
+          return {
+            root,
+            turn,
+            thumb: [template.thumb.cmc, template.thumb.mcp, template.thumb.ip].map((id) => bones[id]),
+            fingers: FINGER_SPECS.map((spec) => {
+              const ids = template.fingers[spec.name];
+              return { name: spec.name, splay: spec.baseSplayZ, mcp: bones[ids.mcp], pip: bones[ids.pip], dip: bones[ids.dip] };
+            }),
+            tip: bones[template.landmarkJoints[8]], // index fingertip
+          };
+        };
+        const answering = makeHand(1, sleeveMaterials[0]); // left hand, from the left
+        const reaching = makeHand(-1, sleeveMaterials[1]); // right hand, from the right
+
+        // The same joint conventions as the 3D sign stage (rotation.set(curl, 0, splay)).
+        const [gainMcp, gainPip, gainDip] = FINGER_CURL_GAINS;
+        const openThumb = thumbAnglesFor('open');
+        const pose = (hand, curls, time, phase) => {
+          hand.thumb[0].rotation.set(...openThumb.cmc);
+          hand.thumb[1].rotation.set(...openThumb.mcp);
+          hand.thumb[2].rotation.set(...openThumb.ip);
+          hand.fingers.forEach((finger, i) => {
+            // Resting fingers are never quite still; the pointing index finger holds.
+            const drift = finger.name === 'index' ? 0 : Math.sin(time * 0.9 + phase + i * 0.8) * 0.035;
+            const curl = Math.max(0, curls[finger.name] + drift);
+            const relax = 1 - curl;
+            finger.mcp.rotation.set(curl * gainMcp + relax * 0.02, 0, finger.splay * (1 - curl * 0.7));
+            finger.pip.rotation.set(curl * gainPip + relax * 0.06, 0, 0);
+            finger.dip.rotation.set(curl * gainDip + relax * 0.04, 0, 0);
           });
-          const bones = new THREE.InstancedMesh(boneGeometry, secondary ? copperMaterial : boneMaterial, CONNECTIONS.length);
-          CONNECTIONS.forEach(([a, b], index) => {
-            const direction = new THREE.Vector3().subVectors(points[b], points[a]);
-            transform.position.copy(points[a]).add(points[b]).multiplyScalar(0.5);
-            transform.quaternion.setFromUnitVectors(up, direction.clone().normalize());
-            transform.scale.set(0.022, direction.length(), 0.022);
-            transform.updateMatrix();
-            bones.setMatrixAt(index, transform.matrix);
-          });
-          nodes.instanceMatrix.needsUpdate = true;
-          nodes.instanceColor.needsUpdate = true;
-          handNodes.push({ nodes, secondary, count: points.length });
-          bones.instanceMatrix.needsUpdate = true;
-          // Instancing owns GPU buffers in addition to the shared geometry.
-          own(nodes);
-          own(bones);
-          hand.add(nodes, bones);
-          return hand;
+        };
+        const tip = new THREE.Vector3();
+        // Moves a hand so its index fingertip lands on (x, y, z) in sculpture space.
+        const placeTip = (hand, x, y, z) => {
+          hand.tip.getWorldPosition(tip);
+          sculpture.worldToLocal(tip);
+          hand.root.position.set(x - tip.x, y - tip.y, z - tip.z);
         };
 
-        const front = makeHand(false);
-        front.position.set(-0.32, -0.05, 0.35);
-        front.rotation.set(-0.18, -0.33, -0.28);
-        const back = makeHand(true);
-        back.position.set(0.86, -0.36, -0.8);
-        back.rotation.set(0.18, Math.PI + 0.2, 0.35);
-        back.scale.setScalar(0.72);
-        sculpture.add(back, front);
-
-        const orbitMaterial = own(new THREE.LineBasicMaterial({ color: 0x2b2140, transparent: true, opacity: 0.32 }));
+        const orbitMaterial = own(new THREE.LineBasicMaterial({ transparent: true, opacity: 0.32, toneMapped: false }));
         const orbit = new THREE.Group();
         [0, 1].forEach((index) => {
           const points = [];
@@ -210,31 +256,43 @@ export default function BridgeScene({ paused = false, className = '' }) {
         orbit.position.z = -0.9;
         scene.add(orbit);
         const satellites = new THREE.Group();
-        [[-2.1, 0.65, 0], [1.96, 0.9, -0.1], [1.32, -1.8, 0]].forEach((position, i) => {
-          const node = new THREE.Mesh(nodeGeometry, copperMaterial);
-          node.position.set(...position);
+        [[-2.05, 1.4, -0.6], [2.05, 1.55, -0.6], [1.35, -1.75, -0.6]].forEach(([x, y, z], i) => {
+          const node = new THREE.Mesh(sphereGeometry, accentMaterial);
+          node.position.set(x, y, z);
           node.scale.setScalar(i === 1 ? 0.09 : 0.045);
           satellites.add(node);
         });
         scene.add(satellites);
 
         const recolor = () => {
-          teal.setStyle(resolveColor(host, '--bridge-node', 'rgb(164, 139, 255)'));
-          copper.setStyle(resolveColor(host, '--bridge-accent', 'rgb(255, 158, 133)'));
-          boneMaterial.color.setStyle(resolveColor(host, '--bridge-bone', 'rgb(43, 33, 64)'));
-          copperMaterial.color.copy(copper);
-          orbitMaterial.color.setStyle(resolveColor(host, '--bridge-orbit', 'rgb(43, 33, 64)'));
-          handNodes.forEach(({ nodes, secondary, count }) => {
-            for (let index = 0; index < count; index += 1) nodes.setColorAt(index, index % 4 === 0 || secondary ? copper : teal);
-            nodes.instanceColor.needsUpdate = true;
-          });
+          print.readPrintInks(THREE, host, uniforms);
+          sleeveMaterials[0].color.setStyle(resolveColor(host, '--bridge-sleeve-a', PRINT_INKS.spot1));
+          sleeveMaterials[1].color.setStyle(resolveColor(host, '--bridge-sleeve-b', PRINT_INKS.spot3));
+          trimMaterial.color.setStyle(resolveColor(host, '--bridge-trim', PRINT_INKS.paperWhite));
+          accentMaterial.color.setStyle(resolveColor(host, '--bridge-accent', PRINT_INKS.spot2));
+          orbitMaterial.color.setStyle(resolveColor(host, '--bridge-orbit', PRINT_INKS.ink));
         };
         recolor();
         unsubscribeTheme = subscribeTheme(() => { recolor(); sync(); });
 
         draw = (time) => {
-          sculpture.rotation.y = Math.sin(time * 0.23) * 0.11;
-          sculpture.position.y = Math.sin(time * 0.45) * 0.055;
+          // The fingertips drift closer and apart again, never quite touching.
+          const gap = 0.14 + (1 + Math.sin(time * 0.5)) * 0.09;
+          const lift = Math.sin(time * 0.42) * 0.03;
+          sculpture.rotation.y = Math.sin(time * 0.21) * 0.08;
+          pose(answering, ANSWERING, time, 1.7);
+          pose(reaching, REACHING, time, 0);
+          // One diagonal: up from the lower left, down from the upper right, so only the index
+          // fingers meet and the resting fingers stay clear of each other.
+          answering.root.rotation.z = 0.22;
+          reaching.root.rotation.z = 0.22;
+          answering.turn.rotation.set(PALM_DOWN + Math.sin(time * 0.33 + 1) * 0.05, 0, -Math.PI / 2);
+          reaching.turn.rotation.set(PALM_DOWN + Math.sin(time * 0.37) * 0.05, 0, Math.PI / 2);
+          answering.root.position.set(0, 0, 0);
+          reaching.root.position.set(0, 0, 0);
+          sculpture.updateMatrixWorld(true);
+          placeTip(answering, -gap / 2, MEET_Y + lift - 0.1, 0.4);
+          placeTip(reaching, gap / 2, MEET_Y + lift + 0.1, 0.4);
           orbit.rotation.z = time * 0.015;
           satellites.rotation.z = Math.sin(time * 0.15) * 0.04;
           renderer.render(scene, camera);

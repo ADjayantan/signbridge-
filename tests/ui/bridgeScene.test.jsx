@@ -21,6 +21,21 @@ vi.mock('three', async (importOriginal) => {
   }
   return { ...actual, WebGLRenderer };
 });
+// The real sculpted hand, read straight from the asset: jsdom cannot fetch it for GLTFLoader.
+vi.mock('../../src/lib/handModelLoader.js', async () => {
+  const path = await import('node:path');
+  const { prepareHandModel } = await import('../../src/lib/handModelRig.js');
+  const { readHandModelData } = await import('../helpers/handModel.js');
+  // jsdom gives import.meta.url an http: URL, so resolve from the project root the tests run in.
+  const data = readHandModelData(path.resolve('public/hand3d/left.glb'));
+  let template = null;
+  return {
+    loadHandTemplate: async (THREE) => {
+      template ??= prepareHandModel(THREE, data);
+      return { ...template, geometry: template.geometry.clone() };
+    },
+  };
+});
 
 let frames;
 let nextFrame;

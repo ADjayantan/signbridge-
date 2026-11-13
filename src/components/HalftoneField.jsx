@@ -1,9 +1,10 @@
 import { useEffect, useRef } from "react";
 import { PATTERNS, SCREEN_ANGLES, buildScreen, coverageAt, dotRadius } from "../lib/halftone.js";
+import { PRINT_INKS } from "../lib/printPalette.js";
 import { resolveColor, resolvedTheme, subscribeTheme } from "../lib/theme.js";
 
 const TAU = Math.PI * 2;
-const FALLBACK_INKS = { "--spot-1": "#a48bff", "--spot-2": "#ff9e85", "--spot-3": "#ffd86b", "--ink": "#2b2140" };
+const FALLBACK_INKS = { "--spot-1": PRINT_INKS.spot1, "--spot-2": PRINT_INKS.spot2, "--spot-3": PRINT_INKS.spot3, "--ink": PRINT_INKS.ink };
 const easeOut = (t) => 1 - (1 - t) ** 3;
 
 /**
@@ -59,7 +60,7 @@ export default function HalftoneField({
 
     const readInks = () => {
       dark = resolvedTheme() === "ink";
-      colors = settings.current.inks.map((token) => resolveColor(canvas, token, FALLBACK_INKS[token] || "#ff9e85"));
+      colors = settings.current.inks.map((token) => resolveColor(canvas, token, FALLBACK_INKS[token] || PRINT_INKS.spot2));
     };
     const ensureScreens = () => {
       const key = `${width}x${height}@${settings.current.cell}`;

@@ -1,68 +1,17 @@
 import { useEffect, useRef, useState } from "react";
 import { DAILY_CONVERSATION_SIGNS } from "../lib/handPoseShortcuts.js";
 import { BONE_COUNT, BONE, FINGER_SPECS, THUMB_SPEC, buildHandSkinGeometry } from "../lib/handSkinMesh.js";
-import {
-  HAND_MODEL_URL,
-  MODEL_PINCH_POSE,
-  createHandModelBones,
-  createSkinBumpTexture,
-  extractHandModelData,
-  prepareHandModel,
-} from "../lib/handModelRig.js";
+import { MODEL_PINCH_POSE, createHandModelBones, createSkinBumpTexture } from "../lib/handModelRig.js";
+import { loadHandTemplate } from "../lib/handModelLoader.js";
+import { createPrintUniforms, printAsHalftone, readPrintInks } from "../lib/halftoneShader.js";
+import { FINGER_INKS, PRINT_INKS } from "../lib/printPalette.js";
 import { FINGER_CURL_GAINS, makeHandSpec, thumbAnglesFor } from "../lib/handPoseSpec.js";
 import { liveHandSpecs } from "../lib/liveHandMirror.js";
 import { resolveColor, subscribeTheme } from "../lib/theme.js";
 import HalftoneField from "./HalftoneField.jsx";
 
-const FINGER_COLORS = [
-  0xffd86b, // 0: Wrist
-  0xffd86b, 0xffd86b, 0xffd86b, 0xffd86b, // 1-4: Thumb (butter)
-  0xb9a6ff, 0xb9a6ff, 0xb9a6ff, 0xb9a6ff, // 5-8: Index (lavender)
-  0xff9e85, 0xff9e85, 0xff9e85, 0xff9e85, // 9-12: Middle (peach)
-  0xff7fa8, 0xff7fa8, 0xff7fa8, 0xff7fa8, // 13-16: Ring (pink)
-  0x8fd3ff, 0x8fd3ff, 0x8fd3ff, 0x8fd3ff, // 17-20: Pinky (sky)
-];
-
-/**
- * "Halftone" skin: the hand's lit colour is reprinted as two dot screens on paper-white, a spot ink
- * for the half-tones and plum for the deep shadows (all three come from the page's --stage-print-*
- * tokens), sized in screen pixels so dots stay round.
- * Spliced into the physical material after its final colour (gl_FragColor is sRGB there).
- */
-const HALFTONE_GLSL_HEAD = `
-uniform float uHalftone;
-uniform float uHtCell;
-uniform vec3 uHtPaper;
-uniform vec3 uHtSpot;
-uniform vec3 uHtInk;
-float htDot(vec2 frag, float angle, float tone) {
-  float c = cos(angle);
-  float s = sin(angle);
-  vec2 cellPos = mat2(c, s, -s, c) * frag / uHtCell;
-  float d = length(fract(cellPos) - 0.5);
-  float r = 0.5 * sqrt(clamp(tone, 0.0, 1.0)) * 1.18;
-  float aa = max(fwidth(d), 0.02);
-  return 1.0 - smoothstep(r - aa, r + aa, d);
-}
-`;
-const HALFTONE_GLSL_BODY = `
-if (uHalftone > 0.5) {
-  // Print shading needs form more than realism: a fixed key light from the upper right (view space)
-  // gives every finger a lit side and a shadow side, and the real lighting adds creases and folds.
-  vec3 n = normalize(normal);
-  float key = clamp(dot(n, normalize(vec3(0.45, 0.55, 0.7))), 0.0, 1.0);
-  float lum = dot(gl_FragColor.rgb, vec3(0.2126, 0.7152, 0.0722));
-  float tone = clamp((1.0 - key) * 0.85 + (1.0 - lum) * 0.7, 0.0, 1.0);
-  // Grazing angles are inked like a drawn outline (normal and vViewPosition are view space here).
-  float rim = 1.0 - abs(dot(n, normalize(vViewPosition)));
-  float spot = htDot(gl_FragCoord.xy, 0.2618, smoothstep(0.1, 0.62, tone));
-  float ink = htDot(gl_FragCoord.xy, 0.7854, max(smoothstep(0.58, 0.95, tone), smoothstep(0.42, 0.8, rim) * 0.9));
-  vec3 printed = uHtPaper;
-  printed = mix(printed, printed * uHtSpot, spot);
-  printed = mix(printed, printed * uHtInk, ink);
-  gl_FragColor.rgb = printed;
-}
-`;
+// Joint marker colours: the wrist shares the thumb's ink, then one ink per finger.
+const FINGER_COLORS = Array.from({ length: 21 }, (_, joint) => FINGER_INKS[joint === 0 ? 0 : Math.floor((joint - 1) / 4)]);
 
 const SKIN_THEMES = [
   {
@@ -75,13 +24,14 @@ const SKIN_THEMES = [
     emissive: 0x240f08,
     roughness: 0.42,
     metalness: 0.02,
+    skinGlow: 0.6, // warm light scattered under the skin at the edges and fingertips
   },
   {
     id: "halftone",
     label: "Halftone",
     color: 0xf0e2d3,
     nailColor: 0xfbf3ea,
-    creaseColor: 0x2b2140,
+    creaseColor: 0x3b2a20,
     sheen: 0xffffff,
     emissive: 0x000000,
     roughness: 0.55,
@@ -729,15 +679,16 @@ export default function InteractiveSign3D({
 
     const init = async () => {
       try {
-        const THREE = await import("three");
+        const [THREE, environments] = await Promise.all([
+          import("three"),
+          import("three/examples/jsm/environments/RoomEnvironment.js").catch(() => null),
+        ]);
         if (disposed) return;
 
         // Sculpted hand model (public/hand3d). If it cannot be loaded, the procedural hand takes over.
         let handTemplate = null;
         try {
-          const { GLTFLoader } = await import("three/examples/jsm/loaders/GLTFLoader.js");
-          const gltf = await new GLTFLoader().loadAsync(`${import.meta.env?.BASE_URL || "/"}${HAND_MODEL_URL}`);
-          handTemplate = prepareHandModel(THREE, extractHandModelData(THREE, gltf.scene));
+          handTemplate = await loadHandTemplate(THREE);
         } catch (error) {
           console.warn("[InteractiveSign3D] sculpted hand model unavailable, using the built-in procedural hand", error);
         }
@@ -763,8 +714,8 @@ export default function InteractiveSign3D({
         camera.position.set(0, 0.08, 4.75);
 
         // Warm 3-point studio lighting for realistic human skin & clear finger depth
-        scene.add(new THREE.HemisphereLight(0xfff7f0, 0x2a1c16, 1.55));
-        const keyLight = new THREE.DirectionalLight(0xfff9f4, 2.8);
+        scene.add(new THREE.HemisphereLight(0xfff7f0, 0x2a1c16, 1.1));
+        const keyLight = new THREE.DirectionalLight(0xfff9f4, 2.5);
         keyLight.position.set(3.4, 4.8, 5.8);
         // Soft self-shadowing: fingers shade the palm and each other, which is what gives the hand depth
         keyLight.castShadow = true;
@@ -780,7 +731,7 @@ export default function InteractiveSign3D({
         keyLight.shadow.radius = 5;
         scene.add(keyLight);
 
-        const fillLight = new THREE.DirectionalLight(0xdff7ef, 1.25);
+        const fillLight = new THREE.DirectionalLight(0xe4ecff, 0.9);
         fillLight.position.set(-4.2, 1.8, 4.4);
         scene.add(fillLight);
 
@@ -788,27 +739,42 @@ export default function InteractiveSign3D({
         rimLight.position.set(-2.2, 2.8, -3.6);
         scene.add(rimLight);
 
+        // Soft studio reflections: skin, nails and gold pick up a room's light instead of reading as
+        // plastic. The lights alone still make a good hand if this is unavailable.
+        if (environments) {
+          try {
+            const room = new environments.RoomEnvironment();
+            const pmrem = new THREE.PMREMGenerator(renderer);
+            scene.environment = own(pmrem.fromScene(room, 0.04).texture);
+            scene.environmentIntensity = 0.45;
+            pmrem.dispose();
+            room.dispose();
+          } catch {
+            scene.environment = null;
+          }
+        }
+
         const rootGroup = new THREE.Group();
         scene.add(rootGroup);
 
         // Stage markings beneath the forearm, printed in the page's inks (re-read on a theme change)
         const ringGeo = own(new THREE.RingGeometry(1.52, 1.60, 72));
-        const ringMat = own(new THREE.MeshBasicMaterial({ color: 0xa48bff, side: THREE.DoubleSide, transparent: true, opacity: 0.44 }));
+        const ringMat = own(new THREE.MeshBasicMaterial({ color: PRINT_INKS.spot1, side: THREE.DoubleSide, transparent: true, opacity: 0.44 }));
         const ringMesh = new THREE.Mesh(ringGeo, ringMat);
         ringMesh.rotation.x = Math.PI / 2.25;
         ringMesh.position.y = -1.28;
         rootGroup.add(ringMesh);
 
         const outerRingGeo = own(new THREE.RingGeometry(1.88, 1.92, 72));
-        const outerRingMat = own(new THREE.MeshBasicMaterial({ color: 0x2b2140, side: THREE.DoubleSide, transparent: true, opacity: 0.3 }));
+        const outerRingMat = own(new THREE.MeshBasicMaterial({ color: PRINT_INKS.ink, side: THREE.DoubleSide, transparent: true, opacity: 0.3 }));
         const outerRingMesh = new THREE.Mesh(outerRingGeo, outerRingMat);
         outerRingMesh.rotation.x = Math.PI / 2.25;
         outerRingMesh.position.y = -1.30;
         rootGroup.add(outerRingMesh);
         const stageColors = {
-          ring: new THREE.Color(0xa48bff),
-          hold: new THREE.Color(0xffd86b),
-          ok: new THREE.Color(0xff9e85),
+          ring: new THREE.Color(PRINT_INKS.spot1),
+          hold: new THREE.Color(PRINT_INKS.spot3),
+          ok: new THREE.Color(PRINT_INKS.spot2),
         };
 
         // Materials: Skin, Fingernails, Knuckle Creases, and Studio Sleeve Cuff
@@ -844,48 +810,26 @@ export default function InteractiveSign3D({
 
         const cuffMat = own(
           new THREE.MeshStandardMaterial({
-            color: 0xa48bff,
+            color: PRINT_INKS.spot1,
             roughness: 0.78,
             metalness: 0.0,
           })
         );
-        const cuffTrimMat = own(new THREE.MeshBasicMaterial({ color: 0xff9e85 }));
+        const cuffTrimMat = own(new THREE.MeshBasicMaterial({ color: PRINT_INKS.spot2 }));
 
-        const srgb = (hex) => new THREE.Vector3(((hex >> 16) & 255) / 255, ((hex >> 8) & 255) / 255, (hex & 255) / 255);
-        const halftoneUniforms = {
-          uHalftone: { value: 0 },
-          uHtCell: { value: 5.5 * renderer.getPixelRatio() },
-          uHtPaper: { value: srgb(0xfdf9f3) },
-          uHtSpot: { value: srgb(0xff9e85) },
-          uHtInk: { value: srgb(0x2b2140) },
-        };
-        const printAsHalftone = (material) => {
-          material.onBeforeCompile = (shader) => {
-            Object.assign(shader.uniforms, halftoneUniforms);
-            shader.fragmentShader = shader.fragmentShader
-              .replace("void main() {", HALFTONE_GLSL_HEAD + "\nvoid main() {")
-              .replace("#include <dithering_fragment>", "#include <dithering_fragment>\n" + HALFTONE_GLSL_BODY);
-          };
-        };
-        printAsHalftone(skinMat);
-        printAsHalftone(nailMat);
+        // "Halftone" skin: the lit colour reprinted as dot screens in the page's print inks.
+        const halftoneUniforms = createPrintUniforms(THREE, { pixelRatio: renderer.getPixelRatio(), enabled: false });
+        printAsHalftone(skinMat, halftoneUniforms);
+        printAsHalftone(nailMat, halftoneUniforms);
 
-        // The skin shader runs after the output colour conversion, so its inks go in as sRGB components.
-        const printInk = new THREE.Color();
-        const readPrintInk = (uniform, token, fallback) => {
-          const { r, g, b } = printInk.setStyle(resolveColor(host, token, fallback)).getRGB({ r: 0, g: 0, b: 0 }, THREE.SRGBColorSpace);
-          uniform.value.set(r, g, b);
-        };
         const readStageColors = () => {
-          stageColors.ring.setStyle(resolveColor(host, "--stage-ring", "rgb(164, 139, 255)"));
-          stageColors.hold.setStyle(resolveColor(host, "--stage-ring-hold", "rgb(255, 216, 107)"));
-          stageColors.ok.setStyle(resolveColor(host, "--stage-ring-ok", "rgb(255, 158, 133)"));
-          outerRingMat.color.setStyle(resolveColor(host, "--stage-outer", "rgb(43, 33, 64)"));
-          cuffMat.color.setStyle(resolveColor(host, "--stage-cuff", "rgb(164, 139, 255)"));
-          cuffTrimMat.color.setStyle(resolveColor(host, "--stage-trim", "rgb(255, 158, 133)"));
-          readPrintInk(halftoneUniforms.uHtPaper, "--stage-print-paper", "rgb(253, 249, 243)");
-          readPrintInk(halftoneUniforms.uHtSpot, "--stage-print-spot", "rgb(255, 158, 133)");
-          readPrintInk(halftoneUniforms.uHtInk, "--stage-print-ink", "rgb(43, 33, 64)");
+          stageColors.ring.setStyle(resolveColor(host, "--stage-ring", PRINT_INKS.spot1));
+          stageColors.hold.setStyle(resolveColor(host, "--stage-ring-hold", PRINT_INKS.spot3));
+          stageColors.ok.setStyle(resolveColor(host, "--stage-ring-ok", PRINT_INKS.spot2));
+          outerRingMat.color.setStyle(resolveColor(host, "--stage-outer", PRINT_INKS.ink));
+          cuffMat.color.setStyle(resolveColor(host, "--stage-cuff", PRINT_INKS.spot1));
+          cuffTrimMat.color.setStyle(resolveColor(host, "--stage-trim", PRINT_INKS.spot2));
+          readPrintInks(THREE, host, halftoneUniforms);
         };
         readStageColors();
         unsubscribeTheme = subscribeTheme(readStageColors);
@@ -1082,7 +1026,7 @@ export default function InteractiveSign3D({
           const overlayPins = own(new THREE.InstancedMesh(pinSphereGeo, overlayJointMat, 21));
           const c = new THREE.Color();
           for (let i = 0; i < 21; i++) {
-            c.setHex(FINGER_COLORS[i]);
+            c.set(FINGER_COLORS[i]);
             overlayPins.setColorAt(i, c);
           }
           overlayPins.instanceColor.needsUpdate = true;
@@ -1301,6 +1245,7 @@ export default function InteractiveSign3D({
             if (skinMat.sheenColor) skinMat.sheenColor.setHex(themeObj.sheen);
             nailMat.color.setHex(themeObj.nailColor);
             halftoneUniforms.uHalftone.value = themeObj.halftone ? 1 : 0;
+            halftoneUniforms.uSkinGlow.value = themeObj.skinGlow ?? 0;
             // Skin grain would speckle the dot screens, so the printed hand is smooth.
             if (skinMat.bumpMap) skinMat.bumpScale = themeObj.halftone ? 0 : 0.38;
           }

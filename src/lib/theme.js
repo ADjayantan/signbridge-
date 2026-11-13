@@ -5,15 +5,13 @@
  * pins the colour scheme when the person picks one. Canvases and WebGL scenes cannot read
  * light-dark() tokens directly, so they resolve them here and re-read them on a theme change.
  */
+import { BROWSER_CHROME } from "./printPalette.js";
 import { load, save } from "./storage.js";
 
 export const THEME_CHOICES = Object.freeze(["auto", "paper", "ink"]);
 const STORAGE_KEY = "theme";
 const listeners = new Set();
 let current = null;
-
-/** Browser chrome colour per theme (address bar, task switcher). Matches --paper. */
-const BROWSER_CHROME = { paper: "#f6f0e8", ink: "#15111c" };
 
 export function getThemeChoice() {
   if (current) return current;

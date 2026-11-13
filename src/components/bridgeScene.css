@@ -6,11 +6,13 @@
   overflow: hidden;
   isolation: isolate;
   pointer-events: none;
-  color: var(--ink, #2b2140);
-  --bridge-bone: var(--ink, #2b2140);
-  --bridge-node: var(--spot-1, #a48bff);
-  --bridge-accent: var(--spot-2, #ff9e85);
-  --bridge-orbit: var(--ink, #2b2140);
+  color: var(--ink, #3b2a20);
+  /* The hands print in --print-paper / --print-spot / --print-ink; the rest is flat spot colour. */
+  --bridge-sleeve-a: var(--spot-1, #7b5034);
+  --bridge-sleeve-b: var(--spot-3, #e9c07a);
+  --bridge-trim: var(--paper-white, #fffaf3);
+  --bridge-accent: var(--spot-2, #c89a6e);
+  --bridge-orbit: var(--ink, #3b2a20);
   contain: layout paint;
 }
 
@@ -41,7 +43,7 @@
   top: 50%;
   transform: translateY(-50%);
   border-radius: 50%;
-  background: radial-gradient(circle at center, var(--bridge-accent, #ff9e85) 0 1.2px, transparent 1.8px) 0 0 / 8px 8px;
+  background: radial-gradient(circle at center, var(--bridge-accent, #c89a6e) 0 1.2px, transparent 1.8px) 0 0 / 8px 8px;
   -webkit-mask-image: radial-gradient(closest-side, #000 0%, transparent 100%);
   mask-image: radial-gradient(closest-side, #000 0%, transparent 100%);
   opacity: 0.45;

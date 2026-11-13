@@ -1,5 +1,6 @@
 // Draws only the detected, complete hand skeletons over the camera view.
 import { HAND_CONNECTIONS, HAND_FINGERS, HAND_JOINT_NAMES, isCompleteHandLandmarks } from "./handJoints.js";
+import { CAMERA_LABEL, FINGER_INKS } from "./printPalette.js";
 const TIP_JOINTS = new Set([4, 8, 12, 16, 20]);
 const fingerFor = (joint) => HAND_FINGERS.find((finger) => finger.joints.includes(joint));
 
@@ -21,7 +22,7 @@ export function drawHands(canvas, hands, width, height, { showLabels = false, sh
     if (!isCompleteHandLandmarks(hand?.landmarks)) continue;
     const pts = hand.landmarks.map((p) => [p.x * width, p.y * height]);
     for (const [a, b] of HAND_CONNECTIONS) {
-      ctx.strokeStyle = fingerFor(a === 0 ? b : a)?.color || "#b9a6ff";
+      ctx.strokeStyle = fingerFor(a === 0 ? b : a)?.color || FINGER_INKS[1];
       ctx.beginPath();
       ctx.moveTo(pts[a][0], pts[a][1]);
       ctx.lineTo(pts[b][0], pts[b][1]);
@@ -29,7 +30,7 @@ export function drawHands(canvas, hands, width, height, { showLabels = false, sh
     }
     pts.forEach(([x, y], joint) => {
       const tip = TIP_JOINTS.has(joint);
-      ctx.fillStyle = joint === 0 ? "#ffffff" : fingerFor(joint)?.color || "#ff9e85";
+      ctx.fillStyle = joint === 0 ? "#ffffff" : fingerFor(joint)?.color || FINGER_INKS[2];
       ctx.beginPath();
       ctx.arc(x, y, line * (joint === 0 ? 2.2 : tip ? 1.9 : 1.35), 0, Math.PI * 2);
       ctx.fill();
@@ -44,7 +45,7 @@ export function drawHands(canvas, hands, width, height, { showLabels = false, sh
       const labelY = Math.max(fontSize, Math.min(height - fontSize, y));
       ctx.translate(labelX, labelY);
       if (mirrorText) ctx.scale(-1, 1);
-      ctx.fillStyle = "#f6f0e8"; ctx.strokeStyle = "#17121f"; ctx.lineWidth = 3;
+      ctx.fillStyle = CAMERA_LABEL.fill; ctx.strokeStyle = CAMERA_LABEL.outline; ctx.lineWidth = 3;
       ctx.strokeText?.(label, 0, 0); ctx.fillText(label, 0, 0);
       ctx.restore();
     });

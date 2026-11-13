@@ -1,4 +1,6 @@
 // MediaPipe's real 21-joint hand layout, shared by preview and feature adapters.
+import { FINGER_INKS } from "./printPalette.js";
+
 export const HAND_JOINT_COUNT = 21;
 export const HAND_JOINT_NAMES = Object.freeze([
   "Wrist", "Thumb base", "Thumb knuckle", "Thumb joint", "Thumb tip",
@@ -8,12 +10,12 @@ export const HAND_JOINT_NAMES = Object.freeze([
   "Pinky knuckle", "Pinky middle joint", "Pinky outer joint", "Pinky tip",
 ]);
 export const HAND_FINGERS = Object.freeze([
-  // Print inks, bright enough to read over any camera image (no green, by design).
-  { name: "Thumb", color: "#ffd86b", joints: [0, 1, 2, 3, 4] },
-  { name: "Index", color: "#b9a6ff", joints: [0, 5, 6, 7, 8] },
-  { name: "Middle", color: "#ff9e85", joints: [0, 9, 10, 11, 12] },
-  { name: "Ring", color: "#ff7fa8", joints: [0, 13, 14, 15, 16] },
-  { name: "Pinky", color: "#8fd3ff", joints: [0, 17, 18, 19, 20] },
+  // Bright enough to read over skin and any camera image (no green, by design).
+  { name: "Thumb", color: FINGER_INKS[0], joints: [0, 1, 2, 3, 4] },
+  { name: "Index", color: FINGER_INKS[1], joints: [0, 5, 6, 7, 8] },
+  { name: "Middle", color: FINGER_INKS[2], joints: [0, 9, 10, 11, 12] },
+  { name: "Ring", color: FINGER_INKS[3], joints: [0, 13, 14, 15, 16] },
+  { name: "Pinky", color: FINGER_INKS[4], joints: [0, 17, 18, 19, 20] },
 ].map((finger) => Object.freeze({ ...finger, joints: Object.freeze(finger.joints) })));
 export const HAND_CONNECTIONS = Object.freeze([
   [0, 1], [1, 2], [2, 3], [3, 4],
