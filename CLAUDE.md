@@ -2,6 +2,10 @@
 
 Two-person conversation app (React 19 + Vite 8 PWA, Node `ws` room server) with experimental local ISL/ASL isolated-word sign recognition (MediaPipe Holistic landmarks into a GRU; Python training in `training/`). Owner: Jai, student project on a Windows laptop.
 
+## Cold start
+STARTUP.md says where the work stands, how to wake the app and what comes next. It is imported here so every session starts with it: @STARTUP.md
+Update it before you stop if your session changed that state.
+
 ## Talking to Jai
 - Reply in casual Tanglish (Tamil-English, "machan", "da"). Short and direct, strict mentor.
 - Lead with what changed and what was verified on the real laptop. No long essays. Test counts are not progress.
@@ -24,8 +28,8 @@ Two-person conversation app (React 19 + Vite 8 PWA, Node `ws` room server) with 
 - Don't lower recognition thresholds or force an expected word to make a demo pass.
 - Automated tests are not device evidence. Report real camera/browser results separately.
 
-## Honest state (8 Oct 2026)
-- Rooms, chat, clarify/correction, meeting cards and WebRTC are built but tested only in two tabs on this laptop. **Not deployed** (no Render service, no Metered TURN), no two-device test.
+## Honest state (8 Oct 2026; later work is in STARTUP.md)
+- Rooms, chat, clarify/correction, meeting cards and WebRTC are built but tested only in two tabs on this laptop. A Render Free pilot went live on 8 Oct, checked with synthetic clients only (`docs/render-pilot-verification-2026-10-08.md`); its current state is unchecked. No Metered TURN, no two-device test.
 - App sign models (`public/models/isl.json` 49 words, `asl.json` 100 words, 27-joint GRU): dataset top-1 ISL 75% / ASL 40.8%. ASL test signers overlap training (52 of 56); signer-disjoint ASL is 28%.
 - **Zero verified live recognitions on Jai's webcam.** BOOK (4/4 on the dataset) and DRINK failed live. HELLO/STOP came from gesture shortcuts, not the model.
 - A 75-joint GRU (ISL 89.6% top-1) is trained but not promoted; the graph model was worse. See `docs/graph-model-implementation-2026-10-04.md` and `docs/recognition-capture-diagnostic-2026-10-05.md`.
