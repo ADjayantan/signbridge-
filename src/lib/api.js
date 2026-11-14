@@ -1,4 +1,6 @@
 // Client for the SignBridge server (/api/chat). The browser never sees the Gemini key.
+// Always the page's own origin: the room server answers it locally and on Render, and on Vercel the
+// api/chat.js function does, with GEMINI_API_KEY set in the Vercel project.
 const ENDPOINT = "/api/chat";
 
 export class ApiError extends Error {

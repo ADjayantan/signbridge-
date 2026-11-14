@@ -110,6 +110,10 @@ test("hosted room server generates public invite links even when the developer U
   const { client } = setup({ baseUrl: "https://signbridge.example", origin: "http://127.0.0.1:5173" }); await client.create();
   assert.match(client.state.inviteUrl, /^https:\/\/signbridge\.example\/#connect/); client.dispose();
 });
+test("a public site hosted apart from its room server shares invites to itself", async () => {
+  const { client } = setup({ baseUrl: "https://signbridge-conversations.onrender.com", origin: "https://signbridge.vercel.app" }); await client.create();
+  assert.match(client.state.inviteUrl, /^https:\/\/signbridge\.vercel\.app\/#connect\?room=room_123&invite=/); client.dispose();
+});
 test("snapshot restores received receipts and backend invalid-auth errors are terminal", async () => {
   const { client } = setup(); const socket = await connected(client);
   socket.receive({ type: "snapshot", messages: [{ id: "received_1", senderId: "host_1", seq: 1, receivedBy: ["guest_2"] }], participants: [] });

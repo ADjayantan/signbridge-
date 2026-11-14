@@ -78,7 +78,11 @@ export class RoomClient {
   }
   activate(credentials) {
     this.saveCredentials(credentials); this.closed = false;
-    const inviteOrigin = this.baseUrl ? new URL(this.baseUrl, this.origin).origin : this.origin;
+    // Invites open the site the partner can reach: this page, unless this page is a local address,
+    // in which case the public room server (which also serves the site) is the one to share.
+    let pageIsLocal = true;
+    try { pageIsLocal = ["localhost", "127.0.0.1", "[::1]"].includes(new URL(this.origin).hostname); } catch { /* an unusable origin is treated as local */ }
+    const inviteOrigin = this.baseUrl && pageIsLocal ? new URL(this.baseUrl, this.origin).origin : this.origin;
     this.update({ roomId: credentials.roomId, participantId: credentials.participantId, role: credentials.role, error: "", notice: "", inviteUrl: `${inviteOrigin}/#connect?room=${encodeURIComponent(credentials.roomId)}&invite=${encodeURIComponent(credentials.inviteToken || "")}` });
     this.connect();
   }

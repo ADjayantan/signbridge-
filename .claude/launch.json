@@ -16,6 +16,14 @@
       "port": 5174,
       "autoPort": false,
       "url": "http://127.0.0.1:5174"
+    },
+    {
+      "name": "public",
+      "runtimeExecutable": "cmd",
+      "runtimeArgs": ["/c", "set PORT=3101&& node server/roomServer.js"],
+      "port": 3101,
+      "autoPort": false,
+      "url": "http://127.0.0.1:3101"
     }
   ]
 }

@@ -4,7 +4,7 @@ Read this first after a cold start: a new Claude session, a context reset, a lon
 CLAUDE.md holds the standing rules (how to talk to Jai, ports, what never to do, priorities). This
 note says where the work stands. Whoever changes that state updates this note before stopping.
 
-Last updated: 14 Nov 2026, at `db58ecb` on `main` (5 commits ahead of `origin/main`, not pushed).
+Last updated: 14 Nov 2026, with the Vercel + Render hosting prep. `main` was pushed to GitHub that day.
 
 ## Wake up
 1. `git status -sb` and `git log --oneline -8`: has anything moved since this note?
@@ -53,9 +53,18 @@ These are dated reports, not fresh checks.
 - Rooms, chat, clarify/correction, meeting cards and WebRTC: tested in two tabs on this laptop only.
 - A Render Free pilot went live on 8 Oct (`signbridge-conversations.onrender.com`, deploy `361a131`
   from `codex/render-pilot`), checked with synthetic clients only
-  (`docs/render-pilot-verification-2026-10-08.md`). Auto-deploy is off, so unless someone redeployed
-  by hand it still runs that build. Recheck before saying anything about it. No Metered TURN, no
-  two-device test.
+  (`docs/render-pilot-verification-2026-10-08.md`). On 14 Nov its `/api/health` still answered
+  `{"ok":true}` after a 24 s cold start. Auto-deploy is off, so unless someone redeployed by hand it
+  runs the October build, not the November interface. No Metered TURN, no two-device test.
+- To check the deployable build locally: `npm run build:public`, then the `public` entry in
+  `.claude/launch.json` (production server on http://127.0.0.1:3101). On 14 Nov it served the site,
+  answered `/api/health`, returned 404 for `/models/*` and served `/hand3d/left.glb`.
+- Hosting plan (Jai chose it 14 Nov): site on Vercel, rooms on Render. Rooms can't move to Vercel
+  (WebSocket connections end at the function's maximum duration, and partners can land on different
+  instances while rooms live in one server's memory). `vercel.json` is ready, the app wakes Render
+  when it opens (`src/lib/conversationServer.js`), and invites point at the Vercel page. The split
+  passed a local two-origin test; nothing is deployed yet. Jai's steps, and why `GEMINI_API_KEY`
+  must not go on Vercel: `docs/conversations-deployment.md`, "Vercel front end, Render rooms".
 
 ## Not checked on a real device since the November work
 Camera-on states with the real webcam, reduced motion, browsers without `light-dark()`, a phone over

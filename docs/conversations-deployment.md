@@ -42,9 +42,21 @@ Use one server instance. Durable transcripts and shared state across instances a
 3. Authenticated room members fetch ICE configuration from the room server. It caches successful upstream results for five minutes and failures for 30 seconds. The configured credential's ICE username/password reach the browser peer; its API key and raw upstream errors do not. This endpoint retrieves an existing credential; it does not generate temporary credentials. Expiry depends on how that credential was created. Rotation/expiry automation is later work. Allow up to two minutes after creating a credential for propagation, then reconnect before declaring relay failure. [Creating TURN credentials](https://www.metered.ca/docs/turn-server-service/creating-turn-credentials/).
 4. Confirm allowance/usage in the account dashboard. Open Relay currently advertises 20 GB/month free TURN traffic. This app does not inspect remaining allowance or purchase capacity. Failed/missing relay configuration leaves text available and explains video availability. [Open Relay setup and allowance](https://www.metered.ca/tools/openrelay/).
 
-### Existing Vercel tools
+### Vercel front end, Render rooms (prepared 14 November 2026)
 
-`api/chat.js` and `vercel.json` host the older AI function/static app separately. They do not run the persistent room WebSocket server. A separate frontend needs `npm run build:public`, build-time `VITE_ROOM_SERVER_URL` pointing to the Render HTTPS origin, and that frontend origin in Render's `ROOM_ALLOWED_ORIGINS`.
+The site can load from Vercel's CDN while rooms stay on Render. Vercel Functions accept WebSockets, but a connection ends at the function's maximum duration and two partners can reach different instances, while rooms live in one server's memory, so the room server stays on Render. `vercel.json` builds with `npm run build:public` and bakes in `VITE_ROOM_SERVER_URL=https://signbridge-conversations.onrender.com`; change it there if the Render service moves. The app knocks on the Render `/api/health` when it opens, so the free service starts waking before anyone creates a room, and invite links point at the page that made them (the Vercel site), not at Render.
+
+Checked on the laptop before any deploy: a public build pointed at a separate local room server (page on port 3101, rooms on 3001) sent the wake-up knock, created a room across origins (preflight 204, `POST /api/rooms` 201), connected its WebSocket, let a partner join from the invite and delivered a message both ways. Vercel and Render themselves were not touched.
+
+Jai does these steps; nothing here needs a secret in chat.
+
+1. Push `main` to GitHub.
+2. Render, existing `signbridge-conversations` service: Settings → Build & Deploy → Branch `main` (it was `codex/render-pilot`), then Manual Deploy → Deploy latest commit. Check `/api/health` returns `{"ok":true}`.
+3. Vercel: Add New → Project → import `ADjayantan/signbridge-`. `vercel.json` supplies the install, build and output settings; keep them. Deploy and note the domain, for example `https://signbridge-abc.vercel.app`.
+4. Render → Environment: `ROOM_ALLOWED_ORIGINS=https://<the Vercel domain>` (comma-separate several). Saving restarts the service, which ends open rooms.
+5. Open the Vercel URL on the laptop, create an invite (the first room after a sleep can take up to a minute; the page says the server is waking), open the invite on an Android phone on mobile data, and send messages both ways.
+
+AI on the hosted site: room **Optional AI help** goes to Render's authenticated, rate-limited `POST /api/chat` and works when Render has `GEMINI_API_KEY`. Do not put `GEMINI_API_KEY` on Vercel: its `api/chat.js` route has no room authentication or rate limit, so the key would be open to anyone who finds the URL. Without it, Voice and standalone sign AI on Vercel report the AI as unavailable, as they do on Render.
 
 Room **Optional AI help** uses authenticated `POST /api/chat`. Standalone AI status adds `roomAuthRequired: true`, while preserving configured-key readiness. Older AI tools lack room-member headers; they cannot call this protected endpoint directly. Local Vite/Vercel tools have a separate AI route and retain their existing behavior. Local recognition, speech, saved videos and Training Studio do not need AI. Vercel's old AI route does not inherit standalone room authentication/rate limits.
 
